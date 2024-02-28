@@ -1,6 +1,6 @@
 {
 	"name": "ParserPower",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"author": [
 		"[http://www.mediawiki.org/wiki/User:OoEyes Shawn Bruckner]",
 		"Hydra Wiki Platform Team"
@@ -23,8 +23,7 @@
 		"ParserPower\\ParserPowerCompare": "includes/ParserPowerCompare.php",
 		"ParserPower\\ParserPowerSortKeyValueComparer": "includes/ParserPowerSortKeyValueComparer.php",
 		"ParserPower\\ParserPowerSimple": "includes/ParserPowerSimple.php",
-		"ParserPower\\ParserPowerLists": "includes/ParserPowerLists.php",
-		"ParserPower\\ParserPowerArrayMap": "includes/ParserPowerArrayMap.php"
+		"ParserPower\\ParserPowerLists": "includes/ParserPowerLists.php"
 	},
 	"Hooks": {
 		"ParserFirstCallInit": "ParserPower\\ParserPower::setup"
