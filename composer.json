@@ -1,0 +1,19 @@
+{
+	"name": "hydrawiki/parserpower",
+	"version": "1.0.2",
+	"type": "mediawiki-extension",
+	"description": "A modular, multi-featured user profile system.",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=7.0.0"
+	},
+	"require-dev": {
+		"hydrawiki/hydrawiki-codesniffer": "1.0.13"
+	},
+	"scripts": {
+		"test": [
+			"phpcs -p -s"
+		],
+		"fix": "phpcbf"
+	}
+}
