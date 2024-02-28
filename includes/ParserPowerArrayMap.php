@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * Arraymap Class
+ * Adapted from Page Forms extension
+ *
+ * @package   ParserPower
+ * @author    Yaron Koren
+ * @license   GPL-2.0-or-later
+ */
 
 namespace ParserPower;
 
