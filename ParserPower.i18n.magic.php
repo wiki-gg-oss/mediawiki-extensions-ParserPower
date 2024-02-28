@@ -43,4 +43,6 @@ $magicWords['en'] = [
 	'lstmap'              => [0, 'lstmap'],
 	'lstmaptemp'          => [0, 'lstmaptemp'],
 	'listmerge'           => [0, 'listmerge'],
+	'arraymap'    => [0, 'arraymap'],
+	'arraymaptemplate'    => [0, 'arraymaptemplate'],
 ];
