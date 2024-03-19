@@ -6,7 +6,7 @@
 		"Hydra Wiki Platform Team"
 	],
 	"license-name": "GPL-2.0-or-later",
-	"url": "https://gitlab.com/hydrawiki/extensions/ParserPower",
+	"url": "https://www.mediawiki.org/wiki/Extension:ParserPower",
 	"description": "A collection of extended parser functions for MediaWiki, particularly including functions for dealing with lists of values separated by a dynamically-specified delimiter.",
 	"descriptionmsg": "parserpower-desc",
 	"type": "parserhook",
