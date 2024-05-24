@@ -341,7 +341,7 @@ class ParserPowerLists {
 		if ($list !== '') {
 			$sep = isset($params[1]) ? ParserPower::unescape(trim($frame->expand($params[1]))) : ',';
 
-			$sep = $parser->mStripState->unstripNoWiki($sep);
+			$sep = $parser->getStripState()->unstripNoWiki($sep);
 
 			$count = count(self::arrayTrimUnescape(self::explodeList($sep, $list)));
 			return [$count, 'noparse' => false];
@@ -367,7 +367,7 @@ class ParserPowerLists {
 			$inSep = isset($params[1]) ? ParserPower::unescape(trim($frame->expand($params[1]))) : ',';
 			$outSep = isset($params[2]) ? ParserPower::unescape(trim($frame->expand($params[2]))) : ', ';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 			return [implode($outSep, $values), 'noparse' => false];
@@ -393,7 +393,7 @@ class ParserPowerLists {
 			$inSep = isset($params[1]) ? ParserPower::unescape(trim($frame->expand($params[1]))) : ',';
 			$inIndex = isset($params[2]) ? ParserPower::unescape(trim($frame->expand($params[2]))) : '';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$index = 1;
 			if (is_numeric($inIndex)) {
@@ -427,7 +427,7 @@ class ParserPowerLists {
 			$inOffset = isset($params[3]) ? ParserPower::unescape(trim($frame->expand($params[3]))) : '';
 			$inLength = isset($params[4]) ? ParserPower::unescape(trim($frame->expand($params[4]))) : '';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$offset = 0;
 			if (is_numeric($inOffset)) {
@@ -469,7 +469,7 @@ class ParserPowerLists {
 			$sep = isset($params[2]) ? ParserPower::unescape(trim($frame->expand($params[2]))) : ',';
 			$csOption = isset($params[3]) ? strtolower(trim($frame->expand($params[3]))) : 'ncs';
 
-			$sep = $parser->mStripState->unstripNoWiki($sep);
+			$sep = $parser->getStripState()->unstripNoWiki($sep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($sep, $list));
 			if ($csOption === 'cs') {
@@ -509,7 +509,7 @@ class ParserPowerLists {
 			$sep = isset($params[2]) ? ParserPower::unescape(trim($frame->expand($params[2]))) : ',';
 			$inOptions = isset($params[3]) ? strtolower(trim($frame->expand($params[3]))) : '';
 
-			$sep = $parser->mStripState->unstripNoWiki($sep);
+			$sep = $parser->getStripState()->unstripNoWiki($sep);
 			$options = self::indexOptionsFromParam($inOptions);
 
 			$values = self::arrayTrimUnescape(self::explodeList($sep, $list));
@@ -574,7 +574,7 @@ class ParserPowerLists {
 		if ($list !== '') {
 			$sep = isset($params[1]) ? ParserPower::unescape(trim($frame->expand($params[1]))) : ',';
 
-			$sep = $parser->mStripState->unstripNoWiki($sep);
+			$sep = $parser->getStripState()->unstripNoWiki($sep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($sep, $list));
 			if ($value !== '') {
@@ -603,7 +603,7 @@ class ParserPowerLists {
 		if ($list !== '') {
 			$sep = isset($params[1]) ? ParserPower::unescape(trim($frame->expand($params[1]))) : '';
 
-			$sep = $parser->mStripState->unstripNoWiki($sep);
+			$sep = $parser->getStripState()->unstripNoWiki($sep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($sep, $list));
 			if ($value !== '') {
@@ -633,7 +633,7 @@ class ParserPowerLists {
 			if ($inList1 !== '') {
 				$inSep1 = isset($params[1]) ? ParserPower::unescape(trim($frame->expand($params[1]))) : '';
 
-				$inSep1 = $parser->mStripState->unstripNoWiki($inSep1);
+				$inSep1 = $parser->getStripState()->unstripNoWiki($inSep1);
 
 				$values1 = self::arrayTrimUnescape(self::explodeList($inSep1, $inList1));
 			} else {
@@ -643,7 +643,7 @@ class ParserPowerLists {
 			if ($inList2 !== '') {
 				$inSep2 = isset($params[3]) ? ParserPower::unescape(trim($frame->expand($params[3]))) : '';
 
-				$inSep2 = $parser->mStripState->unstripNoWiki($inSep2);
+				$inSep2 = $parser->getStripState()->unstripNoWiki($inSep2);
 
 				$values2 = self::arrayTrimUnescape(self::explodeList($inSep2, $inList2));
 			} else {
@@ -1031,8 +1031,8 @@ class ParserPowerLists {
 			$intro = isset($params["intro"]) ? ParserPower::unescape(trim($frame->expand($params["intro"]))) : '';
 			$outro = isset($params["outro"]) ? ParserPower::unescape(trim($frame->expand($params["outro"]))) : '';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
-			$tokenSep = $parser->mStripState->unstripNoWiki($tokenSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
+			$tokenSep = $parser->getStripState()->unstripNoWiki($tokenSep);
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 
@@ -1099,7 +1099,7 @@ class ParserPowerLists {
 			$outSep = isset($params[4]) ? ParserPower::unescape(trim($frame->expand($params[4]))) : ', ';
 			$csOption = isset($params[5]) ? strtolower(trim($frame->expand($params[5]))) : 'ncs';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 
@@ -1142,7 +1142,7 @@ class ParserPowerLists {
 			$csOption = isset($params[4]) ?
 				  strtolower(trim($frame->expand($params[4]))) : 'ncs';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 
@@ -1197,7 +1197,7 @@ class ParserPowerLists {
 			$csOption = isset($params[2]) ?
 				  strtolower(trim($frame->expand($params[2]))) : 'ncs';
 
-			$sep = $parser->mStripState->unstripNoWiki($sep);
+			$sep = $parser->getStripState()->unstripNoWiki($sep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($sep, $inList));
 			$values = self::reduceToUniqueValues($values, $csOption === 'cs');
@@ -1439,7 +1439,7 @@ class ParserPowerLists {
 			$csOption = isset($params[3]) ?
 				  strtolower(trim($frame->expand($params[3]))) : 'ncs';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 			$values = self::reduceToUniqueValues($values, $csOption === 'cs');
@@ -1753,7 +1753,7 @@ class ParserPowerLists {
 			$intro = isset($params["intro"]) ? ParserPower::unescape(trim($frame->expand($params["intro"]))) : '';
 			$outro = isset($params["outro"]) ? ParserPower::unescape(trim($frame->expand($params["outro"]))) : '';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 			if ($duplicates === 'strip') {
@@ -1813,7 +1813,7 @@ class ParserPowerLists {
 			$outSep = isset($params[2]) ? ParserPower::unescape(trim($frame->expand($params[2]))) : ', ';
 			$sortOptions = isset($params[3]) ? trim($frame->expand($params[3])) : '';
 
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 			$values = self::sortList($values, $sortOptions);
@@ -1867,7 +1867,7 @@ class ParserPowerLists {
 		$default
 	) {
 		if ($inList !== '') {
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 
@@ -1987,7 +1987,7 @@ class ParserPowerLists {
 		$default
 	) {
 		if ($inList !== '') {
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 			if ($duplicates == 'prestrip' || $duplicates == 'pre/postsort') {
@@ -2374,7 +2374,7 @@ class ParserPowerLists {
 		$default
 	) {
 		if ($inList !== '') {
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 
@@ -2457,7 +2457,7 @@ class ParserPowerLists {
 		$default
 	) {
 		if ($inList !== '') {
-			$inSep = $parser->mStripState->unstripNoWiki($inSep);
+			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 
