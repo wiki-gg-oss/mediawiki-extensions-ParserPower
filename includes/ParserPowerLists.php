@@ -2383,8 +2383,8 @@ class ParserPowerLists {
 			}
 
 			if ($tokenSep !== '') {
-				$tokens1 = explode($tokenSep, $token1);
-				$tokens2 = explode($tokenSep, $token2);
+				$tokens1 = array_map('trim', explode($tokenSep, $token1));
+				$tokens2 = array_map('trim', explode($tokenSep, $token2));
 			} else {
 				$tokens1 = [$token1];
 				$tokens2 = [$token2];
