@@ -3,7 +3,8 @@
 	"version": "1.1.0",
 	"author": [
 		"[http://www.mediawiki.org/wiki/User:OoEyes Shawn Bruckner]",
-		"Hydra Wiki Platform Team"
+		"Hydra Wiki Platform Team",
+		"wiki.gg development"
 	],
 	"license-name": "GPL-2.0-or-later",
 	"url": "https://www.mediawiki.org/wiki/Extension:ParserPower",
