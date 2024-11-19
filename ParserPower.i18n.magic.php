@@ -17,6 +17,7 @@ $magicWords['en'] = [
 	'trimuesc'            => [0, 'trimuesc'],
 	'ueif'                => [0, 'ueif'],
 	'or'                  => [0, 'or'],
+	'ueor'                => [0, 'ueor'],
 	'ueifeq'              => [0, 'ueifeq'],
 	'token'               => [0, 'token'],
 	'tokenif'             => [0, 'tokenif'],
