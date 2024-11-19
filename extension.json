@@ -1,10 +1,11 @@
 {
 	"name": "ParserPower",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"author": [
 		"[http://www.mediawiki.org/wiki/User:OoEyes Shawn Bruckner]",
 		"Hydra Wiki Platform Team",
-		"wiki.gg development"
+		"wiki.gg development",
+		"Derugon"
 	],
 	"license-name": "GPL-2.0-or-later",
 	"url": "https://www.mediawiki.org/wiki/Extension:ParserPower",
