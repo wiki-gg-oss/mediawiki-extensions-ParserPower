@@ -75,6 +75,11 @@ class ParserPowerSimple {
 			Parser::SFH_OBJECT_ARGS
 		);
 		$parser->setFunctionHook(
+			'ueor',
+			'ParserPower\\ParserPowerSimple::ueorRender',
+			Parser::SFH_OBJECT_ARGS
+		);
+		$parser->setFunctionHook(
 			'ueifeq',
 			'ParserPower\\ParserPowerSimple::ueifeqRender',
 			Parser::SFH_OBJECT_ARGS
@@ -307,6 +312,28 @@ class ParserPowerSimple {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function orRender($parser, $frame, $params) {
+		foreach ($params as $param) {
+			$inValue = trim($frame->expand($param));
+
+			if ($inValue !== '') {
+				return [$inValue, 'noparse' => false];
+			}
+		}
+
+		return ['', 'noparse' => false];
+	}
+
+	/**
+	 * This function performs the test for the ueor function.
+	 *
+	 * @param Parser  $parser The parser object. Ignored.
+	 * @param PPFrame $frame  The parser frame object.
+	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
+	 *
+	 * @return array The function output along with relevant parser options.
+	 */
+	public static function ueorRender($parser, $frame, $params) {
+
 		foreach ($params as $param) {
 			$inValue = trim($frame->expand($param));
 
