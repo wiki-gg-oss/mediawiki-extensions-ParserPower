@@ -264,7 +264,7 @@ class ParserPower {
 	 * @param string  $token      The token to replace.
 	 * @param string  $pattern    Pattern containing token to be replaced with the input value.
 	 *
-	 * @return The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	public static function applyPatternWithIndex($parser, $frame, $inValue, $indexToken, $index, $token, $pattern) {
 		$inValue = trim($inValue);

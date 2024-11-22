@@ -52,7 +52,7 @@ class ParserPowerSortKeyValueComparer {
 	public function compare($pair1, $pair2) {
 		$result = call_user_func($this->mSortKeyCompare, $pair1[0], $pair2[0]);
 
-		if ($result == 0) {
+		if ($result === 0) {
 			if ($this->mValueCompare) {
 				return call_user_func($this->mValueCompare, $pair1[1], $pair2[1]);
 			} else {
@@ -66,7 +66,7 @@ class ParserPowerSortKeyValueComparer {
 	/**
 	 * Get Comparer class
 	 *
-	 * @param array $options
+	 * @param int $options
 	 *
 	 * @return void
 	 */

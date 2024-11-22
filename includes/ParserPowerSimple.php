@@ -137,9 +137,9 @@ class ParserPowerSimple {
 	 * This function performs the unescape operation for the uesc parser function. This trims the value first, leaving
 	 * whitespace intact if it's there after escape sequences are replaced.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
-	 * @param array   $params Attributes values of the tag function.
+	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -154,9 +154,9 @@ class ParserPowerSimple {
 	 * leaving whitespace intact if it's there after escape sequences are replaced. It returns the content wrapped in
 	 * <nowiki> tags so that it isn't parsed.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
-	 * @param array   $params Attributes values of the tag function.
+	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -189,10 +189,10 @@ class ParserPowerSimple {
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the name of the page they would have linked to.
 	 *
+	 * @param string  $text    The text within the tag function.
+	 * @param array   $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser  $parser  The parser object.
 	 * @param PPFrame $frame   The parser frame object.
-	 * @param string  $text    The text within the tag function.
-	 * @param array   $attribs Attributes values of the tag function.
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -215,7 +215,7 @@ class ParserPowerSimple {
 	 *
 	 * @param array $matches The parameters and values together, not yet exploded or trimmed.
 	 *
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output along with relevant parser options.
 	 */
 	public static function linkpageReplace($matches) {
 		$parts = explode('|', $matches[1], 2);
@@ -227,10 +227,10 @@ class ParserPowerSimple {
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the text that any links would return.
 	 *
-	 * @param Parser  $parser  The parser object. Ignored.
+	 * @param string  $text    The text within the tag function.
+	 * @param array   $attribs Attributes values of the tag function. Ignored.
+	 * @param Parser  $parser  The parser object.
 	 * @param PPFrame $frame   The parser frame object.
-	 * @param string  $text    The parameters and values together, not yet exploded or trimmed.
-	 * @param array   $attribs
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -266,10 +266,10 @@ class ParserPowerSimple {
 	/**
 	 * This function escapes all appropriate characters in the given text and returns the result.
 	 *
+	 * @param string  $text    The text within the tag function.
+	 * @param array   $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser  $parser  The parser object.
 	 * @param PPFrame $frame   The parser frame object.
-	 * @param string  $text    The text within the tag function.
-	 * @param array   $attribs Attributes values of the tag function.
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -284,7 +284,7 @@ class ParserPowerSimple {
 	/**
 	 * This function performs the test for the ueif function.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -305,7 +305,7 @@ class ParserPowerSimple {
 	/**
 	 * This function performs the test for the or function.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -348,7 +348,7 @@ class ParserPowerSimple {
 	/**
 	 * This function performs the test for the ueifeq function.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -414,7 +414,7 @@ class ParserPowerSimple {
 	/**
 	 * This function performs the test for the ueswitch function.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
