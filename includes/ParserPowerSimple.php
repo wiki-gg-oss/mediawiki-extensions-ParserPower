@@ -447,6 +447,7 @@ class ParserPowerSimple {
 						return [ParserPower::unescape(trim($frame->expand($pair[1]))), 'noparse' => false];
 					} else if ($mwDefaultFound) {
 						$default = $pair[1];
+						$mwDefaultFound = false;
 					}
 				}
 			}
