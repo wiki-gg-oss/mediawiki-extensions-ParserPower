@@ -430,12 +430,12 @@ class ParserPowerSimple {
 
 			$keyFound = false;
 			foreach ($params as $param) {
-				$pair = explode('=', trim($frame->expand($param)), 2);
-				if (!$keyFound && ParserPower::unescape($pair[0]) === $switchKey) {
+				$pair = explode('=', $frame->expand($param), 2);
+				if (!$keyFound && ParserPower::unescape(trim($pair[0])) === $switchKey) {
 					$keyFound = true;
 				}
 				if ($keyFound && count($pair) > 1) {
-					return [ParserPower::unescape(trim($frame->expand($pair[1]))), 'noparse' => false];
+					return [ParserPower::unescape(trim($pair[1])), 'noparse' => false];
 				}
 			}
 			return [ParserPower::unescape(trim($frame->expand($default))), 'noparse' => false];
