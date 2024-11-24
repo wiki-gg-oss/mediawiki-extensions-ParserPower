@@ -437,7 +437,7 @@ class ParserPowerSimple {
 					$key = ParserPower::unescape($pair[0]);
 					if ($key === $switchKey) {
 						$keyFound = true;
-					} else if ($mwDefault->matchStartToEnd($key)) {
+					} elseif ($mwDefault->matchStartToEnd($key)) {
 						$mwDefaultFound = true;
 					}
 				}
@@ -445,7 +445,7 @@ class ParserPowerSimple {
 				if (count($pair) > 1) {
 					if ($keyFound) {
 						return [ParserPower::unescape(trim($frame->expand($pair[1]))), 'noparse' => false];
-					} else if ($mwDefaultFound) {
+					} elseif ($mwDefaultFound) {
 						$default = $pair[1];
 						$mwDefaultFound = false;
 					}
