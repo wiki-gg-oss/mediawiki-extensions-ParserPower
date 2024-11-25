@@ -13,7 +13,7 @@ namespace ParserPower;
 
 use MediaWiki\MediaWikiServices;
 use PPFrame;
-use Title;
+use MediaWiki\Title\Title;
 use Parser;
 use PPNode_Hash_Array;
 
