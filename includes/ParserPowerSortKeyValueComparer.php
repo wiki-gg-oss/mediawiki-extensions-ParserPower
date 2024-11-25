@@ -17,7 +17,7 @@ class ParserPowerSortKeyValueComparer {
 	 *
 	 * @var callable
 	 */
-	private $mSortKeyCompare = 'ParserPower\\ParserPowerCompare::numericstrcmp';
+	private $mSortKeyCompare = [ ParserPowerCompare::class, 'numericstrcmp' ];
 
 	/**
 	 * The function to use to compare values, if any.
@@ -73,20 +73,20 @@ class ParserPowerSortKeyValueComparer {
 	private function getComparer($options) {
 		if ($options & ParserPowerLists::SORT_NUMERIC) {
 			if ($options & ParserPowerLists::SORT_DESC) {
-				return 'ParserPower\\ParserPowerCompare::numericrstrcmp';
+				return [ ParserPowerCompare::class, 'numericrstrcmp' ];
 			} else {
-				return 'ParserPower\\ParserPowerCompare::numericstrcmp';
+				return [ ParserPowerCompare::class, 'numericstrcmp' ];
 			}
 		} else {
 			if ($options & ParserPowerLists::SORT_CS) {
 				if ($options & ParserPowerLists::SORT_DESC) {
-					return 'ParserPower\\ParserPowerCompare::rstrcmp';
+					return [ ParserPowerCompare::class, 'rstrcmp' ];
 				} else {
 					return 'strcmp';
 				}
 			} else {
 				if ($options & ParserPowerLists::SORT_DESC) {
-					return 'ParserPower\\ParserPowerCompare::rstrcasecmp';
+					return [ ParserPowerCompare::class, 'rstrcasecmp' ];
 				} else {
 					return 'strcasecmp';
 				}

@@ -95,111 +95,27 @@ class ParserPowerLists {
 	 * @return void
 	 */
 	public static function setup(&$parser) {
-		$parser->setFunctionHook(
-			'lstcnt',
-			'ParserPower\\ParserPowerLists::lstcntRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstsep',
-			'ParserPower\\ParserPowerLists::lstsepRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstelem',
-			'ParserPower\\ParserPowerLists::lstelemRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstsub',
-			'ParserPower\\ParserPowerLists::lstsubRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstfnd',
-			'ParserPower\\ParserPowerLists::lstfndRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstind',
-			'ParserPower\\ParserPowerLists::lstindRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstapp',
-			'ParserPower\\ParserPowerLists::lstappRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstprep',
-			'ParserPower\\ParserPowerLists::lstprepRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstjoin',
-			'ParserPower\\ParserPowerLists::lstjoinRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstcntuniq',
-			'ParserPower\\ParserPowerLists::lstcntuniqRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listunique',
-			'ParserPower\\ParserPowerLists::listuniqueRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstuniq',
-			'ParserPower\\ParserPowerLists::lstuniqRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listfilter',
-			'ParserPower\\ParserPowerLists::listfilterRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstfltr',
-			'ParserPower\\ParserPowerLists::lstfltrRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstrm',
-			'ParserPower\\ParserPowerLists::lstrmRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listsort',
-			'ParserPower\\ParserPowerLists::listsortRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstsrt',
-			'ParserPower\\ParserPowerLists::lstsrtRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listmap',
-			'ParserPower\\ParserPowerLists::listmapRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstmap',
-			'ParserPower\\ParserPowerLists::lstmapRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstmaptemp',
-			'ParserPower\\ParserPowerLists::lstmaptempRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listmerge',
-			'ParserPower\\ParserPowerLists::listmergeRender',
-			SFH_OBJECT_ARGS
-		);
+		$parser->setFunctionHook('lstcnt', [ __CLASS__, 'lstcntRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstsep', [ __CLASS__, 'lstsepRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstelem', [ __CLASS__, 'lstelemRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstsub', [ __CLASS__, 'lstsubRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstfnd', [ __CLASS__, 'lstfndRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstind', [ __CLASS__, 'lstindRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstapp', [ __CLASS__, 'lstappRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstprep', [ __CLASS__, 'lstprepRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstjoin', [ __CLASS__, 'lstjoinRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstcntuniq', [ __CLASS__, 'lstcntuniqRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listunique', [ __CLASS__, 'listuniqueRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstuniq', [ __CLASS__, 'lstuniqRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listfilter', [ __CLASS__, 'listfilterRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstfltr', [ __CLASS__, 'lstfltrRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstrm', [ __CLASS__, 'lstrmRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listsort', [ __CLASS__, 'listsortRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstsrt', [ __CLASS__, 'lstsrtRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listmap', [ __CLASS__, 'listmapRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstmap', [ __CLASS__, 'lstmapRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstmaptemp', [ __CLASS__, 'lstmaptempRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listmerge', [ __CLASS__, 'listmergeRender' ], Parser::SFH_OBJECT_ARGS);
 	}
 
 	/**
@@ -1517,7 +1433,7 @@ class ParserPowerLists {
 				}
 			} else {
 				if ($options & self::SORT_DESC) {
-					usort($values, 'ParserPower\\ParserPowerCompare::rstrcasecmp');
+					usort($values, [ ParserPowerCompare::class, 'rstrcasecmp' ]);
 					return $values;
 				} else {
 					usort($values, 'strcasecmp');
@@ -2396,7 +2312,7 @@ class ParserPowerLists {
 				$parser,
 				$frame,
 				$inValues,
-				'ParserPower\\ParserPowerLists::applyTwoSetFieldPattern',
+				[ __CLASS__, 'applyTwoSetFieldPattern' ],
 				$matchParams,
 				$mergeParams,
 				2,
@@ -2471,7 +2387,7 @@ class ParserPowerLists {
 				$parser,
 				$frame,
 				$inValues,
-				'ParserPower\\ParserPowerLists::applyTemplateToTwoValues',
+				[ __CLASS__, 'applyTemplateToTwoValues' ],
 				$matchParams,
 				$mergeParams,
 				2,

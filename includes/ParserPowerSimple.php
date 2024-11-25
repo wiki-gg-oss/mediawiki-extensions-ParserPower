@@ -26,96 +26,31 @@ class ParserPowerSimple {
 	 * @return void
 	 */
 	public static function setup(&$parser) {
-		$parser->setFunctionHook(
-			'trim',
-			'ParserPower\\ParserPowerSimple::trimRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'uesc',
-			'ParserPower\\ParserPowerSimple::uescRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'uescnowiki',
-			'ParserPower\\ParserPowerSimple::uescnowikiRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'trimuesc',
-			'ParserPower\\ParserPowerSimple::trimuescRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setHook(
-			'linkpage',
-			'ParserPower\\ParserPowerSimple::linkpageRender'
-		);
-		$parser->setHook(
-			'linktext',
-			'ParserPower\\ParserPowerSimple::linktextRender'
-		);
-		$parser->setHook(
-			'esc',
-			'ParserPower\\ParserPowerSimple::escRender'
-		);
+		$parser->setFunctionHook('trim', [ __CLASS__, 'trimRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('uesc', [ __CLASS__, 'uescRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('uescnowiki', [ __CLASS__, 'uescnowikiRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('trimuesc', [ __CLASS__, 'trimuescRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setHook('linkpage', [ __CLASS__, 'linkpageRender' ]);
+		$parser->setHook('linktext', [ __CLASS__, 'linktextRender' ]);
+		$parser->setHook('esc', [ __CLASS__, 'escRender' ]);
 		for ($i = 1; $i < 10; ++$i) {
-			$parser->setHook(
-				'esc' . $i,
-				'ParserPower\\ParserPowerSimple::escRender'
-			);
+			$parser->setHook('esc' . $i, [ __CLASS__, 'escRender' ]);
 		}
-		$parser->setFunctionHook(
-			'ueif',
-			'ParserPower\\ParserPowerSimple::ueifRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'or',
-			'ParserPower\\ParserPowerSimple::orRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'ueor',
-			'ParserPower\\ParserPowerSimple::ueorRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'ueifeq',
-			'ParserPower\\ParserPowerSimple::ueifeqRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'token',
-			'ParserPower\\ParserPowerSimple::tokenRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'tokenif',
-			'ParserPower\\ParserPowerSimple::tokenifRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'ueswitch',
-			'ParserPower\\ParserPowerSimple::ueswitchRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'follow',
-			'ParserPower\\ParserPowerSimple::followRender',
-			Parser::SFH_OBJECT_ARGS
-		);
+		$parser->setFunctionHook('ueif', [ __CLASS__, 'ueifRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('or', [ __CLASS__, 'orRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('ueor', [ __CLASS__, 'ueorRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('ueifeq', [ __CLASS__, 'ueifeqRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('token', [ __CLASS__, 'tokenRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('tokenif', [ __CLASS__, 'tokenifRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('ueswitch', [ __CLASS__, 'ueswitchRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('follow', [ __CLASS__, 'followRender' ], Parser::SFH_OBJECT_ARGS);
 		
-		if ( defined( 'PF_VERSION' ) ) {
-			// Do not load if Page Forms is installed.
-			return;
+		// Do not load if Page Forms is installed.
+		if ( !defined( 'PF_VERSION' ) ) {
+			$parser->setFunctionHook( 'arraymap', [ __CLASS__, 'arraymapRender' ], Parser::SFH_OBJECT_ARGS );
+			$parser->setFunctionHook( 'arraymaptemplate', [ __CLASS__, 'arraymaptemplateRender' ],
+				Parser::SFH_OBJECT_ARGS );
 		}
-		
-		$parser->setFunctionHook( 'arraymap', 'ParserPower\\ParserPowerSimple::arraymapRender',
-			Parser::SFH_OBJECT_ARGS );
-
-		$parser->setFunctionHook( 'arraymaptemplate', 'ParserPower\\ParserPowerSimple::arraymaptemplateRender',
-			Parser::SFH_OBJECT_ARGS );
-		
 	}
 
 	/**
