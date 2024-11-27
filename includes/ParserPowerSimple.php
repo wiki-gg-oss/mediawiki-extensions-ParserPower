@@ -104,6 +104,11 @@ class ParserPowerSimple {
 			'ParserPower\\ParserPowerSimple::followRender',
 			Parser::SFH_OBJECT_ARGS
 		);
+		$parser->setFunctionHook(
+			'argmap',
+			'ParserPower\\ParserPowerSimple::argmapRender',
+			Parser::SFH_OBJECT_ARGS
+		);
 		
 		if ( defined( 'PF_VERSION' ) ) {
 			// Do not load if Page Forms is installed.
@@ -562,4 +567,95 @@ class ParserPowerSimple {
 		return implode( $new_delimiter, $results_array );
 	}
 	
+	public static function argmapRender($parser, $frame, $args) {
+		if ( !isset($args[0]) ) return "";
+
+		// sort arguments, this is to disregard the position of named arguments 
+		$named_args = [];
+		$unnamed_args = [];
+		foreach ($args as $arg) {
+			$arg = $frame->expand($arg);
+			if (strpos($arg, '=') !== false) {
+				list($key, $value) = explode('=', $arg, 2);
+				$named_args[trim($key)] = trim($value);
+			} else {
+				$unnamed_args[] = $arg;
+			}
+		}
+
+		// set and clean parameters
+		$formatter = isset($unnamed_args[1]) ? trim($frame->expand($unnamed_args[0])) : '';
+		$glue = isset($unnamed_args[1]) ? trim($frame->expand($unnamed_args[1])) : '';
+		$must_contain = isset($unnamed_args[2]) ? trim($frame->expand($unnamed_args[2])) : '';
+		$must_contain = ( $must_contain == '' ) ? [] : explode( ',', $must_contain );
+		$only_show = isset($unnamed_args[3]) ? trim($frame->expand($unnamed_args[3])) : '';
+		$only_show = ( $only_show == '' ) ? [] : explode( ',', $only_show );
+		$debug_options = isset( $named_args['debug'] ) ? explode( ',', trim($frame->expand( $named_args['debug']) ) ) : [];
+
+		// parameter dump
+		$debug_log = "";		
+		if ( in_array("dump", $debug_options) ) {
+			$debug_log .= "formatter: <code>" . $formatter . "</code><br />"
+				. "glue: <code>" . htmlspecialchars( $glue ) . "</code><br />";
+			foreach ( $must_contain as $contain ) $debug_log .= "must_contain: <code>" . $contain . "</code><br />";
+			foreach ( $only_show as $show ) $debug_log .= "only_show: <code>" . $show . "</code><br />";
+			foreach ( $debug_options as $option ) $debug_log .= "debug_option: <code>" . $option . "</code><br />";
+			
+			$template_args = $frame->getArguments ();
+			if ( count($template_args) !== 0 ) {
+				$debug_log .= "argument dump:<br />";
+				foreach ($template_args as $key => $arg) {
+					$debug_log .= "<code>" . $key . "=" . $arg . "</code><br />";
+				}
+			}
+		}
+
+		// group template arguments to interim array, if viable
+		$template_args = $frame->getNamedArguments ();
+		$interim = [];
+		foreach ($template_args as $key => $arg) {
+			$index = preg_replace('/[^0-9]/', '', $key);
+			$argName = preg_replace('/[^a-zA-Z]/', '', $key);
+			
+			if ($index !== "" ) {
+				$index = intval($index);
+				if (!isset($interim[$index])) $interim[$index] = [];
+				$interim[$index][$argName] =  $arg;
+			}
+		}
+
+		// write template calls, if viable
+		$results_array = [];
+		foreach ($interim as $passed_formatter_args) {
+
+			// check if set of arguments has ALL must_contain words
+			$show_this = false;
+			$mustcontain_args_present = 0;
+			foreach ($passed_formatter_args as $key => $value)
+				if ( in_array( $key, $must_contain ) ) $mustcontain_args_present++;
+			if ( $mustcontain_args_present !== count( $must_contain ) ) continue;
+
+			// filter for only_show
+			$filtered_formatter_args = [];
+			foreach ($passed_formatter_args as $key => $value)
+				if ( ( count( $only_show ) === 0 ) || in_array( $key, $only_show ) )
+					$filtered_formatter_args[] = $key . "=" . $value;
+			// discard if nothing remains
+			if ( count( $filtered_formatter_args ) === 0 ) continue;
+
+			// write
+			$val = implode( '|', $filtered_formatter_args );
+			$bracketed_value = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
+			if ( $bracketed_value instanceof PPNode_Hash_Array ) $bracketed_value = $bracketed_value->value;
+			$bracketed_value = implode( '', $bracketed_value );
+			if ( in_array("equivalent", $debug_options) )
+				$results_array[] = $bracketed_value;
+			else
+				$results_array[] = $parser->replaceVariables( $bracketed_value, $frame );
+		}
+
+		if ( in_array("equivalent", $debug_options) ) $debug_log .= "equivalent template calls:<br />";
+		if ( $glue === '\n' ) $glue = "<br />";
+		return $debug_log . implode( $glue, $results_array );
+	}
 }
