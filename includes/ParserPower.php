@@ -9,25 +9,12 @@
  * @license   GPL-2.0-or-later
  */
 
-namespace ParserPower;
+namespace MediaWiki\Extension\ParserPower;
 
 use Parser;
 use PPFrame;
 
 class ParserPower {
-	/**
-	 * Calls all parser function registrations functions.
-	 *
-	 * @param Parser $parser The parser object being initialized.
-	 *
-	 * @return bool true to indicate no problems.
-	 */
-	public static function setup(&$parser) {
-		ParserPowerSimple::setup($parser);
-		ParserPowerLists::setup($parser);
-		return true;
-	}
-
 	/**
 	 * This function converts the parameters to the parser function into an array form with all parameter values
 	 * trimmed, as per longstanding MediaWiki conventions.
@@ -264,7 +251,7 @@ class ParserPower {
 	 * @param string  $token      The token to replace.
 	 * @param string  $pattern    Pattern containing token to be replaced with the input value.
 	 *
-	 * @return The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	public static function applyPatternWithIndex($parser, $frame, $inValue, $indexToken, $index, $token, $pattern) {
 		$inValue = trim($inValue);

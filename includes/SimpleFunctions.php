@@ -9,15 +9,15 @@
  * @license   GPL-2.0-or-later
  */
 
-namespace ParserPower;
+namespace MediaWiki\Extension\ParserPower;
 
 use MediaWiki\MediaWikiServices;
 use PPFrame;
-use Title;
+use MediaWiki\Title\Title;
 use Parser;
 use PPNode_Hash_Array;
 
-class ParserPowerSimple {
+final class SimpleFunctions {
 	/**
 	 * Registers the simple, generic parser functions with the parser.
 	 *
@@ -26,96 +26,31 @@ class ParserPowerSimple {
 	 * @return void
 	 */
 	public static function setup(&$parser) {
-		$parser->setFunctionHook(
-			'trim',
-			'ParserPower\\ParserPowerSimple::trimRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'uesc',
-			'ParserPower\\ParserPowerSimple::uescRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'uescnowiki',
-			'ParserPower\\ParserPowerSimple::uescnowikiRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'trimuesc',
-			'ParserPower\\ParserPowerSimple::trimuescRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setHook(
-			'linkpage',
-			'ParserPower\\ParserPowerSimple::linkpageRender'
-		);
-		$parser->setHook(
-			'linktext',
-			'ParserPower\\ParserPowerSimple::linktextRender'
-		);
-		$parser->setHook(
-			'esc',
-			'ParserPower\\ParserPowerSimple::escRender'
-		);
+		$parser->setFunctionHook('trim', [ __CLASS__, 'trimRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('uesc', [ __CLASS__, 'uescRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('uescnowiki', [ __CLASS__, 'uescnowikiRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('trimuesc', [ __CLASS__, 'trimuescRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setHook('linkpage', [ __CLASS__, 'linkpageRender' ]);
+		$parser->setHook('linktext', [ __CLASS__, 'linktextRender' ]);
+		$parser->setHook('esc', [ __CLASS__, 'escRender' ]);
 		for ($i = 1; $i < 10; ++$i) {
-			$parser->setHook(
-				'esc' . $i,
-				'ParserPower\\ParserPowerSimple::escRender'
-			);
+			$parser->setHook('esc' . $i, [ __CLASS__, 'escRender' ]);
 		}
-		$parser->setFunctionHook(
-			'ueif',
-			'ParserPower\\ParserPowerSimple::ueifRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'or',
-			'ParserPower\\ParserPowerSimple::orRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'ueor',
-			'ParserPower\\ParserPowerSimple::ueorRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'ueifeq',
-			'ParserPower\\ParserPowerSimple::ueifeqRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'token',
-			'ParserPower\\ParserPowerSimple::tokenRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'tokenif',
-			'ParserPower\\ParserPowerSimple::tokenifRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'ueswitch',
-			'ParserPower\\ParserPowerSimple::ueswitchRender',
-			Parser::SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'follow',
-			'ParserPower\\ParserPowerSimple::followRender',
-			Parser::SFH_OBJECT_ARGS
-		);
+		$parser->setFunctionHook('ueif', [ __CLASS__, 'ueifRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('or', [ __CLASS__, 'orRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('ueor', [ __CLASS__, 'ueorRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('ueifeq', [ __CLASS__, 'ueifeqRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('token', [ __CLASS__, 'tokenRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('tokenif', [ __CLASS__, 'tokenifRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('ueswitch', [ __CLASS__, 'ueswitchRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('follow', [ __CLASS__, 'followRender' ], Parser::SFH_OBJECT_ARGS);
 		
-		if ( defined( 'PF_VERSION' ) ) {
-			// Do not load if Page Forms is installed.
-			return;
+		// Do not load if Page Forms is installed.
+		if ( !defined( 'PF_VERSION' ) ) {
+			$parser->setFunctionHook( 'arraymap', [ __CLASS__, 'arraymapRender' ], Parser::SFH_OBJECT_ARGS );
+			$parser->setFunctionHook( 'arraymaptemplate', [ __CLASS__, 'arraymaptemplateRender' ],
+				Parser::SFH_OBJECT_ARGS );
 		}
-		
-		$parser->setFunctionHook( 'arraymap', 'ParserPower\\ParserPowerSimple::arraymapRender',
-			Parser::SFH_OBJECT_ARGS );
-
-		$parser->setFunctionHook( 'arraymaptemplate', 'ParserPower\\ParserPowerSimple::arraymaptemplateRender',
-			Parser::SFH_OBJECT_ARGS );
-		
 	}
 
 	/**
@@ -137,9 +72,9 @@ class ParserPowerSimple {
 	 * This function performs the unescape operation for the uesc parser function. This trims the value first, leaving
 	 * whitespace intact if it's there after escape sequences are replaced.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
-	 * @param array   $params Attributes values of the tag function.
+	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -154,9 +89,9 @@ class ParserPowerSimple {
 	 * leaving whitespace intact if it's there after escape sequences are replaced. It returns the content wrapped in
 	 * <nowiki> tags so that it isn't parsed.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
-	 * @param array   $params Attributes values of the tag function.
+	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -189,10 +124,10 @@ class ParserPowerSimple {
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the name of the page they would have linked to.
 	 *
+	 * @param string  $text    The text within the tag function.
+	 * @param array   $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser  $parser  The parser object.
 	 * @param PPFrame $frame   The parser frame object.
-	 * @param string  $text    The text within the tag function.
-	 * @param array   $attribs Attributes values of the tag function.
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -215,7 +150,7 @@ class ParserPowerSimple {
 	 *
 	 * @param array $matches The parameters and values together, not yet exploded or trimmed.
 	 *
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output along with relevant parser options.
 	 */
 	public static function linkpageReplace($matches) {
 		$parts = explode('|', $matches[1], 2);
@@ -227,10 +162,10 @@ class ParserPowerSimple {
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the text that any links would return.
 	 *
-	 * @param Parser  $parser  The parser object. Ignored.
+	 * @param string  $text    The text within the tag function.
+	 * @param array   $attribs Attributes values of the tag function. Ignored.
+	 * @param Parser  $parser  The parser object.
 	 * @param PPFrame $frame   The parser frame object.
-	 * @param string  $text    The parameters and values together, not yet exploded or trimmed.
-	 * @param array   $attribs
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -266,10 +201,10 @@ class ParserPowerSimple {
 	/**
 	 * This function escapes all appropriate characters in the given text and returns the result.
 	 *
+	 * @param string  $text    The text within the tag function.
+	 * @param array   $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser  $parser  The parser object.
 	 * @param PPFrame $frame   The parser frame object.
-	 * @param string  $text    The text within the tag function.
-	 * @param array   $attribs Attributes values of the tag function.
 	 *
 	 * @return array The function output along with relevant parser options.
 	 */
@@ -284,7 +219,7 @@ class ParserPowerSimple {
 	/**
 	 * This function performs the test for the ueif function.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -305,7 +240,7 @@ class ParserPowerSimple {
 	/**
 	 * This function performs the test for the or function.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -348,7 +283,7 @@ class ParserPowerSimple {
 	/**
 	 * This function performs the test for the ueifeq function.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -414,7 +349,7 @@ class ParserPowerSimple {
 	/**
 	 * This function performs the test for the ueswitch function.
 	 *
-	 * @param Parser  $parser The parser object.
+	 * @param Parser  $parser The parser object. Ignored.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *

@@ -9,9 +9,9 @@
  * @license   GPL-2.0-or-later
  */
 
-namespace ParserPower;
+namespace MediaWiki\Extension\ParserPower;
 
-class ParserPowerCompare {
+final class ComparisonUtils {
 	/**
 	 * The function compares two strings by numerical value, attempting to match the observed behavior of the built-in
 	 * sort function using SORT_NUMERIC.

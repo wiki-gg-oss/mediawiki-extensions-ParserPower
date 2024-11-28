@@ -9,14 +9,14 @@
  * @license   GPL-2.0-or-later
  */
 
-namespace ParserPower;
+namespace MediaWiki\Extension\ParserPower;
 
 use Countable;
 use Parser;
 use PPFrame;
 use PPNode_Hash_Array;
 
-class ParserPowerLists {
+final class ListFunctions {
 	/**
 	 * Flag for alphanumeric sorting. 0 as this is a default mode.
 	 */
@@ -95,111 +95,27 @@ class ParserPowerLists {
 	 * @return void
 	 */
 	public static function setup(&$parser) {
-		$parser->setFunctionHook(
-			'lstcnt',
-			'ParserPower\\ParserPowerLists::lstcntRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstsep',
-			'ParserPower\\ParserPowerLists::lstsepRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstelem',
-			'ParserPower\\ParserPowerLists::lstelemRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstsub',
-			'ParserPower\\ParserPowerLists::lstsubRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstfnd',
-			'ParserPower\\ParserPowerLists::lstfndRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstind',
-			'ParserPower\\ParserPowerLists::lstindRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstapp',
-			'ParserPower\\ParserPowerLists::lstappRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstprep',
-			'ParserPower\\ParserPowerLists::lstprepRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstjoin',
-			'ParserPower\\ParserPowerLists::lstjoinRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstcntuniq',
-			'ParserPower\\ParserPowerLists::lstcntuniqRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listunique',
-			'ParserPower\\ParserPowerLists::listuniqueRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstuniq',
-			'ParserPower\\ParserPowerLists::lstuniqRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listfilter',
-			'ParserPower\\ParserPowerLists::listfilterRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstfltr',
-			'ParserPower\\ParserPowerLists::lstfltrRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstrm',
-			'ParserPower\\ParserPowerLists::lstrmRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listsort',
-			'ParserPower\\ParserPowerLists::listsortRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstsrt',
-			'ParserPower\\ParserPowerLists::lstsrtRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listmap',
-			'ParserPower\\ParserPowerLists::listmapRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstmap',
-			'ParserPower\\ParserPowerLists::lstmapRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'lstmaptemp',
-			'ParserPower\\ParserPowerLists::lstmaptempRender',
-			SFH_OBJECT_ARGS
-		);
-		$parser->setFunctionHook(
-			'listmerge',
-			'ParserPower\\ParserPowerLists::listmergeRender',
-			SFH_OBJECT_ARGS
-		);
+		$parser->setFunctionHook('lstcnt', [ __CLASS__, 'lstcntRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstsep', [ __CLASS__, 'lstsepRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstelem', [ __CLASS__, 'lstelemRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstsub', [ __CLASS__, 'lstsubRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstfnd', [ __CLASS__, 'lstfndRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstind', [ __CLASS__, 'lstindRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstapp', [ __CLASS__, 'lstappRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstprep', [ __CLASS__, 'lstprepRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstjoin', [ __CLASS__, 'lstjoinRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstcntuniq', [ __CLASS__, 'lstcntuniqRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listunique', [ __CLASS__, 'listuniqueRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstuniq', [ __CLASS__, 'lstuniqRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listfilter', [ __CLASS__, 'listfilterRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstfltr', [ __CLASS__, 'lstfltrRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstrm', [ __CLASS__, 'lstrmRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listsort', [ __CLASS__, 'listsortRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstsrt', [ __CLASS__, 'lstsrtRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listmap', [ __CLASS__, 'listmapRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstmap', [ __CLASS__, 'lstmapRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('lstmaptemp', [ __CLASS__, 'lstmaptempRender' ], Parser::SFH_OBJECT_ARGS);
+		$parser->setFunctionHook('listmerge', [ __CLASS__, 'listmergeRender' ], Parser::SFH_OBJECT_ARGS);
 	}
 
 	/**
@@ -265,7 +181,7 @@ class ParserPowerLists {
 	 * according to specified offset and length. It also performs un-escaping on each item. Note that values
 	 * that are only empty after the unescape are preserved.
 	 *
-	 * @param array $inOffset
+	 * @param int   $inOffset
 	 * @param int   $inLength
 	 * @param array $inValues The array to trim, remove empty values from, slice, and unescape.
 	 *
@@ -329,7 +245,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the counting operation for the lstcnt function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -354,7 +270,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the delimiter replacement operation for the lstsep function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -380,7 +296,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the list element retrieval operation for the lstelem function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -412,7 +328,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the list subdivision and delimiter replacement operation for the lstsub function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -455,7 +371,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the search operation for the lstfnd function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -495,7 +411,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the search operation for the lstind function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -561,7 +477,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the append operation for the lstapp function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -590,7 +506,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the prepend operation for the lstprep function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -619,7 +535,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the joining operation for the lstjoin function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -667,7 +583,7 @@ class ParserPowerLists {
 	 * @param string  $token   The token to replace.
 	 * @param string  $pattern Pattern containing token to be replaced with the input value.
 	 *
-	 * @return The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyPattern($parser, $frame, $inValue, $token, $pattern) {
 		return ParserPower::applyPattern($parser, $frame, $inValue, $token, $pattern);
@@ -685,7 +601,7 @@ class ParserPowerLists {
 	 * @param string  $token      The token to replace.
 	 * @param string  $pattern    Pattern containing token to be replaced with the input value.
 	 *
-	 * @return The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyPatternWithIndex($parser, $frame, $inValue, $indexToken, $index, $token, $pattern) {
 		return ParserPower::applyPatternWithIndex($parser, $frame, $inValue, $indexToken, $index, $token, $pattern);
@@ -702,7 +618,7 @@ class ParserPowerLists {
 	 * @param int     $tokenCount The number of tokens.
 	 * @param string  $pattern    Pattern containing tokens to be replaced by field values.
 	 *
-	 * @return The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyFieldPattern(
 		$parser,
@@ -730,7 +646,7 @@ class ParserPowerLists {
 	 * @param int     $tokenCount The number of tokens.
 	 * @param string  $pattern    Pattern containing tokens to be replaced by field values.
 	 *
-	 * @return The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyFieldPatternWithIndex(
 		$parser,
@@ -786,7 +702,7 @@ class ParserPowerLists {
 	 * @param string  $template The template to pass the parameters to.
 	 * @param string  $fieldSep The delimiter separating the parameter values.
 	 *
-	 * @return The result of the template.
+	 * @return string The result of the template.
 	 */
 	private static function applyTemplate($parser, $frame, $inValue, $template, $fieldSep) {
 		$inValue = trim($inValue);
@@ -1183,7 +1099,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the counting operation for the lstcntuniq function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -1424,7 +1340,7 @@ class ParserPowerLists {
 	/**
 	 * This function directs the duplicate removal function for the lstuniq function.
 	 *
-	 * @param Parser  $parser The parser object. Ignored.
+	 * @param Parser  $parser The parser object.
 	 * @param PPFrame $frame  The parser frame object.
 	 * @param array   $params The parameters and values together, not yet expanded or trimmed.
 	 *
@@ -1517,7 +1433,7 @@ class ParserPowerLists {
 				}
 			} else {
 				if ($options & self::SORT_DESC) {
-					usort($values, 'ParserPower\\ParserPowerCompare::rstrcasecmp');
+					usort($values, [ ComparisonUtils::class, 'rstrcasecmp' ]);
 					return $values;
 				} else {
 					usort($values, 'strcasecmp');
@@ -1694,7 +1610,7 @@ class ParserPowerLists {
 			);
 		}
 
-		$comparer = new ParserPowerSortKeyValueComparer(
+		$comparer = new SortKeyValueComparer(
 			self::sortOptionsFromParam($sortOptions, self::SORT_NUMERIC),
 			$subsort === 'yes',
 			self::sortOptionsFromParam($subsortOptions)
@@ -1925,12 +1841,12 @@ class ParserPowerLists {
 				}
 			}
 
-			if ($duplicates == 'strip' || $duplicates == 'poststrip' || $duplicates == 'pre/postsort') {
+			if ($duplicates === 'strip' || $duplicates === 'poststrip' || $duplicates === 'pre/postsort') {
 				$outValues = array_unique($outValues);
 			}
 
 			if (($indexToken === '' && $sortMode === 'sort')
-				|| $sortMode == 'postsort' || $sortMode == 'pre/postsort'
+				|| $sortMode === 'postsort' || $sortMode === 'pre/postsort'
 			) {
 				$outValues = self::sortList($outValues, $sortOptions);
 			}
@@ -1990,11 +1906,11 @@ class ParserPowerLists {
 			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
-			if ($duplicates == 'prestrip' || $duplicates == 'pre/postsort') {
+			if ($duplicates === 'prestrip' || $duplicates === 'pre/postsort') {
 				$inValues = array_unique($inValues);
 			}
 
-			if ($sortMode == 'presort' || $sortMode == 'pre/postsort') {
+			if ($sortMode === 'presort' || $sortMode === 'pre/postsort') {
 				$inValues = self::sortList($inValues, $sortOptions);
 			}
 
@@ -2003,11 +1919,11 @@ class ParserPowerLists {
 				$outValues[] = self::applyTemplate($parser, $frame, $inValue, $template, $fieldSep);
 			}
 
-			if ($sortMode == 'sort' || $sortMode == 'postsort' || $sortMode == 'pre/postsort') {
+			if ($sortMode === 'sort' || $sortMode === 'postsort' || $sortMode === 'pre/postsort') {
 				$outValues = self::sortList($outValues, $sortOptions);
 			}
 
-			if ($duplicates == 'strip' || $duplicates == 'poststrip' || $duplicates == 'pre/postsort') {
+			if ($duplicates === 'strip' || $duplicates === 'poststrip' || $duplicates === 'pre/postsort') {
 				$outValues = array_unique($outValues);
 			}
 
@@ -2378,7 +2294,7 @@ class ParserPowerLists {
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 
-			if ($sortMode == 'presort' || $sortMode == 'pre/postsort') {
+			if ($sortMode === 'presort' || $sortMode === 'pre/postsort') {
 				$inValues = self::sortList($inValues, $sortOptions);
 			}
 
@@ -2396,14 +2312,14 @@ class ParserPowerLists {
 				$parser,
 				$frame,
 				$inValues,
-				'ParserPower\\ParserPowerLists::applyTwoSetFieldPattern',
+				[ __CLASS__, 'applyTwoSetFieldPattern' ],
 				$matchParams,
 				$mergeParams,
 				2,
 				3
 			);
 
-			if ($sortMode == 'sort' || $sortMode == 'postsort' || $sortMode == 'pre/postsort') {
+			if ($sortMode === 'sort' || $sortMode === 'postsort' || $sortMode === 'pre/postsort') {
 				$outValues = self::sortList($outValues, $sortOptions);
 			}
 
@@ -2461,7 +2377,7 @@ class ParserPowerLists {
 
 			$inValues = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 
-			if ($sortMode == 'presort' || $sortMode == 'pre/postsort') {
+			if ($sortMode === 'presort' || $sortMode === 'pre/postsort') {
 				$inValues = self::sortList($inValues, $sortOptions);
 			}
 
@@ -2471,7 +2387,7 @@ class ParserPowerLists {
 				$parser,
 				$frame,
 				$inValues,
-				'ParserPower\\ParserPowerLists::applyTemplateToTwoValues',
+				[ __CLASS__, 'applyTemplateToTwoValues' ],
 				$matchParams,
 				$mergeParams,
 				2,

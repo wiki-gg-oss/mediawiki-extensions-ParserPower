@@ -9,15 +9,15 @@
  * @license   GPL-2.0-or-later
  */
 
-namespace ParserPower;
+namespace MediaWiki\Extension\ParserPower;
 
-class ParserPowerSortKeyValueComparer {
+class SortKeyValueComparer {
 	/**
 	 * The function to use to compare sort keys.
 	 *
 	 * @var callable
 	 */
-	private $mSortKeyCompare = 'ParserPower\\ParserPowerCompare::numericstrcmp';
+	private $mSortKeyCompare = [ ComparisonUtils::class, 'numericstrcmp' ];
 
 	/**
 	 * The function to use to compare values, if any.
@@ -52,7 +52,7 @@ class ParserPowerSortKeyValueComparer {
 	public function compare($pair1, $pair2) {
 		$result = call_user_func($this->mSortKeyCompare, $pair1[0], $pair2[0]);
 
-		if ($result == 0) {
+		if ($result === 0) {
 			if ($this->mValueCompare) {
 				return call_user_func($this->mValueCompare, $pair1[1], $pair2[1]);
 			} else {
@@ -66,27 +66,27 @@ class ParserPowerSortKeyValueComparer {
 	/**
 	 * Get Comparer class
 	 *
-	 * @param array $options
+	 * @param int $options
 	 *
 	 * @return void
 	 */
 	private function getComparer($options) {
-		if ($options & ParserPowerLists::SORT_NUMERIC) {
-			if ($options & ParserPowerLists::SORT_DESC) {
-				return 'ParserPower\\ParserPowerCompare::numericrstrcmp';
+		if ($options & ListFunctions::SORT_NUMERIC) {
+			if ($options & ListFunctions::SORT_DESC) {
+				return [ ComparisonUtils::class, 'numericrstrcmp' ];
 			} else {
-				return 'ParserPower\\ParserPowerCompare::numericstrcmp';
+				return [ ComparisonUtils::class, 'numericstrcmp' ];
 			}
 		} else {
-			if ($options & ParserPowerLists::SORT_CS) {
-				if ($options & ParserPowerLists::SORT_DESC) {
-					return 'ParserPower\\ParserPowerCompare::rstrcmp';
+			if ($options & ListFunctions::SORT_CS) {
+				if ($options & ListFunctions::SORT_DESC) {
+					return [ ComparisonUtils::class, 'rstrcmp' ];
 				} else {
 					return 'strcmp';
 				}
 			} else {
-				if ($options & ParserPowerLists::SORT_DESC) {
-					return 'ParserPower\\ParserPowerCompare::rstrcasecmp';
+				if ($options & ListFunctions::SORT_DESC) {
+					return [ ComparisonUtils::class, 'rstrcasecmp' ];
 				} else {
 					return 'strcasecmp';
 				}
