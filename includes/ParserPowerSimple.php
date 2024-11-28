@@ -292,14 +292,14 @@ class ParserPowerSimple {
 	 */
 	public static function ueifRender($parser, $frame, $params) {
 		$condition = isset($params[0]) ? trim($frame->expand($params[0])) : '';
-		$trueValue = isset($params[1]) ? $params[1] : '';
-		$falseValue = isset($params[2]) ? $params[2] : '';
 
 		if ($condition !== '') {
-			return [ParserPower::unescape($frame->expand($trueValue)), 'noparse' => false];
+			$value = isset($params[1]) ? $params[1] : '';
 		} else {
-			return [ParserPower::unescape($frame->expand($falseValue)), 'noparse' => false];
+			$value = isset($params[2]) ? $params[2] : '';
 		}
+
+		return [ ParserPower::unescape(trim($frame->expand($value))), 'noparse' => false ];
 	}
 
 	/**
@@ -357,14 +357,14 @@ class ParserPowerSimple {
 	public static function ueifeqRender($parser, $frame, $params) {
 		$leftValue = isset($params[0]) ? ParserPower::unescape(trim($frame->expand($params[0]))) : '';
 		$rightValue = isset($params[1]) ? ParserPower::unescape(trim($frame->expand($params[1]))) : '';
-		$trueValue = isset($params[2]) ? $params[2] : '';
-		$falseValue = isset($params[3]) ? $params[3] : '';
 
 		if ($leftValue === $rightValue) {
-			return [ParserPower::unescape($frame->expand($trueValue)), 'noparse' => false];
+			$value = isset($params[2]) ? $params[2] : '';
 		} else {
-			return [ParserPower::unescape($frame->expand($falseValue)), 'noparse' => false];
+			$value = isset($params[3]) ? $params[3] : '';
 		}
+
+		return [ ParserPower::unescape(trim($frame->expand($value))), 'noparse' => false ];
 	}
 
 	/**
@@ -431,10 +431,10 @@ class ParserPowerSimple {
 
 			$keyFound = false;
 			foreach ($params as $param) {
-				$pair = explode('=', trim($frame->expand($param)), 2);
+				$pair = explode('=', $frame->expand($param), 2);
 
 				if (!$keyFound) {
-					$key = ParserPower::unescape($pair[0]);
+					$key = ParserPower::unescape(trim($pair[0]));
 					if ($key === $switchKey) {
 						$keyFound = true;
 					} elseif ($mwDefault->matchStartToEnd($key)) {
@@ -444,7 +444,7 @@ class ParserPowerSimple {
 
 				if (count($pair) > 1) {
 					if ($keyFound) {
-						return [ParserPower::unescape(trim($frame->expand($pair[1]))), 'noparse' => false];
+						return [ParserPower::unescape(trim($pair[1])), 'noparse' => false];
 					} elseif ($mwDefaultFound) {
 						$default = $pair[1];
 						$mwDefaultFound = false;
