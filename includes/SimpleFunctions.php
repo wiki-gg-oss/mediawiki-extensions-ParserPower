@@ -17,7 +17,7 @@ use MediaWiki\Title\Title;
 use Parser;
 use PPNode_Hash_Array;
 
-class ParserPowerSimple {
+final class SimpleFunctions {
 	/**
 	 * Registers the simple, generic parser functions with the parser.
 	 *

@@ -16,7 +16,7 @@ use Parser;
 use PPFrame;
 use PPNode_Hash_Array;
 
-class ParserPowerLists {
+final class ListFunctions {
 	/**
 	 * Flag for alphanumeric sorting. 0 as this is a default mode.
 	 */
@@ -1433,7 +1433,7 @@ class ParserPowerLists {
 				}
 			} else {
 				if ($options & self::SORT_DESC) {
-					usort($values, [ ParserPowerCompare::class, 'rstrcasecmp' ]);
+					usort($values, [ ComparisonUtils::class, 'rstrcasecmp' ]);
 					return $values;
 				} else {
 					usort($values, 'strcasecmp');
@@ -1610,7 +1610,7 @@ class ParserPowerLists {
 			);
 		}
 
-		$comparer = new ParserPowerSortKeyValueComparer(
+		$comparer = new SortKeyValueComparer(
 			self::sortOptionsFromParam($sortOptions, self::SORT_NUMERIC),
 			$subsort === 'yes',
 			self::sortOptionsFromParam($subsortOptions)

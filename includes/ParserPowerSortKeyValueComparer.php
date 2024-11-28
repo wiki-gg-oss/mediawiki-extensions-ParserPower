@@ -11,13 +11,13 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
-class ParserPowerSortKeyValueComparer {
+class SortKeyValueComparer {
 	/**
 	 * The function to use to compare sort keys.
 	 *
 	 * @var callable
 	 */
-	private $mSortKeyCompare = [ ParserPowerCompare::class, 'numericstrcmp' ];
+	private $mSortKeyCompare = [ ComparisonUtils::class, 'numericstrcmp' ];
 
 	/**
 	 * The function to use to compare values, if any.
@@ -71,22 +71,22 @@ class ParserPowerSortKeyValueComparer {
 	 * @return void
 	 */
 	private function getComparer($options) {
-		if ($options & ParserPowerLists::SORT_NUMERIC) {
-			if ($options & ParserPowerLists::SORT_DESC) {
-				return [ ParserPowerCompare::class, 'numericrstrcmp' ];
+		if ($options & ListFunctions::SORT_NUMERIC) {
+			if ($options & ListFunctions::SORT_DESC) {
+				return [ ComparisonUtils::class, 'numericrstrcmp' ];
 			} else {
-				return [ ParserPowerCompare::class, 'numericstrcmp' ];
+				return [ ComparisonUtils::class, 'numericstrcmp' ];
 			}
 		} else {
-			if ($options & ParserPowerLists::SORT_CS) {
-				if ($options & ParserPowerLists::SORT_DESC) {
-					return [ ParserPowerCompare::class, 'rstrcmp' ];
+			if ($options & ListFunctions::SORT_CS) {
+				if ($options & ListFunctions::SORT_DESC) {
+					return [ ComparisonUtils::class, 'rstrcmp' ];
 				} else {
 					return 'strcmp';
 				}
 			} else {
-				if ($options & ParserPowerLists::SORT_DESC) {
-					return [ ParserPowerCompare::class, 'rstrcasecmp' ];
+				if ($options & ListFunctions::SORT_DESC) {
+					return [ ComparisonUtils::class, 'rstrcasecmp' ];
 				} else {
 					return 'strcasecmp';
 				}

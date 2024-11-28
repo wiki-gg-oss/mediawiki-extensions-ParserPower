@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Hooks;
 
-use MediaWiki\Extension\ParserPower\ParserPowerLists;
-use MediaWiki\Extension\ParserPower\ParserPowerSimple;
+use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\SimpleFunctions;
 use Parser;
 
 final class FunctionRegistrationHooks implements
@@ -16,7 +16,7 @@ final class FunctionRegistrationHooks implements
 	 * @return bool|void True or no return value to continue or false to abort
 	 */
 	public function onParserFirstCallInit( $parser ) {
-		ParserPowerSimple::setup( $parser );
-		ParserPowerLists::setup( $parser );
+		SimpleFunctions::setup( $parser );
+		ListFunctions::setup( $parser );
     }
 }
