@@ -9,7 +9,7 @@
  * @license   GPL-2.0-or-later
  */
 
-namespace ParserPower;
+namespace MediaWiki\Extension\ParserPower;
 
 class ParserPowerSortKeyValueComparer {
 	/**
