@@ -16,19 +16,6 @@ use PPFrame;
 
 class ParserPower {
 	/**
-	 * Calls all parser function registrations functions.
-	 *
-	 * @param Parser $parser The parser object being initialized.
-	 *
-	 * @return bool true to indicate no problems.
-	 */
-	public static function setup(&$parser) {
-		ParserPowerSimple::setup($parser);
-		ParserPowerLists::setup($parser);
-		return true;
-	}
-
-	/**
 	 * This function converts the parameters to the parser function into an array form with all parameter values
 	 * trimmed, as per longstanding MediaWiki conventions.
 	 *

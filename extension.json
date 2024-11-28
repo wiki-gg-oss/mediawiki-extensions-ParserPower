@@ -13,7 +13,7 @@
 	"descriptionmsg": "parserpower-desc",
 	"type": "parserhook",
 	"MessagesDirs": {
-		"parserpower": [
+		"ParserPower": [
 			"i18n"
 		]
 	},
@@ -23,8 +23,13 @@
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\ParserPower\\": "includes/"
 	},
+	"HookHandlers": {
+		"FunctionRegistration": {
+			"class": "MediaWiki\\Extension\\ParserPower\\Hooks\\FunctionRegistrationHooks"
+		}
+	},
 	"Hooks": {
-		"ParserFirstCallInit": "ParserPower\\ParserPower::setup"
+		"ParserFirstCallInit": "FunctionRegistration"
 	},
 	"manifest_version": 2
 }
