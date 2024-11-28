@@ -17,7 +17,7 @@ class ParserPowerSortKeyValueComparer {
 	 *
 	 * @var callable
 	 */
-	private $mSortKeyCompare = 'ParserPower\\ParserPowerCompare::numericstrcmp';
+	private $mSortKeyCompare = [ ParserPowerCompare::class, 'numericstrcmp' ];
 
 	/**
 	 * The function to use to compare values, if any.
@@ -52,7 +52,7 @@ class ParserPowerSortKeyValueComparer {
 	public function compare($pair1, $pair2) {
 		$result = call_user_func($this->mSortKeyCompare, $pair1[0], $pair2[0]);
 
-		if ($result == 0) {
+		if ($result === 0) {
 			if ($this->mValueCompare) {
 				return call_user_func($this->mValueCompare, $pair1[1], $pair2[1]);
 			} else {
@@ -66,27 +66,27 @@ class ParserPowerSortKeyValueComparer {
 	/**
 	 * Get Comparer class
 	 *
-	 * @param array $options
+	 * @param int $options
 	 *
 	 * @return void
 	 */
 	private function getComparer($options) {
 		if ($options & ParserPowerLists::SORT_NUMERIC) {
 			if ($options & ParserPowerLists::SORT_DESC) {
-				return 'ParserPower\\ParserPowerCompare::numericrstrcmp';
+				return [ ParserPowerCompare::class, 'numericrstrcmp' ];
 			} else {
-				return 'ParserPower\\ParserPowerCompare::numericstrcmp';
+				return [ ParserPowerCompare::class, 'numericstrcmp' ];
 			}
 		} else {
 			if ($options & ParserPowerLists::SORT_CS) {
 				if ($options & ParserPowerLists::SORT_DESC) {
-					return 'ParserPower\\ParserPowerCompare::rstrcmp';
+					return [ ParserPowerCompare::class, 'rstrcmp' ];
 				} else {
 					return 'strcmp';
 				}
 			} else {
 				if ($options & ParserPowerLists::SORT_DESC) {
-					return 'ParserPower\\ParserPowerCompare::rstrcasecmp';
+					return [ ParserPowerCompare::class, 'rstrcasecmp' ];
 				} else {
 					return 'strcasecmp';
 				}
