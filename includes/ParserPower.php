@@ -48,6 +48,37 @@ class ParserPower {
 	}
 
 	/**
+	 * Expands and trims a PPNode.
+	 *
+	 * @param PPFrame $frame
+	 * @param PPNode|string $input
+	 * @param bool $isVar
+	 * @return string
+	 */
+	public static function expandTrim( PPFrame $frame, $input, $isVar = false ) {
+		if ( $isVar ) {
+			$flags = PPFrame::NO_ARGS | PPFrame::NO_TEMPLATES;
+		} else {
+			$flags = 0;
+		}
+
+		return trim( $frame->expand( $input, $flags ) );
+	}
+
+	/**
+	 * Expands, trims, and unescapes a PPNode.
+	 *
+	 * @param PPFrame $frame
+	 * @param PPNode|string $input
+	 * @param bool $isVar
+	 * @return string
+	 */
+	public static function expandTrimUnescape( PPFrame $frame, $input, $isVar = false ) {
+		$expanded = self::expandTrim( $frame, $param, $isVar );
+		return self::unescape( $expanded );
+	}
+
+	/**
 	 * Replaces all escape sequences with the appropriate characters. It should be calling *after* trimming strings to
 	 * protect any leading or trailing whitespace that was escaped.
 	 *
@@ -250,7 +281,7 @@ class ParserPower {
 	public static function applyPatternWithIndex( $parser, $frame, $inValue, $indexToken, $index, $token, $pattern ) {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
-			$outValue = $frame->expand( $pattern, PPFrame::NO_ARGS || PPFrame::NO_TEMPLATES );
+			$outValue = self::expandTrim( $frame, $pattern, true );
 			if ( $indexToken !== null && $indexToken !== '' ) {
 				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
 			}
@@ -261,7 +292,7 @@ class ParserPower {
 			$outValue = $inValue;
 		}
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return self::unescape( trim( $frame->expand( $outValue ) ) );
+		return self::expandTrimUnescape( $frame, $outValue );
 	}
 
 	/**
@@ -318,7 +349,7 @@ class ParserPower {
 	) {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
-			$outValue = $frame->expand( $pattern, PPFrame::NO_ARGS || PPFrame::NO_TEMPLATES );
+			$outValue = self::expandTrim( $frame, $pattern, true );
 			if ( $indexToken !== null && $indexToken !== '' ) {
 				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
 			}
@@ -331,6 +362,6 @@ class ParserPower {
 			$outValue = $inValue;
 		}
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return self::unescape( trim( $frame->expand( $outValue ) ) );
+		return self::expandTrimUnescape( $frame, $outValue );
 	}
 }
