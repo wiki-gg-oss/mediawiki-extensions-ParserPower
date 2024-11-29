@@ -314,14 +314,14 @@ final class SimpleFunctions {
 		$inValue = isset( $params[0] ) ? ParserPower::expandTrim( $frame, $params[0] ) : '';
 		$default = isset( $params[3] ) ? ParserPower::expandTrim( $frame, $params[3] ) : '';
 
-		if ( $inValue !== '' ) {
-			$token = isset( $params[1] ) ? ParserPower::expandTrimUnescape( $frame, $params[1], true ) : 'x';
-			$pattern = isset( $params[2] ) ? $params[2] : 'x';
-
-			return [ ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern ), 'noparse' => false ];
-		} else {
+		if ( $inValue === '' ) {
 			return [ ParserPower::unescape( $default ), 'noparse' => false ];
 		}
+
+		$token = isset( $params[1] ) ? ParserPower::expandTrimUnescape( $frame, $params[1], true ) : 'x';
+		$pattern = isset( $params[2] ) ? $params[2] : 'x';
+
+		return [ ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern ), 'noparse' => false ];
 	}
 
 	/**
@@ -335,26 +335,26 @@ final class SimpleFunctions {
 	public static function ueswitchRender( $parser, $frame, $params ) {
 		$switchKey = isset( $params[0] ) ? ParserPower::expandTrimUnescape( $frame, array_shift( $params ) ) : '';
 
-		if ( count( $params ) > 0 ) {
-			$default = '';
-			if ( strpos( $frame->expand( $params[count( $params ) - 1] ), '=' ) === false ) {
-				$default = array_pop( $params );
-			}
-
-			$keyFound = false;
-			foreach ( $params as $param ) {
-				$pair = explode( '=', $frame->expand( $param ), 2 );
-				if ( !$keyFound && ParserPower::unescape( trim( $pair[0] ) ) === $switchKey ) {
-					$keyFound = true;
-				}
-				if ( $keyFound && count( $pair ) > 1 ) {
-					return [ ParserPower::unescape( trim( $pair[1] ) ), 'noparse' => false ];
-				}
-			}
-			return [ ParserPower::expandTrimUnescape( $frame, $default ), 'noparse' => false ];
-		} else {
+		if ( count( $params ) === 0 ) {
 			return [ '', 'noparse' => false ];
 		}
+
+		$default = '';
+		if ( strpos( $frame->expand( $params[count( $params ) - 1] ), '=' ) === false ) {
+			$default = array_pop( $params );
+		}
+
+		$keyFound = false;
+		foreach ( $params as $param ) {
+			$pair = explode( '=', $frame->expand( $param ), 2 );
+			if ( !$keyFound && ParserPower::unescape( trim( $pair[0] ) ) === $switchKey ) {
+				$keyFound = true;
+			}
+			if ( $keyFound && count( $pair ) > 1 ) {
+				return [ ParserPower::unescape( trim( $pair[1] ) ), 'noparse' => false ];
+			}
+		}
+		return [ ParserPower::expandTrimUnescape( $frame, $default ), 'noparse' => false ];
 	}
 
 	/**
