@@ -259,11 +259,10 @@ final class ListFunctions {
 
 			$sep = $parser->getStripState()->unstripNoWiki($sep);
 
-			$count = count(self::arrayTrimUnescape(self::explodeList($sep, $list)));
-			return [$count, 'noparse' => false];
+			return count(self::arrayTrimUnescape(self::explodeList($sep, $list)));
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -286,10 +285,10 @@ final class ListFunctions {
 			$inSep = $parser->getStripState()->unstripNoWiki($inSep);
 
 			$values = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
-			return [implode($outSep, $values), 'noparse' => false];
+			return [ implode($outSep, $values), 'noparse' => false ];
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -318,10 +317,10 @@ final class ListFunctions {
 
 			$value = self::arrayElementTrimUnescape($index, self::explodeList($inSep, $inList));
 
-			return [$value, 'noparse' => false];
+			return [ $value, 'noparse' => false ];
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -358,13 +357,13 @@ final class ListFunctions {
 			$values = self::arrayTrimSliceUnescape($offset, $length, self::explodeList($inSep, $inList));
 
 			if (count($values) > 0) {
-				return [implode($outSep, $values), 'noparse' => false];
+				return [ implode($outSep, $values), 'noparse' => false ];
 			} else {
-				return ['', 'noparse' => false];
+				return '';
 			}
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -391,20 +390,20 @@ final class ListFunctions {
 			if ($csOption === 'cs') {
 				foreach ($values as $value) {
 					if ($value === $item) {
-						return [$value, 'noparse' => false];
+						return [ $value, 'noparse' => false ];
 					}
 				}
 			} else {
 				foreach ($values as $value) {
 					if (strtolower($value) === strtolower($item)) {
-						return [$value, 'noparse' => false];
+						return [ $value, 'noparse' => false ];
 					}
 				}
 			}
-			return ['', 'noparse' => false];
+			return '';
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -434,17 +433,13 @@ final class ListFunctions {
 				if ($options & self::INDEX_CS) {
 					for ($index = $count - 1; $index > -1; --$index) {
 						if ($values[$index] === $item) {
-							return [ strval(($options & self::INDEX_NEG) ? $index - $count : $index + 1),
-								'noparse' => false
-							];
+							return strval(($options & self::INDEX_NEG) ? $index - $count : $index + 1);
 						}
 					}
 				} else {
 					for ($index = $count - 1; $index > -1; --$index) {
 						if (strtolower($values[$index]) === strtolower($item)) {
-							  return [ strval(($options & self::INDEX_NEG) ? $index - $count : $index + 1),
-								  'noparse' => false
-							  ];
+							return strval(($options & self::INDEX_NEG) ? $index - $count : $index + 1);
 						}
 					}
 				}
@@ -452,25 +447,21 @@ final class ListFunctions {
 				if ($options & self::INDEX_CS) {
 					for ($index = 0; $index < $count; ++$index) {
 						if ($values[$index] === $item) {
-							return [ strval(($options & self::INDEX_NEG) ? $index - $count : $index + 1),
-								'noparse' => false
-							];
+							return strval(($options & self::INDEX_NEG) ? $index - $count : $index + 1);
 						}
 					}
 				} else {
 					for ($index = 0; $index < $count; ++$index) {
 						if (strtolower($values[$index]) === strtolower($item)) {
-							  return [ strval(($options & self::INDEX_NEG) ? $index - $count : $index + 1),
-								  'noparse' => false
-							  ];
+							return strval(($options & self::INDEX_NEG) ? $index - $count : $index + 1);
 						}
 					}
 				}
 			}
-			return ['', 'noparse' => false];
+			return '';
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -496,10 +487,10 @@ final class ListFunctions {
 			if ($value !== '') {
 				$values[] = $value;
 			}
-			return [implode($sep, $values), 'noparse' => false];
+			return [ implode($sep, $values), 'noparse' => false ];
 
 		} else {
-			return [$value, 'noparse' => false];
+			return [ $value, 'noparse' => false ];
 		}
 	}
 
@@ -525,10 +516,10 @@ final class ListFunctions {
 			if ($value !== '') {
 				array_unshift($values, $value);
 			}
-			return [implode($sep, $values), 'noparse' => false];
+			return [ implode($sep, $values), 'noparse' => false ];
 
 		} else {
-			return [$value, 'noparse' => false];
+			return [ $value, 'noparse' => false ];
 		}
 	}
 
@@ -567,10 +558,10 @@ final class ListFunctions {
 			}
 			$outSep = isset($params[4]) ? ParserPower::unescape(trim($frame->expand($params[4]))) : ', ';
 
-			return [implode($outSep, array_merge($values1, $values2)), 'noparse' => false];
+			return [ implode($outSep, array_merge($values1, $values2)), 'noparse' => false ];
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -985,12 +976,12 @@ final class ListFunctions {
 			if (count($outValues) > 0) {
 				$outList = implode($outSep, $outValues);
 				$count = strval(count($outValues));
-				return [self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false];
+				return [ self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false ];
 			} else {
-				return [$default, 'noparse' => false];
+				return [ $default, 'noparse' => false ];
 			}
 		} else {
-			return [$default, 'noparse' => false];
+			return [ $default, 'noparse' => false ];
 		}
 	}
 
@@ -1027,12 +1018,12 @@ final class ListFunctions {
 			);
 
 			if (count($outValues) > 0) {
-				  return [implode($outSep, $outValues), 'noparse' => false];
+				return [ implode($outSep, $outValues), 'noparse' => false ];
 			} else {
-				return ['', 'noparse' => false];
+				return '';
 			}
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -1071,12 +1062,12 @@ final class ListFunctions {
 			);
 
 			if (count($outValues) > 0) {
-				return [implode($outSep, $outValues), 'noparse' => false];
+				return [ implode($outSep, $outValues), 'noparse' => false ];
 			} else {
-				return ['', 'noparse' => false];
+				return '';
 			}
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -1117,10 +1108,10 @@ final class ListFunctions {
 
 			$values = self::arrayTrimUnescape(self::explodeList($sep, $inList));
 			$values = self::reduceToUniqueValues($values, $csOption === 'cs');
-			return [strval(count($values)), 'noparse' => false];
+			return strval(count($values));
 
 		} else {
-			return ['0', 'noparse' => false];
+			return '0';
 		}
 	}
 
@@ -1294,9 +1285,9 @@ final class ListFunctions {
 			}
 			$outList = implode($outSep, $outValues);
 			$count = strval(count($outValues));
-			return [self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false];
+			return [ self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false ];
 		} else {
-			return [$default, 'noparse' => false];
+			return [ $default, 'noparse' => false ];
 		}
 	}
 
@@ -1359,10 +1350,10 @@ final class ListFunctions {
 
 			$values = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 			$values = self::reduceToUniqueValues($values, $csOption === 'cs');
-			return [implode($outSep, $values), 'noparse' => false];
+			return [ implode($outSep, $values), 'noparse' => false ];
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -1703,12 +1694,12 @@ final class ListFunctions {
 			if (count($values) > 0) {
 				$outList = implode($outSep, $values);
 				$count = strval(count($values));
-				return [self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false];
+				return [ self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false ];
 			} else {
-				return [$default, 'noparse' => false];
+				return [ $default, 'noparse' => false ];
 			}
 		} else {
-			return [$default, 'noparse' => false];
+			return [ $default, 'noparse' => false ];
 		}
 	}
 
@@ -1733,10 +1724,10 @@ final class ListFunctions {
 
 			$values = self::arrayTrimUnescape(self::explodeList($inSep, $inList));
 			$values = self::sortList($values, $sortOptions);
-			return [implode($outSep, $values), 'noparse' => false];
+			return [ implode($outSep, $values), 'noparse' => false ];
 
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -1856,13 +1847,13 @@ final class ListFunctions {
 					$intro = str_replace($countToken, strval(count($outValues)), $intro);
 					$outro = str_replace($countToken, strval(count($outValues)), $outro);
 				}
-				return [$intro . implode($outSep, $outValues) . $outro, 'noparse' => false];
+				return [ $intro . implode($outSep, $outValues) . $outro, 'noparse' => false ];
 			} else {
-				return [$default, 'noparse' => false];
+				return [ $default, 'noparse' => false ];
 			}
 
 		} else {
-			return [$default, 'noparse' => false];
+			return [ $default, 'noparse' => false ];
 		}
 	}
 
@@ -1930,13 +1921,13 @@ final class ListFunctions {
 			if (count($outValues) > 0) {
 				$outList = implode($outSep, $outValues);
 				$count = strval(count($outValues));
-				return [self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false];
+				return [ self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false ];
 			} else {
-				return [$default, 'noparse' => false];
+				return [ $default, 'noparse' => false ];
 			}
 
 		} else {
-			return [$default, 'noparse' => false];
+			return [ $default, 'noparse' => false ];
 		}
 	}
 
@@ -2026,7 +2017,7 @@ final class ListFunctions {
 				);
 			}
 		} else {
-			return [$default, 'noparse' => false];
+			return [ $default, 'noparse' => false ];
 		}
 	}
 
@@ -2071,7 +2062,7 @@ final class ListFunctions {
 				''
 			);
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -2111,7 +2102,7 @@ final class ListFunctions {
 				''
 			);
 		} else {
-			return ['', 'noparse' => false];
+			return '';
 		}
 	}
 
@@ -2326,13 +2317,13 @@ final class ListFunctions {
 			if (count($outValues) > 0) {
 				$outList = implode($outSep, $outValues);
 				$count = strval(count($outValues));
-				return [self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false];
+				return [ self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false ];
 			} else {
-				return [$default . '0 count', 'noparse' => false];
+				return [ $default . '0 count', 'noparse' => false ];
 			}
 
 		} else {
-			return [$default . 'no input', 'noparse' => false];
+			return [ $default . 'no input', 'noparse' => false ];
 		}
 	}
 
@@ -2397,13 +2388,13 @@ final class ListFunctions {
 			if (count($outValues) > 0) {
 				$outList = implode($outSep, $outValues);
 				$count = strval(count($outValues));
-				return [self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false];
+				return [ self::applyIntroAndOutro($intro, $outList, $outro, $countToken, $count), 'noparse' => false ];
 			} else {
-				return [$default, 'noparse' => false];
+				return [ $default, 'noparse' => false ];
 			}
 
 		} else {
-			return [$default, 'noparse' => false];
+			return [ $default, 'noparse' => false ];
 		}
 	}
 
@@ -2493,7 +2484,7 @@ final class ListFunctions {
 				);
 			}
 		} else {
-			return [$default, 'noparse' => false];
+			return [ $default, 'noparse' => false ];
 		}
 	}
 }
