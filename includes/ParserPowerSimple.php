@@ -567,95 +567,131 @@ class ParserPowerSimple {
 		return implode( $new_delimiter, $results_array );
 	}
 	
-	public static function argmapRender($parser, $frame, $args) {
-		if ( !isset($args[0]) ) return "";
+	public static function argmapRender( $parser, $frame, $args ) {
+		if ( !isset( $args[0] ) ) return '';
 
-		// sort arguments, this is to disregard the position of named arguments 
-		$named_args = [];
-		$unnamed_args = [];
-		foreach ($args as $arg) {
-			$arg = $frame->expand($arg);
-			if (strpos($arg, '=') !== false) {
-				list($key, $value) = explode('=', $arg, 2);
-				$named_args[trim($key)] = trim($value);
+		// sort arguments, this is to disregard the position of named arguments
+		$namedArgs = [];
+		$unnamedArgs = [];
+		foreach ( $args as $arg ) {
+			$arg = $frame->expand( $arg );
+			if ( strpos( $arg, '=') !== false ) {
+				[ $key, $value ] = explode( '=', $arg, 2 );
+				$namedArgs[trim( $key )] = trim( $value );
 			} else {
-				$unnamed_args[] = $arg;
+				$unnamedArgs[] = $arg;
 			}
 		}
 
-		// set and clean parameters
-		$formatter = isset($unnamed_args[1]) ? trim($frame->expand($unnamed_args[0])) : '';
-		$glue = isset($unnamed_args[1]) ? trim($frame->expand($unnamed_args[1])) : '';
-		$must_contain = isset($unnamed_args[2]) ? trim($frame->expand($unnamed_args[2])) : '';
-		$must_contain = ( $must_contain == '' ) ? [] : explode( ',', $must_contain );
-		$only_show = isset($unnamed_args[3]) ? trim($frame->expand($unnamed_args[3])) : '';
-		$only_show = ( $only_show == '' ) ? [] : explode( ',', $only_show );
-		$debug_options = isset( $named_args['debug'] ) ? explode( ',', trim($frame->expand( $named_args['debug']) ) ) : [];
+		// set parameters
+		$formatter = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[0] ) ) : '';
+		$glue = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[1] ) ) : '';
+		$mustContainString = isset( $unnamedArgs[2] ) ? trim( $frame->expand( $unnamedArgs[2] ) ) : '';
+		$onlyShowString = isset( $unnamedArgs[3] ) ? trim( $frame->expand( $unnamedArgs[3] ) ) : '';
+		$debugOptionsString = isset( $namedArgs['debug'] ) ? trim( $frame->expand( $namedArgs['debug'] ) ) : '';
+		$formatterArgs = $frame->getNamedArguments ();
+
+		// make arrays
+		$mustContain = [];
+		$onlyShow = [];
+		$debugOptions = [];
+		if ( $mustContainString !== '' ) { 
+			$mustContain = explode( ',', $mustContainString );
+		}
+		if ( $onlyShowString !== '' ) { 
+			$onlyShow = explode( ',', $onlyShowString );
+		}
+		if ( $debugOptionsString !== '' ) { 
+			$debugOptions = explode( ',', $debugOptionsString );
+		}
 
 		// parameter dump
-		$debug_log = "";		
-		if ( in_array("dump", $debug_options) ) {
-			$debug_log .= "formatter: <code>" . $formatter . "</code><br />"
-				. "glue: <code>" . htmlspecialchars( $glue ) . "</code><br />";
-			foreach ( $must_contain as $contain ) $debug_log .= "must_contain: <code>" . $contain . "</code><br />";
-			foreach ( $only_show as $show ) $debug_log .= "only_show: <code>" . $show . "</code><br />";
-			foreach ( $debug_options as $option ) $debug_log .= "debug_option: <code>" . $option . "</code><br />";
+		$debugLog = '';		
+		if ( in_array('dump', $debugOptions ) ) {
+			$debugLog .= 'parser arguments:<ul>';
+			$debugLog .= '<li>formatter: <code>' . $formatter . '</code></li>'
+				. '<li>glue: <code>' . htmlspecialchars( $glue ) . '</code></li>';
+			foreach ( $mustContain as $contain ) { 
+				$debugLog .= '<li>must contain: <code>' . $contain . '</code></li>';
+			}
+			foreach ( $onlyShow as $show ) { 
+				$debugLog .= '<li>only show: <code>' . $show . '</code></li>';
+			}
+			foreach ( $debugOptions as $option ) { 
+				$debugLog .= '<li>debug option: <code>' . $option . '</code></li>';
+			}
+			$debugLog .= '</ul>';
 			
-			$template_args = $frame->getArguments ();
-			if ( count($template_args) !== 0 ) {
-				$debug_log .= "argument dump:<br />";
-				foreach ($template_args as $key => $arg) {
-					$debug_log .= "<code>" . $key . "=" . $arg . "</code><br />";
+			if ( !empty( $formatterArgs ) ) {
+				$debugLog .= 'formater arguments:<ul>';
+				foreach ( $formatterArgs as $key => $arg ) {
+					$debugLog .= '<li><code>' . $key . '=' . $arg . '</code></li>';
+				}
+				$debugLog .= '</ul>';
+			}
+		}
+
+		// group formatter arguments to groupedFormatterArgs array, if viable
+		$groupedFormatterArgs = [];
+		foreach ( $formatterArgs as $key => $arg ) {
+			$index = preg_replace('/[^0-9]/', '', $key );
+			$argName = preg_replace('/[^a-zA-Z]/', '', $key );
+			
+			if ( $index !== '' ) {
+				$index = intval( $index );
+				if ( !isset( $groupedFormatterArgs[$index] ) ) {
+					$groupedFormatterArgs[$index] = [];
+				}
+				$groupedFormatterArgs[$index][$argName] =  $arg;
+			}
+		}
+
+		// write formatter calls, if viable
+		$formatterCalls = [];
+		foreach ( $groupedFormatterArgs as $formatterArg ) {
+
+			// check if there are missing arguments
+			$missingArgs = array_diff( $mustContain, array_keys( $formatterArg ) );
+			if ( !empty( $missingArgs ) ) {
+				continue;
+			}
+
+			// process individual args and filter for onlyShow
+			$processedFormatterArg = [];
+			foreach ( $formatterArg as $key => $value ) {
+				if ( ( empty( $onlyShow ) ) || in_array( $key, $onlyShow ) ) {
+					$processedFormatterArg[] = $key . '=' . $value;
 				}
 			}
-		}
+			// discard if nothing remains
+			if ( empty( $processedFormatterArg ) ) {
+				continue;
+			}
 
-		// group template arguments to interim array, if viable
-		$template_args = $frame->getNamedArguments ();
-		$interim = [];
-		foreach ($template_args as $key => $arg) {
-			$index = preg_replace('/[^0-9]/', '', $key);
-			$argName = preg_replace('/[^a-zA-Z]/', '', $key);
-			
-			if ($index !== "" ) {
-				$index = intval($index);
-				if (!isset($interim[$index])) $interim[$index] = [];
-				$interim[$index][$argName] =  $arg;
+			// construct final formatter call 
+			$val = implode( '|', $processedFormatterArg );
+			$formatterCall = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
+			if ( $formatterCall instanceof PPNode_Hash_Array ) { 
+				$formatterCall = $formatterCall->value;
+			}
+			$formatterCall = implode( '', $formatterCall );
+
+			// parse formatter call
+			if ( in_array( 'equivalent', $debugOptions ) ) {
+				// parsing it as <nowiki> prevents a bug from sometimes occuring
+				$formatterCalls[] = $parser->replaceVariables( '<nowiki>' . $formatterCall . '</nowiki>', $frame );
+			}
+			else {
+				$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
 			}
 		}
 
-		// write template calls, if viable
-		$results_array = [];
-		foreach ($interim as $passed_formatter_args) {
-
-			// check if set of arguments has ALL must_contain words
-			$show_this = false;
-			$mustcontain_args_present = 0;
-			foreach ($passed_formatter_args as $key => $value)
-				if ( in_array( $key, $must_contain ) ) $mustcontain_args_present++;
-			if ( $mustcontain_args_present !== count( $must_contain ) ) continue;
-
-			// filter for only_show
-			$filtered_formatter_args = [];
-			foreach ($passed_formatter_args as $key => $value)
-				if ( ( count( $only_show ) === 0 ) || in_array( $key, $only_show ) )
-					$filtered_formatter_args[] = $key . "=" . $value;
-			// discard if nothing remains
-			if ( count( $filtered_formatter_args ) === 0 ) continue;
-
-			// write
-			$val = implode( '|', $filtered_formatter_args );
-			$bracketed_value = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
-			if ( $bracketed_value instanceof PPNode_Hash_Array ) $bracketed_value = $bracketed_value->value;
-			$bracketed_value = implode( '', $bracketed_value );
-			if ( in_array("equivalent", $debug_options) )
-				$results_array[] = $bracketed_value;
-			else
-				$results_array[] = $parser->replaceVariables( $bracketed_value, $frame );
+		if ( in_array( 'equivalent', $debugOptions ) ) {
+			$debugLog .= 'equivalent template calls:<br />';
 		}
-
-		if ( in_array("equivalent", $debug_options) ) $debug_log .= "equivalent template calls:<br />";
-		if ( $glue === '\n' ) $glue = "<br />";
-		return $debug_log . implode( $glue, $results_array );
+		if ( $glue === '\n' ) {
+			$glue = '<br />';
+		}
+		return $debugLog . implode( $glue, $formatterCalls );
 	}
 }
