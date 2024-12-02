@@ -21,27 +21,22 @@ final class ListFunctions {
 	 * Flag for alphanumeric sorting. 0 as this is a default mode.
 	 */
 	public const SORT_ALPHA = 0;
-
 	/**
 	 * Flag for numeric sorting.
 	 */
 	public const SORT_NUMERIC = 4;
-
 	/**
 	 * Flag for case insensitive sorting. 0 as this is a default mode, and ignored in numeric sorts.
 	 */
 	public const SORT_NCS = 0;
-
 	/**
 	 * Flag for case sensitive sorting. 0 as this is a default mode, and ignored in numeric sorts.
 	 */
 	public const SORT_CS = 2;
-
 	/**
 	 * Flag for sorting in ascending order. 0 as this is a default mode.
 	 */
 	public const SORT_ASC = 0;
-
 	/**
 	 * Flag for sorting in descending order.
 	 */
@@ -51,41 +46,42 @@ final class ListFunctions {
 	 * Flag for index search returning a positive index. 0 as this is a default mode.
 	 */
 	public const INDEX_POS = 0;
-
 	/**
 	 * Flag for index search returning a negative index.
 	 */
 	public const INDEX_NEG = 4;
-
 	/**
 	 * Flag for case insensitive index search. 0 as this is a default mode.
 	 */
 	public const INDEX_NCS = 0;
-
 	/**
 	 * Flag for case sensitive index search.
 	 */
 	public const INDEX_CS = 2;
-
 	/**
 	 * Flag for forward index search. 0 as this is a default mode.
 	 */
 	public const INDEX_ASC = 0;
-
 	/**
 	 * Flag for reverse index search.
 	 */
 	public const INDEX_DESC = 1;
 
 	/**
-	 * Flag for case insensitive item removal. 0 as this is a default mode.
+	 * Flags for duplicate removal in lists.
 	 */
-	public const REMOVE_NCS = 0;
+	public const DUPLICATES_KEEP = 0;
+	public const DUPLICATES_STRIP = 1;
+	public const DUPLICATES_PRESTRIP = 2;
+	public const DUPLICATES_POSTSTRIP = 4;
 
 	/**
-	 * Flag for case sensitive item removal.
+	 * Flags for item sort mode in lists.
 	 */
-	public const REMOVE_CS = 1;
+	public const SORTMODE_NONE = 0;
+	public const SORTMODE_PRE = 1;
+	public const SORTMODE_POST = 2;
+	public const SORTMODE_COMPAT = 4;
 
 	/**
 	 * Registers the list handling parser functions with the parser.
@@ -115,6 +111,166 @@ final class ListFunctions {
 		$parser->setFunctionHook( 'lstmap', [ __CLASS__, 'lstmapRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'lstmaptemp', [ __CLASS__, 'lstmaptempRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'listmerge', [ __CLASS__, 'listmergeRender' ], Parser::SFH_OBJECT_ARGS );
+	}
+
+	/**
+	 * This function converts a string containing a boolean keyword into a boolean.
+	 *
+	 * @param string $text The string containg a boolean keyword.
+	 * @param bool $default Value that should be used by default.
+	 * @return bool
+	 */
+	public static function decodeBool( $text, $default = false ) {
+		$text = strtolower( $text );
+		switch ( $text ) {
+			case 'yes':
+				return true;
+			case 'no':
+				return false;
+			default:
+				return $default;
+		}
+	}
+
+	/**
+	 * This function converts a string containing a duplicate removal keyword into an integer of duplicate mode flags.
+	 *
+	 * @param string $text The string containing a duplicate removal keyword.
+	 * @param int $default Any flags that should be set by default.
+	 * @return int The flags representing the requested mode.
+	 */
+	public static function decodeDuplicates( $text, $default = 0 ) {
+		$text = strtolower( $text );
+		switch ( $text ) {
+			case 'keep':
+				return self::DUPLICATES_KEEP;
+			case 'strip':
+				return self::DUPLICATES_STRIP | self::DUPLICATES_POSTSTRIP;
+			case 'prestrip':
+				return self::DUPLICATES_PRESTRIP;
+			case 'poststrip':
+				return self::DUPLICATES_POSTSTRIP;
+			case 'pre/poststrip':
+				return self::DUPLICATES_PRESTRIP | self::DUPLICATES_POSTSTRIP;
+			default:
+				return $default;
+		}
+	}
+
+	/**
+	 * This function converts a string containing a case sensitivity keyword into a boolean.
+	 *
+	 * @param string $text The string containg a case sensitivity keyword.
+	 * @param bool $default Value that should be used by default.
+	 * @return bool True if case sentitive, false otherwise.
+	 */
+	public static function decodeCSOption( $text, $default = false ) {
+		$text = strtolower( $text );
+		switch ( $text ) {
+			case 'cs':
+				return true;
+			case 'ncs':
+				return false;
+			default:
+				return $default;
+		}
+	}
+
+	/**
+	 * This function converts a string containing a sort mode keyword into an integer of sort mode flags.
+	 *
+	 * @param string $text The string containing a sort mode keyword.
+	 * @param int $default Any flags that should be set by default.
+	 * @return int The flags representing the requested mode.
+	 */
+	public static function decodeSortMode( $text, $default = 0 ) {
+		$text = strtolower( $text );
+		switch ( $text ) {
+			case 'nosort':
+				return self::SORTMODE_NONE;
+			case 'sort':
+				return self::SORTMODE_COMPAT;
+			case 'presort':
+				return self::SORTMODE_PRE;
+			case 'postsort':
+				return self::SORTMODE_POST;
+			case 'pre/postsort':
+				return self::SORTMODE_PRE | self::SORTMODE_POST;
+			default:
+				return $default;
+		}
+	}
+
+	/**
+	 * This function converts a string containing sort option keywords into an integer of sort option flags.
+	 *
+	 * @param string $text The string containg sort options keywords.
+	 * @param int $default Any flags that should be set by default.
+	 * @return int The flags representing the requested options.
+	 */
+	private static function decodeSortOptions( $text, $default = 0 ) {
+		$optionKeywords = explode( ' ', $text );
+		$options = $default;
+		foreach ( $optionKeywords as $optionKeyword ) {
+			switch ( strtolower( trim( $optionKeyword ) ) ) {
+				case 'numeric':
+					$options |= self::SORT_NUMERIC;
+					break;
+				case 'alpha':
+					$options &= ~self::SORT_NUMERIC;
+					break;
+				case 'cs':
+					$options |= self::SORT_CS;
+					break;
+				case 'ncs':
+					$options &= ~self::SORT_CS;
+					break;
+				case 'desc':
+					$options |= self::SORT_DESC;
+					break;
+				case 'asc':
+					$options &= ~self::SORT_DESC;
+					break;
+			}
+		}
+
+		return $options;
+	}
+
+	/**
+	 * This function converts a string containing index option keywords into an integer of index option flags.
+	 *
+	 * @param string $text The string containg index options keywords.
+	 * @param int $default Any flags that should be set by default.
+	 * @return int The flags representing the requested options.
+	 */
+	private static function decodeIndexOptions( $text, $default = 0 ) {
+		$optionKeywords = explode( ' ', $text );
+		$options = $default;
+		foreach ( $optionKeywords as $optionKeyword ) {
+			switch ( strtolower( trim( $optionKeyword ) ) ) {
+				case 'neg':
+					$options |= self::INDEX_NEG;
+					break;
+				case 'pos':
+					$options &= ~self::INDEX_NEG;
+					break;
+				case 'cs':
+					$options |= self::INDEX_CS;
+					break;
+				case 'ncs':
+					$options &= ~self::INDEX_CS;
+					break;
+				case 'desc':
+					$options |= self::INDEX_DESC;
+					break;
+				case 'asc':
+					$options &= ~self::INDEX_DESC;
+					break;
+			}
+		}
+
+		return $options;
 	}
 
 	/**
@@ -372,12 +528,13 @@ final class ListFunctions {
 
 		$item = isset( $params[0] ) ? ParserPower::expandTrimUnescape( $frame, $params[0] ) : '';
 		$sep = isset( $params[2] ) ? ParserPower::expandTrimUnescape( $frame, $params[2] ) : ',';
-		$csOption = isset( $params[3] ) ? strtolower( ParserPower::expandTrim( $frame, $params[3] ) ) : 'ncs';
+		$csOption = isset( $params[3] ) ? ParserPower::expandTrim( $frame, $params[3] ) : '';
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
+		$csOption = self::decodeCSOption( $csOption );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
-		if ( $csOption === 'cs' ) {
+		if ( $csOption ) {
 			foreach ( $values as $value ) {
 				if ( $value === $item ) {
 					return [ $value, 'noparse' => false ];
@@ -410,10 +567,10 @@ final class ListFunctions {
 
 		$item = isset( $params[0] ) ? ParserPower::expandTrimUnescape( $frame, $params[0] ) : '';
 		$sep = isset( $params[2] ) ? ParserPower::expandTrimUnescape( $frame, $params[2] ) : ',';
-		$inOptions = isset( $params[3] ) ? strtolower( ParserPower::expandTrim( $frame, $params[3] ) ) : '';
+		$inOptions = isset( $params[3] ) ? ParserPower::expandTrim( $frame, $params[3] ) : '';
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-		$options = self::indexOptionsFromParam( $inOptions );
+		$options = self::decodeIndexOptions( $inOptions );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
 		$count = ( is_array( $values ) || $values instanceof Countable ) ? count( $values ) : 0;
@@ -429,9 +586,9 @@ final class ListFunctions {
 			} else {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-							return [ strval( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 ),
-								'noparse' => false
-							];
+						return [ strval( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 ),
+							'noparse' => false
+						];
 					}
 				}
 			}
@@ -447,9 +604,9 @@ final class ListFunctions {
 			} else {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-							return [ strval( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 ),
-								'noparse' => false
-							];
+						return [ strval( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 ),
+							'noparse' => false
+						];
 					}
 				}
 			}
@@ -811,8 +968,8 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
-					$result = strtolower( $parser->replaceVariables( ParserPower::unescape( trim( $result ) ), $frame ) );
-					if ( $result !== 'remove' ) {
+					$result = $parser->replaceVariables( ParserPower::unescape( trim( $result ) ), $frame );
+					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
 					++$index;
@@ -831,8 +988,8 @@ final class ListFunctions {
 						$token,
 						$pattern
 					);
-					$result = strtolower( $parser->replaceVariables( ParserPower::unescape( $result ), $frame ) );
-					if ( $result !== 'remove' ) {
+					$result = $parser->replaceVariables( ParserPower::unescape( $result ), $frame );
+					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
 					++$index;
@@ -886,10 +1043,10 @@ final class ListFunctions {
 
 		$keepValues = isset( $params["keep"] ) ? ParserPower::expandTrim( $frame, $params["keep"] ) : '';
 		$keepSep = isset( $params["keepsep"] ) ? ParserPower::expandTrim( $frame, $params["keepsep"] ) : ',';
-		$keepCS = isset( $params["keepcs"] ) ? strtolower( ParserPower::expandTrim( $frame, $params["keepcs"] ) ) : 'no';
+		$keepCS = isset( $params["keepcs"] ) ? ParserPower::expandTrim( $frame, $params["keepcs"] ) : '';
 		$removeValues = isset( $params["remove"] ) ? ParserPower::expandTrim( $frame, $params["remove"] ) : '';
 		$removeSep = isset( $params["removesep"] ) ? ParserPower::expandTrim( $frame, $params["removesep"] ) : ',';
-		$removeCS = isset( $params["removecs"] ) ? strtolower( ParserPower::expandTrim( $frame, $params["removecs"] ) ) : 'no';
+		$removeCS = isset( $params["removecs"] ) ? ParserPower::expandTrim( $frame, $params["removecs"] ) : '';
 		$template = isset( $params["template"] ) ? ParserPower::expandTrim( $frame, $params["template"] ) : '';
 		$inSep = isset( $params["insep"] ) ? ParserPower::expandTrimUnescape( $frame, $params["insep"] ) : ',';
 		$fieldSep = isset( $params["fieldsep"] ) ? ParserPower::expandTrimUnescape( $frame, $params["fieldsep"] ) : '';
@@ -902,6 +1059,8 @@ final class ListFunctions {
 		$intro = isset( $params["intro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["intro"] ) : '';
 		$outro = isset( $params["outro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["outro"] ) : '';
 
+		$keepCS = self::decodeBool( $keepCS );
+		$removeCS = self::decodeBool( $removeCS );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
 
@@ -912,7 +1071,7 @@ final class ListFunctions {
 				$inValues,
 				$keepValues,
 				$keepSep,
-				( $keepCS === 'yes' )
+				$keepCS
 			);
 		} elseif ( $removeValues !== '' ) {
 			$outValues = self::filterListByExclusion(
@@ -920,7 +1079,7 @@ final class ListFunctions {
 				$inSep,
 				$removeValues,
 				$removeSep,
-				( $removeCS === 'yes' )
+				$removeCS
 			);
 		} elseif ( $template !== '' ) {
 			$outValues = self::filterFromListByTemplate( $parser, $frame, $inValues, $template, $fieldSep );
@@ -967,9 +1126,10 @@ final class ListFunctions {
 		$valueSep = isset( $params[1] ) ? ParserPower::expandTrimUnescape( $frame, $params[1] ) : ',';
 		$inSep = isset( $params[3] ) ? ParserPower::expandTrimUnescape( $frame, $params[3] ) : ',';
 		$outSep = isset( $params[4] ) ? ParserPower::expandTrimUnescape( $frame, $params[4] ) : ', ';
-		$csOption = isset( $params[5] ) ? strtolower( ParserPower::expandTrim( $frame, $params[5] ) ) : 'ncs';
+		$csOption = isset( $params[5] ) ? ParserPower::expandTrim( $frame, $params[5] ) : '';
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$csOption = self::decodeCSOption( $csOption );
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
@@ -977,7 +1137,7 @@ final class ListFunctions {
 			$inValues,
 			$values,
 			$valueSep,
-			( $csOption === 'cs' )
+			$csOption
 		);
 
 		if ( count( $outValues ) > 0 ) {
@@ -1007,9 +1167,10 @@ final class ListFunctions {
 		$value = isset( $params[0] ) ? ParserPower::expandTrim( $frame, $params[0] ) : '';
 		$inSep = isset( $params[2] ) ? ParserPower::expandTrimUnescape( $frame, $params[2] ) : ',';
 		$outSep = isset( $params[3] ) ? ParserPower::expandTrimUnescape( $frame, $params[3] ) : ', ';
-		$csOption = isset( $params[4] ) ? strtolower( ParserPower::expandTrim( $frame, $params[4] ) ) : 'ncs';
+		$csOption = isset( $params[4] ) ? ParserPower::expandTrim( $frame, $params[4] ) : '';
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$csOption = self::decodeCSOption( $csOption );
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
@@ -1018,7 +1179,7 @@ final class ListFunctions {
 			$inSep,
 			$value,
 			'',
-			( $csOption === 'cs' )
+			$csOption
 		);
 
 		if ( count( $outValues ) > 0 ) {
@@ -1059,12 +1220,13 @@ final class ListFunctions {
 		}
 
 		$sep = isset( $params[1] ) ? ParserPower::expandTrimUnescape( $frame, $params[1] ) : ',';
-		$csOption = isset( $params[2] ) ? strtolower( ParserPower::expandTrim( $frame, $params[2] ) ) : 'ncs';
+		$csOption = isset( $params[2] ) ? ParserPower::expandTrim( $frame, $params[2] ) : '';
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
+		$csOption = self::decodeCSOption( $csOption );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $inList ) );
-		$values = self::reduceToUniqueValues( $values, $csOption === 'cs' );
+		$values = self::reduceToUniqueValues( $values, $csOption );
 		return [ strval( count( $values ) ), 'noparse' => false ];
 	}
 
@@ -1181,7 +1343,7 @@ final class ListFunctions {
 			return [ $default, 'noparse' => false ];
 		}
 
-		$uniqueCS = isset( $params["uniquecs"] ) ? strtolower( ParserPower::expandTrim( $frame, $params["uniquecs"] ) ) : 'no';
+		$uniqueCS = isset( $params["uniquecs"] ) ? ParserPower::expandTrim( $frame, $params["uniquecs"] ) : '';
 		$template = isset( $params["template"] ) ? ParserPower::expandTrim( $frame, $params["template"] ) : '';
 		$inSep = isset( $params["insep"] ) ? ParserPower::expandTrimUnescape( $frame, $params["insep"] ) : ',';
 		$fieldSep = isset( $params["fieldsep"] ) ? ParserPower::expandTrimUnescape( $frame, $params["fieldsep"] ) : '';
@@ -1193,6 +1355,8 @@ final class ListFunctions {
 		$countToken = isset( $params["counttoken"] ) ? ParserPower::expandTrimUnescape( $frame, $params["counttoken"], true ) : '';
 		$intro = isset( $params["intro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["intro"] ) : '';
 		$outro = isset( $params["outro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["outro"] ) : '';
+
+		$uniqueCS = self::decodeBool( $uniqueCS );
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
@@ -1220,47 +1384,11 @@ final class ListFunctions {
 				$pattern
 			);
 		} else {
-			$outValues = self::reduceToUniqueValues( $inValues, $uniqueCS === 'yes' );
+			$outValues = self::reduceToUniqueValues( $inValues, $uniqueCS );
 		}
 		$outList = implode( $outSep, $outValues );
 		$count = strval( count( $outValues ) );
 		return [ self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count ), 'noparse' => false ];
-	}
-
-	/**
-	 * This function converts a string containing sort option keywords into an integer of sort option flags.
-	 *
-	 * @param string $param The string containg sort options keywords.
-	 * @param int $default ANy flags that should be set by default.
-	 * @return int The flags representing the requested options.
-	 */
-	private static function sortOptionsFromParam( $param, $default = 0 ) {
-		$optionKeywords = explode( ' ', $param );
-		$options = $default;
-		foreach ( $optionKeywords as $optionKeyword ) {
-			switch ( strtolower( trim( $optionKeyword ) ) ) {
-				case 'numeric':
-					$options |= self::SORT_NUMERIC;
-					break;
-				case 'alpha':
-					$options &= ~self::SORT_NUMERIC;
-					break;
-				case 'cs':
-					$options |= self::SORT_CS;
-					break;
-				case 'ncs':
-					$options &= ~self::SORT_CS;
-					break;
-				case 'desc':
-					$options |= self::SORT_DESC;
-					break;
-				case 'asc':
-					$options &= ~self::SORT_DESC;
-					break;
-			}
-		}
-
-		return $options;
 	}
 
 	/**
@@ -1280,61 +1408,24 @@ final class ListFunctions {
 
 		$inSep = isset( $params[1] ) ? ParserPower::expandTrimUnescape( $frame, $params[1] ) : ',';
 		$outSep = isset( $params[2] ) ? ParserPower::expandTrimUnescape( $frame, $params[2] ) : ', ';
-		$csOption = isset( $params[3] ) ? strtolower( ParserPower::expandTrim( $frame, $params[3] ) ) : 'ncs';
+		$csOption = isset( $params[3] ) ? ParserPower::expandTrim( $frame, $params[3] ) : '';
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$csOption = self::decodeCSOption( $csOption );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
-		$values = self::reduceToUniqueValues( $values, $csOption === 'cs' );
+		$values = self::reduceToUniqueValues( $values, $csOption );
 		return [ implode( $outSep, $values ), 'noparse' => false ];
-	}
-
-	/**
-	 * This function converts a string containing index option keywords into an integer of index option flags.
-	 *
-	 * @param string $param The string containg index options keywords.
-	 * @param int $default Any flags that should be set by default.
-	 * @return int The flags representing the requested options.
-	 */
-	private static function indexOptionsFromParam( $param, $default = 0 ) {
-		$optionKeywords = explode( ' ', $param );
-		$options = $default;
-		foreach ( $optionKeywords as $optionKeyword ) {
-			switch ( strtolower( trim( $optionKeyword ) ) ) {
-				case 'neg':
-					$options |= self::INDEX_NEG;
-					break;
-				case 'pos':
-					$options &= ~self::INDEX_NEG;
-					break;
-				case 'cs':
-					$options |= self::INDEX_CS;
-					break;
-				case 'ncs':
-					$options &= ~self::INDEX_CS;
-					break;
-				case 'desc':
-					$options |= self::INDEX_DESC;
-					break;
-				case 'asc':
-					$options &= ~self::INDEX_DESC;
-					break;
-			}
-		}
-
-		return $options;
 	}
 
 	/**
 	 * This function sorts an array according to the parameters supplied.
 	 *
 	 * @param array $values An array of values to sort.
-	 * @param string $optionParam The sorting options parameter value as provided by the user.
+	 * @param string $options The sorting options parameter value as provided by the user.
 	 * @return array The values in an array of strings.
 	 */
-	private static function sortList( $values, $optionParam ) {
-		$options = self::sortOptionsFromParam( $optionParam );
-
+	private static function sortList( $values, $options ) {
 		if ( $options & self::SORT_NUMERIC ) {
 			if ( $options & self::SORT_DESC ) {
 				rsort( $values, SORT_NUMERIC );
@@ -1492,9 +1583,9 @@ final class ListFunctions {
 	 * @param string $token The token in the pattern that represents where the list value should go.
 	 * @param array $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
-	 * @param string $sortOptions A string of options for the key sort as handled by #listsort.
-	 * @param string $subsort A string indicating whether to perform a value sort where sort keys are equal.
-	 * @param string $subsortOptions A string of options for the value sort as handled by #listsort.
+	 * @param int $sortOptions Options for the key sort as handled by #listsort.
+	 * @param bool $subsort Whether to perform a value sort where sort keys are equal.
+	 * @param int $subsortOptions Options for the value sort as handled by #listsort.
 	 * @return array An array where each value has been paired with a sort key in a two-element array.
 	 */
 	private static function sortListByKeys(
@@ -1526,11 +1617,7 @@ final class ListFunctions {
 			);
 		}
 
-		$comparer = new SortKeyValueComparer(
-			self::sortOptionsFromParam( $sortOptions, self::SORT_NUMERIC ),
-			$subsort === 'yes',
-			self::sortOptionsFromParam( $subsortOptions )
-		);
+		$comparer = new SortKeyValueComparer( $sortOptions, $subsort, $subsortOptions );
 
 		usort( $pairedValues, [ $comparer, 'compare' ] );
 
@@ -1564,17 +1651,20 @@ final class ListFunctions {
 		$pattern = isset( $params["pattern"] ) ? $params["pattern"] : '';
 		$outSep = isset( $params["outsep"] ) ? ParserPower::expandTrimUnescape( $frame, $params["outsep"] ) : ', ';
 		$sortOptions = isset( $params["sortoptions"] ) ? ParserPower::expandTrim( $frame, $params["sortoptions"] ) : '';
-		$subsort = isset( $params["subsort"] ) ? strtolower( ParserPower::expandTrim( $frame, $params["subsort"] ) ) : 'no';
+		$subsort = isset( $params["subsort"] ) ? ParserPower::expandTrim( $frame, $params["subsort"] ) : '';
 		$subsortOptions = isset( $params["subsortoptions"] ) ? ParserPower::expandTrim( $frame, $params["subsortoptions"] ) : '';
-		$duplicates = isset( $params["duplicates"] ) ? strtolower( ParserPower::expandTrim( $frame, $params["duplicates"] ) ) : 'keep';
+		$duplicates = isset( $params["duplicates"] ) ? ParserPower::expandTrim( $frame, $params["duplicates"] ) : '';
 		$countToken = isset( $params["counttoken"] ) ? ParserPower::expandTrimUnescape( $frame, $params["counttoken"], true ) : '';
 		$intro = isset( $params["intro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["intro"] ) : '';
 		$outro = isset( $params["outro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["outro"] ) : '';
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$subsort = self::decodeBool( $subsort );
+		$subsortOptions = self::decodeSortOptions( $subsortOptions );
+		$duplicates = self::decodeDuplicates( $duplicates );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
-		if ( $duplicates === 'strip' ) {
+		if ( $duplicates & self::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
 		}
 
@@ -1583,6 +1673,7 @@ final class ListFunctions {
 		}
 
 		if ( $template !== '' || ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) ) {
+			$sortOptions = self::decodeSortOptions( $sortOptions, self::SORT_NUMERIC );
 			$values = self::sortListByKeys(
 				$parser,
 				$frame,
@@ -1598,6 +1689,7 @@ final class ListFunctions {
 				$subsortOptions
 			);
 		} else {
+			$sortOptions = self::decodeSortOptions( $sortOptions );
 			$values = self::sortList( $values, $sortOptions );
 		}
 
@@ -1630,6 +1722,7 @@ final class ListFunctions {
 		$sortOptions = isset( $params[3] ) ? ParserPower::expandTrim( $frame, $params[3] ) : '';
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 		$values = self::sortList( $values, $sortOptions );
@@ -1649,9 +1742,9 @@ final class ListFunctions {
 	 * @param string $tokenSep The separator between tokens if used.
 	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
 	 * @param string $outSep The delimiter that should separate values in the output list.
-	 * @param string $sortMode A string indicating what sort mode to use, if any.
-	 * @param string $sortOptions A string of options for the sort as handled by #listsort.
-	 * @param string $duplicates When to strip duplicate values, if at all.
+	 * @param int $sortMode What sort mode to use, if any.
+	 * @param int $sortOptions Options for the sort as handled by #listsort.
+	 * @param int $duplicates When to strip duplicate values, if at all.
 	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
 	 * @param string $intro Content to include before outputted list values, only if at least one item is output.
 	 * @param string $outro Content to include after outputted list values, only if at least one item is output.
@@ -1685,13 +1778,11 @@ final class ListFunctions {
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
-		if ( $duplicates === 'prestrip' || $duplicates === 'pre/poststrip' ) {
+		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
 		}
 
-		if ( ( $indexToken !== '' && $sortMode === 'sort' )
-			|| $sortMode === 'presort' || $sortMode === 'pre/postsort'
-		) {
+		if ( ( $indexToken !== '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_PRE ) {
 			$inValues = self::sortList( $inValues, $sortOptions );
 		}
 
@@ -1739,13 +1830,11 @@ final class ListFunctions {
 			}
 		}
 
-		if ( $duplicates === 'strip' || $duplicates === 'poststrip' || $duplicates === 'pre/postsort' ) {
+		if ( $duplicates & self::DUPLICATES_POSTSTRIP ) {
 			$outValues = array_unique( $outValues );
 		}
 
-		if ( ( $indexToken === '' && $sortMode === 'sort' )
-			|| $sortMode === 'postsort' || $sortMode === 'pre/postsort'
-		) {
+		if ( ( $indexToken === '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_POST ) {
 			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
@@ -1770,9 +1859,9 @@ final class ListFunctions {
 	 * @param string $inSep The delimiter seoarating values in the input list.
 	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
 	 * @param string $outSep The delimiter that should separate values in the output list.
-	 * @param string $sortMode A string indicating what sort mode to use, if any.
-	 * @param string $sortOptions A string of options for the sort as handled by #listsort.
-	 * @param string $duplicates When to strip duplicate values, if at all.
+	 * @param int $sortMode What sort mode to use, if any.
+	 * @param int $sortOptions Options for the sort as handled by #listsort.
+	 * @param int $duplicates When to strip duplicate values, if at all.
 	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
 	 * @param string $intro Content to include before outputted list values, only if at least one item is output.
 	 * @param string $outro Content to include after outputted list values, only if at least one item is output.
@@ -1802,11 +1891,11 @@ final class ListFunctions {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
-		if ( $duplicates === 'prestrip' || $duplicates === 'pre/postsort' ) {
+		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
 		}
 
-		if ( $sortMode === 'presort' || $sortMode === 'pre/postsort' ) {
+		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = self::sortList( $inValues, $sortOptions );
 		}
 
@@ -1815,11 +1904,11 @@ final class ListFunctions {
 			$outValues[] = self::applyTemplate( $parser, $frame, $inValue, $template, $fieldSep );
 		}
 
-		if ( $sortMode === 'sort' || $sortMode === 'postsort' || $sortMode === 'pre/postsort' ) {
+		if ( $sortMode === 'sort' & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
-		if ( $duplicates === 'strip' || $duplicates === 'poststrip' || $duplicates === 'pre/postsort' ) {
+		if ( $duplicates & self::DUPLICATES_POSTSTRIP ) {
 			$outValues = array_unique( $outValues );
 		}
 
@@ -1859,12 +1948,16 @@ final class ListFunctions {
 		$tokenSep = isset( $params["tokensep"] ) ? ParserPower::expandTrimUnescape( $frame, $params["tokensep"] ) : ',';
 		$pattern = isset( $params["pattern"] ) ? $params["pattern"] : '';
 		$outSep = isset( $params["outsep"] ) ? ParserPower::expandTrimUnescape( $frame, $params["outsep"] ) : ', ';
-		$sortMode = isset( $params["sortmode"] ) ? strtolower( ParserPower::expandTrim( $frame, $params["sortmode"] ) ) : 'nosort';
+		$sortMode = isset( $params["sortmode"] ) ? ParserPower::expandTrim( $frame, $params["sortmode"] ) : '';
 		$sortOptions = isset( $params["sortoptions"] ) ? ParserPower::expandTrim( $frame, $params["sortoptions"] ) : '';
-		$duplicates = isset( $params["duplicates"] ) ? strtolower( ParserPower::expandTrim( $frame, $params["duplicates"] ) ) : 'keep';
+		$duplicates = isset( $params["duplicates"] ) ? ParserPower::expandTrim( $frame, $params["duplicates"] ) : '';
 		$countToken = isset( $params["counttoken"] ) ? ParserPower::expandTrimUnescape( $frame, $params["counttoken"], true ) : '';
 		$intro = isset( $params["intro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["intro"] ) : '';
 		$outro = isset( $params["outro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["outro"] ) : '';
+
+		$sortMode = self::decodeSortMode( $sortMode );
+		$sortOptions = self::decodeSortOptions( $sortOptions );
+		$duplicates = self::decodeDuplicates( $duplicates );
 
 		if ( $template !== '' ) {
 			return self::applyTemplateToList(
@@ -1925,8 +2018,11 @@ final class ListFunctions {
 		$token = isset( $params[2] ) ? ParserPower::expandTrimUnescape( $frame, $params[2], true ) : 'x';
 		$pattern = isset( $params[3] ) ? $params[3] : 'x';
 		$outSep = isset( $params[4] ) ? ParserPower::expandTrimUnescape( $frame, $params[4] ) : ', ';
-		$sortMode = isset( $params[5] ) ? strtolower( ParserPower::expandTrim( $frame, $params[5] ) ) : 'nosort';
-		$sortOptions = isset( $params[6] ) ? trim( $frame->expand( $params[6] ) ) : '';
+		$sortMode = isset( $params[5] ) ? ParserPower::expandTrim( $frame, $params[5] ) : '';
+		$sortOptions = isset( $params[6] ) ? ParserPower::expandTrim( $frame, $params[6] ?? '' ) : '';
+
+		$sortMode = self::decodeSortMode( $sortMode );
+		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		return self::applyPatternToList(
 			$parser,
@@ -1967,8 +2063,11 @@ final class ListFunctions {
 		$template = isset( $params[1] ) ? ParserPower::expandTrim( $frame, $params[1] ) : '';
 		$inSep = isset( $params[2] ) ? ParserPower::expandTrimUnescape( $frame, $params[2] ) : ',';
 		$outSep = isset( $params[3] ) ? ParserPower::expandTrimUnescape( $frame, $params[3] ) : ', ';
-		$sortMode = isset( $params[4] ) ? strtolower( ParserPower::expandTrim( $frame, $params[4] ) ) : 'nosort';
+		$sortMode = isset( $params[4] ) ? ParserPower::expandTrim( $frame, $params[4] ) : '';
 		$sortOptions = isset( $params[5] ) ? ParserPower::expandTrim( $frame, $params[5] ) : '';
+
+		$sortMode = self::decodeSortMode( $sortMode );
+		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		return self::applyTemplateToList(
 			$parser,
@@ -2133,8 +2232,8 @@ final class ListFunctions {
 	 * @param string $matchPattern The pattern that determines if items match.
 	 * @param string $mergePattern The pattern that list values are inserted into at that token.
 	 * @param string $outSep The delimiter that should separate values in the output list.
-	 * @param string $sortMode A string indicating what sort mode to use, if any.
-	 * @param string $sortOptions A string of options for the sort as handled by #listsort.
+	 * @param int $sortMode What sort mode to use, if any.
+	 * @param int $sortOptions Options for the sort as handled by #listsort.
 	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
 	 * @param string $intro Content to include before outputted list values, if at least one item is output.
 	 * @param string $outro Content to include after outputted list values, if at least one item is output.
@@ -2168,7 +2267,7 @@ final class ListFunctions {
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
-		if ( $sortMode === 'presort' || $sortMode === 'pre/postsort' ) {
+		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = self::sortList( $inValues, $sortOptions );
 		}
 
@@ -2193,7 +2292,7 @@ final class ListFunctions {
 			3
 		);
 
-		if ( $sortMode === 'sort' || $sortMode === 'postsort' || $sortMode === 'pre/postsort' ) {
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
@@ -2217,8 +2316,8 @@ final class ListFunctions {
 	 * @param string $inSep The delimiter seoarating values in the input list.
 	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
 	 * @param string $outSep The delimiter that should separate values in the output list.
-	 * @param string $sortMode A string indicating what sort mode to use, if any.
-	 * @param string $sortOptions A string of options for the sort as handled by #listsort.
+	 * @param int $sortMode What sort mode to use, if any.
+	 * @param int $sortOptions Options for the sort as handled by #listsort.
 	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
 	 * @param string $intro Content to include before outputted list values, if at least one item is output.
 	 * @param string $outro Content to include after outputted list values, if at least one item is output.
@@ -2249,7 +2348,7 @@ final class ListFunctions {
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
-		if ( $sortMode === 'presort' || $sortMode === 'pre/postsort' ) {
+		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = self::sortList( $inValues, $sortOptions );
 		}
 
@@ -2304,11 +2403,14 @@ final class ListFunctions {
 		$matchPattern = isset( $params["matchpattern"] ) ? $params["matchpattern"] : '';
 		$mergePattern = isset( $params["mergepattern"] ) ? $params["mergepattern"] : '';
 		$outSep = isset( $params["outsep"] ) ? ParserPower::expandTrimUnescape( $frame, $params["outsep"] ) : ', ';
-		$sortMode = isset( $params["sortmode"] ) ? strtolower( ParserPower::expandTrim( $frame, $params["sortmode"] ) ) : 'nosort';
+		$sortMode = isset( $params["sortmode"] ) ? ParserPower::expandTrim( $frame, $params["sortmode"] ) : '';
 		$sortOptions = isset( $params["sortoptions"] ) ? ParserPower::expandTrim( $frame, $params["sortoptions"] ) : '';
 		$countToken = isset( $params["counttoken"] ) ? ParserPower::expandTrimUnescape( $frame, $params["counttoken"], true ) : '';
 		$intro = isset( $params["intro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["intro"] ) : '';
 		$outro = isset( $params["outro"] ) ? ParserPower::expandTrimUnescape( $frame, $params["outro"] ) : '';
+
+		$sortMode = self::decodeSortMode( $sortMode );
+		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		if ( $matchTemplate !== '' && $mergeTemplate !== '' ) {
 			return self::mergeListByTemplate(
