@@ -25,6 +25,41 @@ class ParserPower {
 	public const UNESCAPE = 2;
 
 	/**
+	 * Sequences to escape, with the replacement character (after a basckslash).
+	 */
+	private const ESCAPE_CHARS = [
+		"\n" => 'n',
+		' ' => '_',
+		'{' => '{',
+		'}' => '}',
+		'[' => '(',
+		']' => ')',
+		'<' => 'l',
+		'>' => 'g',
+		'=' => 'e',
+		'|' => '!',
+	];
+
+	/**
+	 * Characters to unescape (when used after a backslash), with the replacement sequence.
+	 *
+	 * Mostly equivalent to array_flip( ParserPower::ESCAPE_CHARS ).
+	 */
+	private const UNESCAPE_SEQS = [
+		'n' => "\n",
+		'_' => ' ',
+		'{' => '{',
+		'}' => '}',
+		'(' => '[',
+		')' => ']',
+		'l' => '<',
+		'g' => '>',
+		'e' => '=',
+		'!' => '|',
+		'0' => '',
+	];
+
+	/**
 	 * This function converts the parameters to the parser function into an array form with all parameter values
 	 * trimmed, as per longstanding MediaWiki conventions.
 	 *
@@ -89,61 +124,36 @@ class ParserPower {
 	 */
 	public static function unescape( $input ) {
 		$output = '';
+		$offset = 0;
 		$length = strlen( $input );
+		$bsFound = false;
 		for ( $i = 0; $i < $length; ++$i ) {
-			$char = substr( $input, $i, 1 );
-
-			if ( $char !== "\\" ) {
-				$output .= $char;
-				continue;
+			$char = $input[$i];
+			if ( $bsFound ) {
+				if ( $char === '\\' ) {
+					// Double backslash
+					$output .= substr( $input, $offset, $i - $offset );
+					$offset = $i + 1;
+				} elseif ( isset( self::UNESCAPE_SEQS[$char] ) ) {
+					// Escape sequence
+					$output .= substr( $input, $offset, $i - $offset - 1 );
+					$output .= self::UNESCAPE_SEQS[$char];
+					$offset = $i + 1;
+				}
+				$bsFound = false;
+			} elseif ( $char === '\\' ) {
+				// Backslash
+				// The next char will tell us what to do.
+				$bsFound = true;
 			}
-
-			$sequence = substr( $input, $i, 2 );
-			switch ( $sequence ) {
-				case "\\n":
-					$output .= "\n";
-					break;
-				case "\\_":
-					$output .= " ";
-					break;
-				case "\\\\":
-					$output .= "\\";
-					break;
-				case "\\{":
-					$output .= "{";
-					break;
-				case "\\}":
-					$output .= "}";
-					break;
-				case "\\(":
-					$output .= "[";
-					break;
-				case "\\)":
-					$output .= "]";
-					break;
-				case "\\l":
-					$output .= "<";
-					break;
-				case "\\g":
-					$output .= ">";
-					break;
-				case "\\e":
-					$output .= "=";
-					break;
-				case "\\!":
-					$output .= "|";
-					break;
-				case "\\0":
-					$output .= "";
-					break;
-				default:
-					$output .= $sequence;
-					break;
-			}
-			$i += 1;
 		}
 
-		return $output;
+		if ( $offset > 0 ) {
+			$output .= substr( $input, $offset );
+			return $output;
+		} else {
+			return $input;
+		}
 	}
 
 	/**
@@ -154,103 +164,45 @@ class ParserPower {
 	 */
 	public static function escape( $input ) {
 		$output = '';
+		$offset = 0;
 		$length = strlen( $input );
+		$bsFound = false;
 		for ( $i = 0; $i < $length; ++$i ) {
-			$char = substr( $input, $i, 1 );
-			switch ( $char ) {
-				case "\\":
-					$sequence = substr( $input, $i, 2 );
-					switch ( $sequence ) {
-						case "\\n":
-							$output .= "\\\\n";
-							$i += 1;
-							break;
-						case "\\_":
-							$output .= "\\\\_";
-							$i += 1;
-							break;
-						case "\\\\":
-							$output .= "\\\\\\\\";
-							$i += 1;
-							break;
-						case "\\{":
-							$output .= "\\\\{";
-							$i += 1;
-							break;
-						case "\\}":
-							$output .= "\\\\}";
-							$i += 1;
-							break;
-						case "\\(":
-							$output .= "\\\\(";
-							$i += 1;
-							break;
-						case "\\)":
-							$output .= "\\\\)";
-							$i += 1;
-							break;
-						case "\\l":
-							$output .= "\\\\l";
-							$i += 1;
-							break;
-						case "\\g":
-							$output .= "\\\\g";
-							$i += 1;
-							break;
-						case "\\e":
-							$output .= "\\\\e";
-							$i += 1;
-							break;
-						case "\\!":
-							$output .= "\\\\!";
-							$i += 1;
-							break;
-						case "\\0":
-							$output .= "\\\\0";
-							$i += 1;
-							break;
-						default:
-							$output .= "\\\\";
-							break;
-					}
-					break;
-				case "\n":
-					$output .= "\\n";
-					break;
-				case " ":
-					$output .= "\\_";
-					break;
-				case "{":
-					$output .= "\\{";
-					break;
-				case "}":
-					$output .= "\\}";
-					break;
-				case "[":
-					$output .= "\\(";
-					break;
-				case "]":
-					$output .= "\\)";
-					break;
-				case "<":
-					$output .= "\\l";
-					break;
-				case ">":
-					$output .= "\\g";
-					break;
-				case "=":
-					$output .= "\\e";
-					break;
-				case "|":
-					$output .= "\\!";
-					break;
-				default:
+			$char = $input[$i];
+			if ( $bsFound ) {
+				if ( $char === '\\' ) {
+					// Double backslash
+					$output .= '\\\\';
+					$offset = $i + 1;
+				} elseif ( isset( self::UNESCAPE_SEQS[$char] ) ) {
+					// Escape sequence
 					$output .= $char;
-					break;
+					$offset = $i + 1;
+				}
+				$bsFound = false;
+			} else {
+				if ( $char === '\\' ) {
+					// Always escape a backslash, whatever the next char (if any),
+					// because we do not want wikitext concatenations to generate spurious escape sequences.
+					$output .= substr( $input, $offset, $i - $offset );
+					$output .= '\\\\';
+					$offset = $i + 1;
+					$bsFound = true;
+				} elseif ( isset( self::ESCAPE_CHARS[$char] ) ) {
+					// Character replaceable with an escape sequence
+					$output .= substr( $input, $offset, $i - $offset );
+					$output .= '\\' . self::ESCAPE_CHARS[$char];
+					$offset = $i + 1;
+				}
 			}
 		}
 
-		return $output;
+		if ( $offset > 0 ) {
+			$output .= substr( $input, $offset );
+			return $output;
+		} else {
+			return $input;
+		}
 	}
 
 	/**
