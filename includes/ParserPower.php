@@ -16,6 +16,15 @@ use PPFrame;
 
 class ParserPower {
 	/**
+	 * Flag for not expanding variables.
+	 */
+	public const NO_VARS = 1;
+	/**
+	 * Flag for unescaping after expanding.
+	 */
+	public const UNESCAPE = 2;
+
+	/**
 	 * This function converts the parameters to the parser function into an array form with all parameter values
 	 * trimmed, as per longstanding MediaWiki conventions.
 	 *
@@ -52,30 +61,23 @@ class ParserPower {
 	 *
 	 * @param PPFrame $frame
 	 * @param PPNode|string $input
-	 * @param bool $isVar
+	 * @param int $flags
 	 * @return string
 	 */
-	public static function expandTrim( PPFrame $frame, $input, $isVar = false ) {
-		if ( $isVar ) {
-			$flags = PPFrame::NO_ARGS | PPFrame::NO_TEMPLATES;
+	public static function expand( PPFrame $frame, $input, $flags = 0 ) {
+		if ( $flags & self::NO_VARS ) {
+			$expanded = $frame->expand( $input, PPFrame::NO_ARGS | PPFrame::NO_TEMPLATES );
 		} else {
-			$flags = 0;
+			$expanded = $frame->expand( $input );
 		}
 
-		return trim( $frame->expand( $input, $flags ) );
-	}
+		$expanded = trim( $expanded );
 
-	/**
-	 * Expands, trims, and unescapes a PPNode.
-	 *
-	 * @param PPFrame $frame
-	 * @param PPNode|string $input
-	 * @param bool $isVar
-	 * @return string
-	 */
-	public static function expandTrimUnescape( PPFrame $frame, $input, $isVar = false ) {
-		$expanded = self::expandTrim( $frame, $param, $isVar );
-		return self::unescape( $expanded );
+		if ( $flags & self::UNESCAPE ) {
+			$expanded = self::unescape( $expanded );
+		}
+
+		return $expanded;
 	}
 
 	/**
@@ -292,7 +294,7 @@ class ParserPower {
 			$outValue = $inValue;
 		}
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return self::expandTrimUnescape( $frame, $outValue );
+		return self::expand( $frame, $outValue, self::UNESCAPE );
 	}
 
 	/**
@@ -362,6 +364,6 @@ class ParserPower {
 			$outValue = $inValue;
 		}
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return self::expandTrimUnescape( $frame, $outValue );
+		return self::expand( $frame, $outValue, self::UNESCAPE );
 	}
 }
