@@ -1,0 +1,107 @@
+!! options
+version=2
+!! end
+
+# Force the test runner to ensure the extension is loaded
+!! functionhooks
+trim
+!! endfunctionhooks
+
+!! article
+Redirect
+!! text
+#REDIRECT [[Target]]
+!! endarticle
+
+!! article
+Target
+!! text
+1
+!! endarticle
+
+# NOTE: we use the following strings (concatenated) as parameter values below for testing some unescaping behaviors:
+#  - wikitext is not unescaped:          "\0"        -> ""
+#  - wikitext is trimmed then unescaped: "\_"        -> " "
+#  - unescaped wikitext is evaluated:    "\{\{\!}\}" -> "|"
+#  - wikitext is unescaped only once:    "\\0"       -> "\0"
+
+!! test
+<esc>
+!! wikitext
+<esc>\
+{}[]<>=|</esc>
+<esc>\a\{\</esc>
+!! html/php
+<p>\\\n\{\}\(\)\l\g\e\!
+\\a\\{\\
+</p>
+!! end
+
+!! test
+{{#trim}}
+!! wikitext
+"{{#trim: 1\0 }}"
+!! html/php
+<p>"1\0"
+</p>
+!! end
+
+!! test
+{{#uesc}}
+!! wikitext
+"{{#uesc: \_\{\{!\}\}\0}}"
+"{{#uesc:\}}"
+!! html/php
+<p>" |"
+"\"
+</p>
+!! end
+
+!! test
+{{#uescnowiki}}
+!! wikitext
+"{{#uescnowiki: \_\{\{!\}\}\\0}}"
+!! html/php
+<p>" {{!}}\0"
+</p>
+!! end
+
+!! test
+{{#trimuesc}}
+!! wikitext
+"{{#trimuesc: \_\{\{!\}\}\\0}}"
+!! html/php
+<p>"|\0"
+</p>
+!! end
+
+!! test
+<linkpage>
+!! wikitext
+<linkpage>with [[some|X]] [[text#around|X]] and [external.gg url]</linkpage>
+!! html/php
+<p>with some text#around and [external.gg url]
+</p>
+!! end
+
+!! test
+<linktext>
+!! wikitext
+<linktext>with [[X|some]] [[X#Y|text]] and [external.gg url]</linktext>
+!! html/php
+<p>with some text and [external.gg url]
+</p>
+!! end
+
+!! test
+{{#follow}}
+!! wikitext
+{{#follow: Unknown }} {{#follow: Unknown#Section }}
+{{#follow: Target }} {{#follow: Target#Section }}
+{{#follow: Redirect }} {{#follow: Redirect#Section }}
+!! html/php
+<p>Unknown Unknown#Section
+Target Target#Section
+Target Target
+</p>
+!! end
