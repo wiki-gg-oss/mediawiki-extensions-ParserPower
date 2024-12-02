@@ -67,7 +67,7 @@ class ParserPower {
 	 * @param array $unexpandedParams The parameters and values together, not yet exploded or trimmed.
 	 * @return array The parameter values associated with the appropriate named or numbered keys
 	 */
-	public static function arrangeParams( $frame, $unexpandedParams ) {
+	public static function arrangeParams( PPFrame $frame, array $unexpandedParams ) {
 		$params = [];
 		foreach ( $unexpandedParams as $unexpandedParam ) {
 			$param = explode( '=', $frame->expand( $unexpandedParam ), 2 );
@@ -219,7 +219,7 @@ class ParserPower {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPattern( $parser, $frame, $inValue, $token, $pattern ) {
+	public static function applyPattern( Parser $parser, PPFrame $frame, $inValue, $token, $pattern ) {
 		return self::applyPatternWithIndex( $parser, $frame, $inValue, '', 0, $token, $pattern );
 	}
 
@@ -236,7 +236,15 @@ class ParserPower {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPatternWithIndex( $parser, $frame, $inValue, $indexToken, $index, $token, $pattern ) {
+	public static function applyPatternWithIndex(
+		Parser $parser,
+		PPFrame $frame,
+		$inValue,
+		$indexToken,
+		$index,
+		$token,
+		$pattern
+	) {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
 			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
@@ -265,7 +273,15 @@ class ParserPower {
 	 * @param string $pattern Pattern containing tokens to be replaced by field values.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyFieldPattern( $parser, $frame, $inValue, $fieldSep, $tokens, $tokenCount, $pattern ) {
+	public static function applyFieldPattern(
+		Parser $parser,
+		PPFrame $frame,
+		$inValue,
+		$fieldSep,
+		array $tokens,
+		$tokenCount,
+		$pattern
+	) {
 		return self::applyFieldPatternWithIndex(
 			$parser,
 			$frame,
@@ -295,13 +311,13 @@ class ParserPower {
 	 * @return string The result of the token replacement within the pattern.
 	 */
 	public static function applyFieldPatternWithIndex(
-		$parser,
-		$frame,
+		Parser $parser,
+		PPFrame $frame,
 		$inValue,
 		$fieldSep,
 		$indexToken,
 		$index,
-		$tokens,
+		array $tokens,
 		$tokenCount,
 		$pattern
 	) {

@@ -48,7 +48,7 @@ class SortKeyValueComparer {
 	 * @param array $pair2 A sort-key value pair to compare to $pair1
 	 * @return int Number > 0 if str1 is less than str2; Number < 0 if str1 is greater than str2; 0 if they are equal.
 	 */
-	public function compare( $pair1, $pair2 ) {
+	public function compare( array $pair1, array $pair2 ) {
 		$result = call_user_func( $this->mSortKeyCompare, $pair1[0], $pair2[0] );
 
 		if ( $result === 0 ) {
