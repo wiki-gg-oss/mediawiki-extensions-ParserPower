@@ -902,13 +902,12 @@ final class ListFunctions {
 	 * This function performs the filtering operation for the listfiler function when done by value exclusion.
 	 *
 	 * @param array $inValues Array with the input values.
-	 * @param mixed $inSep
 	 * @param string $values The list of values to exclude, not yet exploded.
 	 * @param string $valueSep The delimiter separating the values to exclude.
 	 * @param bool $valueCS true to match in a case-sensitive manner, false to match in a case-insensitive manner
 	 * @return array The function output along with relevant parser options.
 	 */
-	private static function filterListByExclusion( array $inValues, $inSep, $values, $valueSep, $valueCS ) {
+	private static function filterListByExclusion( array $inValues, $values, $valueSep, $valueCS ) {
 		if ( $valueSep !== '' ) {
 			$excludeValues = self::arrayTrimUnescape( self::explodeList( $valueSep, $values ) );
 		} else {
@@ -1073,20 +1072,9 @@ final class ListFunctions {
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
 		if ( $keepValues !== '' ) {
-			$outValues = self::filterListByInclusion(
-				$inValues,
-				$keepValues,
-				$keepSep,
-				$keepCS
-			);
+			$outValues = self::filterListByInclusion( $inValues, $keepValues, $keepSep, $keepCS );
 		} elseif ( $removeValues !== '' ) {
-			$outValues = self::filterListByExclusion(
-				$inValues,
-				$inSep,
-				$removeValues,
-				$removeSep,
-				$removeCS
-			);
+			$outValues = self::filterListByExclusion( $inValues, $removeValues, $removeSep, $removeCS );
 		} elseif ( $template !== '' ) {
 			$outValues = self::filterFromListByTemplate( $parser, $frame, $inValues, $template, $fieldSep );
 		} else {
@@ -1139,12 +1127,7 @@ final class ListFunctions {
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
-		$outValues = self::filterListByInclusion(
-			$inValues,
-			$values,
-			$valueSep,
-			$csOption
-		);
+		$outValues = self::filterListByInclusion( $inValues, $values, $valueSep, $csOption );
 
 		if ( count( $outValues ) > 0 ) {
 			return [ implode( $outSep, $outValues ), 'noparse' => false ];
@@ -1180,13 +1163,7 @@ final class ListFunctions {
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
-		$outValues = self::filterListByExclusion(
-			$inValues,
-			$inSep,
-			$value,
-			'',
-			$csOption
-		);
+		$outValues = self::filterListByExclusion( $inValues, $value, '', $csOption );
 
 		if ( count( $outValues ) > 0 ) {
 			return [ implode( $outSep, $outValues ), 'noparse' => false ];
@@ -1377,13 +1354,7 @@ final class ListFunctions {
 		}
 
 		if ( $template !== '' ) {
-			$outValues = self::reduceToUniqueValuesByKeyTemplate(
-				$parser,
-				$frame,
-				$inValues,
-				$template,
-				$fieldSep
-			);
+			$outValues = self::reduceToUniqueValuesByKeyTemplate( $parser, $frame, $inValues, $template, $fieldSep );
 		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
 			$outValues = self::reduceToUniqueValuesByKeyPattern(
 				$parser,
@@ -1825,15 +1796,7 @@ final class ListFunctions {
 		} else {
 			foreach ( $inValues as $inValue ) {
 				if ( trim( $inValue ) !== '' ) {
-					$outValue = self::applyPatternWithIndex(
-						$parser,
-						$frame,
-						$inValue,
-						$indexToken,
-						$index,
-						$token,
-						$pattern
-					);
+					$outValue = self::applyPatternWithIndex( $parser, $frame, $inValue, $indexToken, $index, $token, $pattern );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 						++$index;
@@ -2202,39 +2165,37 @@ final class ListFunctions {
 		$valueIndex1,
 		$valueIndex2
 	) {
-		$preValues = $inValues;
-		$debug1 = $debug2 = $debug3 = 0;
-
 		do {
-			$postValues = [];
-			$preCount = count( $preValues );
+			$outValues = [];
+			$preCount = count( $inValues );
 
-			while ( count( $preValues ) > 0 ) {
-				$value1 = $matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = array_shift( $preValues );
-				$otherValues = $preValues;
-				$preValues = [];
+			while ( count( $inValues ) > 0 ) {
+				$value1 = $matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = array_shift( $inValues );
+				$otherValues = $inValues;
+				$inValues = [];
 
 				while ( count( $otherValues ) > 0 ) {
 					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = array_shift( $otherValues );
 					$doMerge = call_user_func_array( $applyFunction, $matchParams );
-					$doMerge = strtolower( $parser->replaceVariables( ParserPower::unescape( trim( $doMerge ) ), $frame ) );
+					$doMerge = $parser->replaceVariables( ParserPower::unescape( trim( $doMerge ) ), $frame );
+					$doMerge = self::decodeBool( $doMerge );
 
-					if ( $doMerge === 'yes' ) {
+					if ( $doMerge ) {
 						$value1 = call_user_func_array( $applyFunction, $mergeParams );
 						$value1 = $parser->replaceVariables( ParserPower::unescape( trim( $value1 ) ), $frame );
 						$matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $value1;
 					} else {
-						$preValues[] = $value2;
+						$inValues[] = $value2;
 					}
 				}
 
-				$postValues[] = $value1;
+				$outValues[] = $value1;
 			}
-			$postCount = count( $postValues );
-			$preValues = $postValues;
+			$postCount = count( $outValues );
+			$inValues = $outValues;
 		} while ( $postCount < $preCount && $postCount > 1 );
 
-		return $postValues;
+		return $outValues;
 	}
 
 	/**

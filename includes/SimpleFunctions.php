@@ -462,8 +462,7 @@ final class SimpleFunctions {
 			if ( $bracketed_value instanceof PPNode_Hash_Array ) {
 				$bracketed_value = $bracketed_value->value;
 			}
-			$results_array[] = $parser->replaceVariables(
-				implode( '', $bracketed_value ), $frame );
+			$results_array[] = $parser->replaceVariables( implode( '', $bracketed_value ), $frame );
 		}
 		return implode( $new_delimiter, $results_array );
 	}
