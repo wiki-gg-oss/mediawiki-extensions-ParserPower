@@ -178,6 +178,10 @@ class ParserPower {
 					// Escape sequence
 					$output .= $char;
 					$offset = $i + 1;
+				} elseif ( isset( self::ESCAPE_CHARS[$char] ) ) {
+					// Backslash followed by a character replaceable with an escape sequence
+					$output .= '\\' . self::ESCAPE_CHARS[$char];
+					$offset = $i + 1;
 				}
 				$bsFound = false;
 			} else {
@@ -226,7 +230,7 @@ class ParserPower {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters.
-	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
+	 * @param string $indexToken The token to replace with the index, or null/empty value to skip index replacement.
 	 * @param int $index The numeric index of this value.
 	 * @param string $token The token to replace.
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
@@ -235,7 +239,7 @@ class ParserPower {
 	public static function applyPatternWithIndex( $parser, $frame, $inValue, $indexToken, $index, $token, $pattern ) {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
-			$outValue = self::expandTrim( $frame, $pattern, true );
+			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
 			if ( $indexToken !== null && $indexToken !== '' ) {
 				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
 			}
@@ -303,7 +307,7 @@ class ParserPower {
 	) {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
-			$outValue = self::expandTrim( $frame, $pattern, true );
+			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
 			if ( $indexToken !== null && $indexToken !== '' ) {
 				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
 			}
