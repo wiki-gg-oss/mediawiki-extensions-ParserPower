@@ -175,13 +175,15 @@ Target
 {{#ueswitch}}
 !! wikitext
 "{{#ueswitch:}}"
-"{{#ueswitch:\0|\\0=|| \_{\{!}\}\\0}}"
-"{{#ueswitch:\0|=y||}}"
+"{{#ueswitch:\0|=y|}}"
+"{{#ueswitch:\0|\\0=|#default=|| \_{\{!}\}\\0}}"
+"{{#ueswitch:1|#default=|#default|= \_{\{!}\}\\0|=}}"
 "{{#ueswitch: \_{\{!}\}\\0|=|||=|| \_{\{!}\}\\0||= \_{\{!}\}\\0|}}"
 !! html
 <p>""
-" |\0"
 "y"
+" |\0"
+" |\0"
 " |\0"
 </p>
 !! end
