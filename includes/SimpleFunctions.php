@@ -127,13 +127,10 @@ final class SimpleFunctions {
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text ) {
-			return [ preg_replace_callback( '/\[\[(.*?)\]\]/', 'self::linkpageReplace', $text ),
-				'noparse' => false,
-				'markerType' => 'none'
-			];
-		} else {
-			return [ '', 'markerType' => 'none' ];
+			$text = preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linkpageReplace' ], $text );
 		}
+
+		return [ $text, 'markerType' => 'none' ];
 	}
 
 	/**
@@ -162,14 +159,11 @@ final class SimpleFunctions {
 	public static function linktextRender( $text, $attribs, $parser, PPFrame $frame ) {
 		$text = $parser->replaceVariables( $text, $frame );
 
-		if ( $text ) {
-			return [ preg_replace_callback( '/\[\[(.*?)\]\]/', 'self::linktextReplace', $text ),
-				'noparse' => false,
-				'markerType' => 'none'
-			];
-		} else {
-			return [ '', 'markerType' => 'none' ];
+		if ( $text !== '' ) {
+			$text = preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linktextReplace' ], $text );
 		}
+
+		return [ $text, 'markerType' => 'none' ];
 	}
 
 	/**
