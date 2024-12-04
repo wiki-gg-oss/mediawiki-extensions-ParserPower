@@ -294,11 +294,11 @@ final class ListFunctions {
 	 * This function gets the specified element from the array after filtering out any empty values before it so that
 	 * the empty values are skipped in index counting. The returned element is unescaped.
 	 *
-	 * @param array $inIndex The 1-based index of the array element to get, or a negative value to start from the end.
-	 * @param array $inValues The array to get the element from.
+	 * @param int $inIndex The 1-based index of the array element to get, or a negative value to start from the end.
+	 * @param array|null $inValues The array to get the element from.
 	 * @return string The array element, trimmed and with character escapes replaced, or empty string if not found.
 	 */
-	private static function arrayElementTrimUnescape( array $inIndex, array $inValues ) {
+	private static function arrayElementTrimUnescape( $inIndex, $inValues ) {
 		if ( $inIndex > 0 ) {
 			$curOutIndex = 1;
 			$count = ( is_array( $inValues ) || $inValues instanceof Countable ) ? count( $inValues ) : 0;
@@ -1223,7 +1223,7 @@ final class ListFunctions {
 	 * @param string $fieldSep Separator between fields, if any.
 	 * @param string $indexToken Replace the current 1-based index of the element. Null/empty to skip.
 	 * @param string $token The token in the pattern that represents where the list value should go.
-	 * @param array $tokens Or if there are mulitple fields, the tokens representing where they go.
+	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern of text containing token that list values are inserted into at that token.
 	 * @return array An array with only values that generated unique keys via the given pattern.
 	 */
@@ -1234,7 +1234,7 @@ final class ListFunctions {
 		$fieldSep,
 		$indexToken,
 		$token,
-		array $tokens,
+		$tokens,
 		$pattern
 	) {
 		$previousKeys = [];
@@ -1448,7 +1448,7 @@ final class ListFunctions {
 	 * @param string $fieldSep Separator between fields, if any.
 	 * @param int $indexToken
 	 * @param string $token The token in the pattern that represents where the list value should go.
-	 * @param array $tokens Or if there are mulitple fields, the tokens representing where they go.
+	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern of text containing token that list values are inserted into at that token.
 	 * @return array An array where each value has been paired with a sort key in a two-element array.
 	 */
@@ -1459,7 +1459,7 @@ final class ListFunctions {
 		$fieldSep,
 		$indexToken,
 		$token,
-		array $tokens,
+		$tokens,
 		$pattern
 	) {
 		$pairedValues = [];
@@ -1564,7 +1564,7 @@ final class ListFunctions {
 	 * @param string $fieldSep The delimiter separating values in the input list.
 	 * @param string $indexToken Replace the current 1-based index of the element. Null/empty to skip.
 	 * @param string $token The token in the pattern that represents where the list value should go.
-	 * @param array $tokens Or if there are mulitple fields, the tokens representing where they go.
+	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
 	 * @param int $sortOptions Options for the key sort as handled by #listsort.
 	 * @param bool $subsort Whether to perform a value sort where sort keys are equal.
@@ -1579,7 +1579,7 @@ final class ListFunctions {
 		$fieldSep,
 		$indexToken,
 		$token,
-		array $tokens,
+		$tokens,
 		$pattern,
 		$sortOptions,
 		$subsort,
