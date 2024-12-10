@@ -43,6 +43,7 @@ final class SimpleFunctions {
 		$parser->setFunctionHook( 'tokenif', [ __CLASS__, 'tokenifRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'ueswitch', [ __CLASS__, 'ueswitchRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'follow', [ __CLASS__, 'followRender' ], Parser::SFH_OBJECT_ARGS );
+		$parser->setFunctionHook( 'argmap', [ __CLASS__, 'argmapRender' ], Parser::SFH_OBJECT_ARGS );
 
 		// Do not load if Page Forms is installed.
 		if ( !defined( 'PF_VERSION' ) ) {
@@ -481,5 +482,95 @@ final class SimpleFunctions {
 			$results_array[] = $parser->replaceVariables( implode( '', $bracketed_value ), $frame );
 		}
 		return implode( $new_delimiter, $results_array );
+	}
+
+	public static function argmapRender( Parser $parser, PPFrame $frame, array $args ) {
+		if ( !isset( $args[0] ) ) {
+			return [ '', 'noparse' => false ];
+		}
+
+		// sort arguments, this is to disregard the position of named arguments
+		$namedArgs = [];
+		$unnamedArgs = [];
+		foreach ( $args as $arg ) {
+			$arg = $frame->expand( $arg );
+			if ( strpos( $arg, '=' ) !== false ) {
+				[ $key, $value ] = explode( '=', $arg, 2 );
+				$namedArgs[trim( $key )] = trim( $value );
+			} else {
+				$unnamedArgs[] = $arg;
+			}
+		}
+
+		// set parameters
+		$formatter = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[0] ) ) : '';
+		$glue = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[1] ) ) : '';
+		$mustContainString = isset( $unnamedArgs[2] ) ? trim( $frame->expand( $unnamedArgs[2] ) ) : '';
+		$onlyShowString = isset( $unnamedArgs[3] ) ? trim( $frame->expand( $unnamedArgs[3] ) ) : '';
+		$formatterArgs = $frame->getNamedArguments();
+
+		// make arrays
+		$mustContain = [];
+		$onlyShow = [];
+		if ( $mustContainString !== '' ) {
+			$mustContain = explode( ',', $mustContainString );
+		}
+		if ( $onlyShowString !== '' ) {
+			$onlyShow = explode( ',', $onlyShowString );
+		}
+
+		// group formatter arguments to groupedFormatterArgs array, if viable
+		$groupedFormatterArgs = [];
+		foreach ( $formatterArgs as $key => $arg ) {
+			$index = preg_replace( '/[^0-9]/', '', $key );
+			$argName = preg_replace( '/[^a-zA-Z]/', '', $key );
+
+			if ( $index !== '' ) {
+				$index = intval( $index );
+				if ( !isset( $groupedFormatterArgs[$index] ) ) {
+					$groupedFormatterArgs[$index] = [];
+				}
+				$groupedFormatterArgs[$index][$argName] = $arg;
+			}
+		}
+
+		// write formatter calls, if viable
+		$formatterCalls = [];
+		foreach ( $groupedFormatterArgs as $formatterArg ) {
+			// check if there are missing arguments
+			$missingArgs = array_diff( $mustContain, array_keys( $formatterArg ) );
+			if ( !empty( $missingArgs ) ) {
+				continue;
+			}
+
+			// process individual args and filter for onlyShow
+			$processedFormatterArg = [];
+			foreach ( $formatterArg as $key => $value ) {
+				if ( empty( $onlyShow ) || in_array( $key, $onlyShow ) ) {
+					$processedFormatterArg[] = "$key=$value";
+				}
+			}
+
+			// discard if nothing remains
+			if ( empty( $processedFormatterArg ) ) {
+				continue;
+			}
+
+			// construct final formatter call
+			$val = implode( '|', $processedFormatterArg );
+			$formatterCall = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
+			if ( $formatterCall instanceof PPNode_Hash_Array ) {
+				$formatterCall = $formatterCall->value;
+			}
+			$formatterCall = implode( '', $formatterCall );
+
+			// parse formatter call
+			$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
+		}
+
+		if ( $glue === '\n' ) {
+			$glue = '<br />';
+		}
+		return implode( $glue, $formatterCalls );
 	}
 }
