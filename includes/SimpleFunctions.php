@@ -515,8 +515,10 @@ final class SimpleFunctions {
 		return implode( $new_delimiter, $results_array );
 	}
 	
-	public static function argmapRender( $parser, $frame, $args ) {
-		if ( !isset( $args[0] ) ) return '';
+	public static function argmapRender( Parser $parser, PPFrame $frame, array $args ) {
+		if ( !isset( $args[0] ) ) {
+			return [ '', 'noparse' => false ];
+		}
 
 		// sort arguments, this is to disregard the position of named arguments
 		$namedArgs = [];
@@ -536,54 +538,23 @@ final class SimpleFunctions {
 		$glue = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[1] ) ) : '';
 		$mustContainString = isset( $unnamedArgs[2] ) ? trim( $frame->expand( $unnamedArgs[2] ) ) : '';
 		$onlyShowString = isset( $unnamedArgs[3] ) ? trim( $frame->expand( $unnamedArgs[3] ) ) : '';
-		$debugOptionsString = isset( $namedArgs['debug'] ) ? trim( $frame->expand( $namedArgs['debug'] ) ) : '';
-		$formatterArgs = $frame->getNamedArguments ();
+		$formatterArgs = $frame->getNamedArguments();
 
 		// make arrays
 		$mustContain = [];
 		$onlyShow = [];
-		$debugOptions = [];
 		if ( $mustContainString !== '' ) { 
 			$mustContain = explode( ',', $mustContainString );
 		}
 		if ( $onlyShowString !== '' ) { 
 			$onlyShow = explode( ',', $onlyShowString );
 		}
-		if ( $debugOptionsString !== '' ) { 
-			$debugOptions = explode( ',', $debugOptionsString );
-		}
-
-		// parameter dump
-		$debugLog = '';		
-		if ( in_array('dump', $debugOptions ) ) {
-			$debugLog .= 'parser arguments:<ul>';
-			$debugLog .= '<li>formatter: <code>' . $formatter . '</code></li>'
-				. '<li>glue: <code>' . htmlspecialchars( $glue ) . '</code></li>';
-			foreach ( $mustContain as $contain ) { 
-				$debugLog .= '<li>must contain: <code>' . $contain . '</code></li>';
-			}
-			foreach ( $onlyShow as $show ) { 
-				$debugLog .= '<li>only show: <code>' . $show . '</code></li>';
-			}
-			foreach ( $debugOptions as $option ) { 
-				$debugLog .= '<li>debug option: <code>' . $option . '</code></li>';
-			}
-			$debugLog .= '</ul>';
-			
-			if ( !empty( $formatterArgs ) ) {
-				$debugLog .= 'formater arguments:<ul>';
-				foreach ( $formatterArgs as $key => $arg ) {
-					$debugLog .= '<li><code>' . $key . '=' . $arg . '</code></li>';
-				}
-				$debugLog .= '</ul>';
-			}
-		}
 
 		// group formatter arguments to groupedFormatterArgs array, if viable
 		$groupedFormatterArgs = [];
 		foreach ( $formatterArgs as $key => $arg ) {
-			$index = preg_replace('/[^0-9]/', '', $key );
-			$argName = preg_replace('/[^a-zA-Z]/', '', $key );
+			$index = preg_replace( '/[^0-9]/', '', $key );
+			$argName = preg_replace( '/[^a-zA-Z]/', '', $key );
 			
 			if ( $index !== '' ) {
 				$index = intval( $index );
@@ -597,7 +568,6 @@ final class SimpleFunctions {
 		// write formatter calls, if viable
 		$formatterCalls = [];
 		foreach ( $groupedFormatterArgs as $formatterArg ) {
-
 			// check if there are missing arguments
 			$missingArgs = array_diff( $mustContain, array_keys( $formatterArg ) );
 			if ( !empty( $missingArgs ) ) {
@@ -607,10 +577,11 @@ final class SimpleFunctions {
 			// process individual args and filter for onlyShow
 			$processedFormatterArg = [];
 			foreach ( $formatterArg as $key => $value ) {
-				if ( ( empty( $onlyShow ) ) || in_array( $key, $onlyShow ) ) {
-					$processedFormatterArg[] = $key . '=' . $value;
+				if ( empty( $onlyShow ) || in_array( $key, $onlyShow ) ) {
+					$processedFormatterArg[] = "$key=$value";
 				}
 			}
+
 			// discard if nothing remains
 			if ( empty( $processedFormatterArg ) ) {
 				continue;
@@ -625,21 +596,12 @@ final class SimpleFunctions {
 			$formatterCall = implode( '', $formatterCall );
 
 			// parse formatter call
-			if ( in_array( 'equivalent', $debugOptions ) ) {
-				// parsing it as <nowiki> prevents a bug from sometimes occuring
-				$formatterCalls[] = $parser->replaceVariables( '<nowiki>' . $formatterCall . '</nowiki>', $frame );
-			}
-			else {
-				$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
-			}
+			$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
 		}
 
-		if ( in_array( 'equivalent', $debugOptions ) ) {
-			$debugLog .= 'equivalent template calls:<br />';
-		}
 		if ( $glue === '\n' ) {
 			$glue = '<br />';
 		}
-		return $debugLog . implode( $glue, $formatterCalls );
+		return implode( $glue, $formatterCalls );
 	}
 }
