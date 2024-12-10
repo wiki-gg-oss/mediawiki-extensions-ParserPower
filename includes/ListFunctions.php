@@ -263,7 +263,7 @@ final class ListFunctions {
 			return [$count, 'noparse' => false];
 
 		} else {
-			return ['', 'noparse' => false];
+			return ['0', 'noparse' => false];
 		}
 	}
 
