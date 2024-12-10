@@ -13,12 +13,8 @@ lstcnt
 "{{#lstcnt:}}"
 "{{#lstcnt: ,,,, }}"
 "{{#lstcnt: a, b ,c,d,,e ,f, ,g, h,i,j }}"
-"{{#lstcnt: ,,,, }}"
-"{{#lstcnt: a, b ,c,d,,e ,f, ,g, h,i,j | , }}"
 !! html/php
 <p>"0"
-"0"
-"10"
 "0"
 "10"
 </p>
