@@ -333,7 +333,6 @@ final class SimpleFunctions {
 	 */
 	public static function tokenifRender($parser, $frame, $params) {
 		$inValue = isset($params[0]) ? trim($frame->expand($params[0])) : '';
-		$default = isset($params[3]) ? trim($frame->expand($params[3])) : '';
 
 		if ($inValue !== '') {
 			$token = isset($params[1]) ?
@@ -343,6 +342,8 @@ final class SimpleFunctions {
 
 			return [ParserPower::applyPattern($parser, $frame, $inValue, $token, $pattern), 'noparse' => false];
 		} else {
+			$default = isset($params[3]) ? trim($frame->expand($params[3])) : '';
+
 			return [ParserPower::unescape($default), 'noparse' => false];
 		}
 	}
