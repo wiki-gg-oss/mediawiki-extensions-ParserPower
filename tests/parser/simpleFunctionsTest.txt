@@ -1,0 +1,231 @@
+!! options
+version=2
+!! end
+
+# Force the test runner to ensure the extension is loaded
+!! functionhooks
+trim
+!! endfunctionhooks
+
+!! article
+Redirect
+!! text
+#REDIRECT [[Target]]
+!! endarticle
+
+!! article
+Target
+!! text
+1
+!! endarticle
+
+# NOTE: we use the following strings (concatenated) as parameter values below for testing some unescaping behaviors:
+#  - wikitext is not unescaped:          "\0"      -> "\0"
+#  - wikitext is unescaped only once:    "\\0"     -> "\0"
+#  - wikitext is trimmed then unescaped: "\_"      -> " "
+#  - unescaped wikitext is evaluated:    "{\{!}\}" -> "|"
+
+!! test
+<esc>
+!! wikitext
+"<esc></esc>"
+"<esc>\
+{}[]<>=|</esc>" are all escaped
+"<esc>\a\{\</esc>" only escapes backslashes
+"{{<esc>!</esc>}}" output is not stripped
+!! html/php
+<p>""
+"\\\n\{\}\(\)\l\g\e\!" are all escaped
+"\\a\\{\\" only escapes backslashes
+"|" output is not stripped
+</p>
+!! end
+
+!! test
+{{#trim}}
+!! wikitext
+"{{#trim:}}"
+"{{#trim: 1\0 }}"
+!! html/php
+<p>""
+"1\0"
+</p>
+!! end
+
+!! test
+{{#uesc}}
+!! wikitext
+"{{#uesc:}}"
+"{{#uesc: \_{\{!}\}\0 }}"
+"{{#uesc:\}}"
+!! html/php
+<p>""
+" |"
+"\"
+</p>
+!! end
+
+!! test
+{{#uescnowiki}}
+!! wikitext
+"{{#uescnowiki:}}"
+"{{#uescnowiki: \_{\{!}\}\\0 }}"
+!! html/php
+<p>""
+" {{!}}\0"
+</p>
+!! end
+
+!! test
+{{#trimuesc}}
+!! wikitext
+"{{#trimuesc:}}"
+"{{#trimuesc: \_{\{!}\}\\0 }}"
+!! html/php
+<p>""
+"|\0"
+</p>
+!! end
+
+!! test
+<linkpage>
+!! wikitext
+"<linkpage/>"
+"<linkpage>with [[some|X]] [[text#around|X]] and [external.gg url]</linkpage>"
+!! html/php
+<p>""
+"with some text#around and [external.gg url]"
+</p>
+!! end
+
+!! test
+<linktext>
+!! wikitext
+"<linktext/>"
+"<linktext>with [[X|some]] [[X#Y|text]] and [external.gg url]</linktext>"
+!! html/php
+<p>""
+"with some text and [external.gg url]"
+</p>
+!! end
+
+!! test
+{{#ueif}}
+!! wikitext
+"{{#ueif:}}"
+"{{#ueif: 1 }}"
+"{{#ueif: | y }}"
+"{{#ueif: 1 | y }}"
+"{{#ueif: \0 | \_{\{!}\}\\0 }}"
+"{{#ueif: | | \_{\{!}\}\\0 }}"
+!! html
+<p>""
+""
+""
+"y"
+" |\0"
+" |\0"
+</p>
+!! end
+
+!! test
+{{#or}}
+!! wikitext
+"{{#or:}}"
+"{{#or: }}"
+"{{#or: \0 }}"
+"{{#or: | \0 }}"
+"{{#or: | | }}"
+"{{#or: | | | | | | | | | | | | | | | | | | | | \0 }}"
+!! html
+<p>""
+""
+"\0"
+"\0"
+""
+"\0"
+</p>
+!! end
+
+!! test
+{{#ueor}}
+!! wikitext
+"{{#ueor:}}"
+"{{#ueor: }}"
+"{{#ueor: \_{\{!}\}\\0 }}"
+"{{#ueor: | \_{\{!}\}\\0 }}"
+"{{#ueor: | | }}"
+"{{#ueor: | | | | | | | | | | | | | | | | | | | | \_{\{!}\}\\0 }}"
+!! html
+<p>""
+""
+" |\0"
+" |\0"
+""
+" |\0"
+</p>
+!! end
+
+!! test
+{{#ueifeq}}
+!! wikitext
+"{{#ueifeq:}}"
+"{{#ueifeq: 1 }}"
+"{{#ueifeq: | }}"
+"{{#ueifeq: 1 | }}"
+"{{#ueifeq: | | y }}"
+"{{#ueifeq: \0 | | \_{\{!}\}\\0 }}"
+"{{#ueifeq: | \\0 | | \_{\{!}\}\\0 }}"
+!! html
+<p>""
+""
+""
+""
+"y"
+" |\0"
+" |\0"
+</p>
+!! end
+
+!! test
+{{#ueswitch}}
+!! wikitext
+"{{#ueswitch:}}"
+"{{#ueswitch: \0 | = y }}"
+"{{#ueswitch: \0 | \\0 = n }}"
+"{{#ueswitch: \\0 | \0\\0 = \_{\{!}\}\\0 | \\0 = | }}"
+"{{#ueswitch: 1 | = | | \_{\{!}\}\\0 }}"
+!! html
+<p>""
+"y"
+""
+" |\0"
+" |\0"
+</p>
+!! end
+
+!! test
+{{#ueswitch}} with #default
+!! wikitext
+"{{#ueswitch: 1 | = | #default = | #default = \_{\{!}\}\\0 | = }}"
+"{{#ueswitch: 1 | = | #default = | #default | = y | = }}"
+"{{#ueswitch: 1 | = | #default = | #default =  | y }}"
+!! html
+<p>" |\0"
+"y"
+"y"
+</p>
+!! end
+
+!! test
+{{#follow}}
+!! wikitext
+{{#follow: Unknown }} {{#follow: Unknown#Section }}
+{{#follow: Target }} {{#follow: Target#Section }}
+{{#follow: Redirect }} {{#follow: Redirect#Section }}
+!! html/php
+<p>Unknown Unknown#Section
+Target Target#Section
+Target Target
+</p>
+!! end
