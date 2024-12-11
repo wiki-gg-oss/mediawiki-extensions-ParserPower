@@ -62,9 +62,7 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function trimRender( Parser $parser, PPFrame $frame, array $params ) {
-		$text = ParserPower::expand( $frame, $params[0] ?? '' );
-
-		return [ $text, 'noparse' => false ];
+		return ParserPower::expand( $frame, $params[0] ?? '' );
 	}
 
 	/**
@@ -79,7 +77,7 @@ final class SimpleFunctions {
 	public static function uescRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
 
-		return [ $text, 'noparse' => false ];
+		return [ $text, 'noparse' => $text === '' ];
 	}
 
 	/**
@@ -108,9 +106,9 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function trimuescRender( Parser $parser, PPFrame $frame, array $params ) {
-		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
+		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
 
-		return [ trim( $text ), 'noparse' => false ];
+		return [ $text, 'noparse' => $text === '' ];
 	}
 
 	/**
@@ -127,7 +125,7 @@ final class SimpleFunctions {
 	public static function linkpageRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
 		$text = $parser->replaceVariables( $text, $frame );
 
-		if ( $text ) {
+		if ( $text !== '' ) {
 			$text = preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linkpageReplace' ], $text );
 		}
 
@@ -192,11 +190,7 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function escRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
-		$text = ParserPower::escape( $text );
-
-		$text = $parser->replaceVariables( $text, $frame );
-
-		return [ $text, 'markerType' => 'none' ];
+		return [ ParserPower::escape( $text ), 'markerType' => 'none' ];
 	}
 
 	/**
@@ -232,11 +226,11 @@ final class SimpleFunctions {
 			$inValue = ParserPower::expand( $frame, $param );
 
 			if ( $inValue !== '' ) {
-				return [ $inValue, 'noparse' => false ];
+				return $inValue;
 			}
 		}
 
-		return [ '', 'noparse' => false ];
+		return '';
 	}
 
 	/**
@@ -256,7 +250,7 @@ final class SimpleFunctions {
 			}
 		}
 
-		return [ '', 'noparse' => false ];
+		return '';
 	}
 
 	/**
@@ -332,7 +326,7 @@ final class SimpleFunctions {
 		$switchKey = isset( $params[0] ) ? ParserPower::expand( $frame, array_shift( $params ), ParserPower::UNESCAPE ) : '';
 
 		if ( count( $params ) === 0 ) {
-			return [ '', 'noparse' => false ];
+			return '';
 		}
 
 		$lastItem = $frame->expand( $params[count( $params ) - 1] );
@@ -390,7 +384,7 @@ final class SimpleFunctions {
 			}
 		}
 
-		return [ $output, 'noparse' => false ];
+		return $output;
 	}
 
 	public static function arraymapRender( $parser, $frame, $args ) {
@@ -487,7 +481,7 @@ final class SimpleFunctions {
 
 	public static function argmapRender( Parser $parser, PPFrame $frame, array $args ) {
 		if ( !isset( $args[0] ) ) {
-			return [ '', 'noparse' => false ];
+			return '';
 		}
 
 		// sort arguments, this is to disregard the position of named arguments
