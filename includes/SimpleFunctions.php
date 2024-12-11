@@ -307,10 +307,11 @@ final class SimpleFunctions {
 	 */
 	public static function tokenifRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inValue = ParserPower::expand( $frame, $params[0] ?? '' );
-		$default = ParserPower::expand( $frame, $params[3] ?? '' );
 
 		if ( $inValue === '' ) {
-			return [ ParserPower::unescape( $default ), 'noparse' => false ];
+			$default = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
+
+			return [ $default, 'noparse' => false ];
 		}
 
 		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
