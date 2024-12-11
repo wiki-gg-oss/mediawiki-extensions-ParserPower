@@ -481,7 +481,7 @@ final class SimpleFunctions {
 
 	public static function argmapRender( Parser $parser, PPFrame $frame, array $args ) {
 		if ( !isset( $args[0] ) ) {
-			return [ '', 'noparse' => false ];
+			return '';
 		}
 
 		// sort arguments, this is to disregard the position of named arguments
