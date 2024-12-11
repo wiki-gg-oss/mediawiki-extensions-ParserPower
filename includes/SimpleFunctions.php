@@ -129,7 +129,7 @@ final class SimpleFunctions {
 			$text = preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linkpageReplace' ], $text );
 		}
 
-		return [ '', 'markerType' => 'none' ];
+		return [ $text, 'markerType' => 'none' ];
 	}
 
 	/**
@@ -162,7 +162,7 @@ final class SimpleFunctions {
 			$text = preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linktextReplace' ], $text );
 		}
 
-		return [ '', 'markerType' => 'none' ];
+		return [ $text, 'markerType' => 'none' ];
 	}
 
 	/**
