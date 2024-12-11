@@ -26,21 +26,22 @@ class ParserPower {
 	 */
 	public static function arrangeParams($frame, $unexpandedParams) {
 		$params = [];
-		foreach ($unexpandedParams as $unexpandedParam) {
-			if (is_string($unexpandedParam)) {
-				$param = explode('=', $unexpandedParam, 2);
-				if (count($param) === 2) {
-					$params[trim($param[0])] = $param[1];
-				} else {
-					$params[] = $param[0];
-				}
+
+		if (isset($unexpandedParams[0]) && is_string($unexpandedParams[0])) {
+			$param = explode('=', array_shift($unexpandedParams), 2);
+			if (count($param) === 2) {
+				$params[trim($param[0])] = trim($param[1]);
 			} else {
-				$param = $unexpandedParam->splitArg();
-				if ($param['index'] === '') {
-					$params[trim($frame->expand($param['name']))] = trim($frame->expand($param['value']));
-				} else {
-					$params[] = trim($frame->expand($param['value']));
-				}
+				$params[] = trim($param[0]);
+			}
+		}
+
+		foreach ($unexpandedParams as $unexpandedParam) {
+			$param = $unexpandedParam->splitArg();
+			if ($param['index'] === '') {
+				$params[trim($frame->expand($param['name']))] = trim($frame->expand($param['value']));
+			} else {
+				$params[] = trim($frame->expand($param['value']));
 			}
 		}
 
