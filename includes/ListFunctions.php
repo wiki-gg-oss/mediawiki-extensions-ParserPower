@@ -405,7 +405,7 @@ final class ListFunctions {
 		$list = ParserPower::expand( $frame, $params[0] ?? '' );
 
 		if ( $list === '' ) {
-			return [ '', 'noparse' => false ];
+			return [ '0', 'noparse' => false ];
 		}
 
 		$sep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );

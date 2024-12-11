@@ -1,0 +1,21 @@
+!! options
+version=2
+!! end
+
+# Force the test runner to ensure the extension is loaded
+!! functionhooks
+lstcnt
+!! endfunctionhooks
+
+!! test
+{{#lstcnt}}
+!! wikitext
+"{{#lstcnt:}}"
+"{{#lstcnt: ,,,, }}"
+"{{#lstcnt: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+!! html/php
+<p>"0"
+"0"
+"10"
+</p>
+!! end
