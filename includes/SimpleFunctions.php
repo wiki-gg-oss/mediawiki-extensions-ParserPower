@@ -380,17 +380,24 @@ final class SimpleFunctions {
 	public static function followRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
 
-		$output = $text;
 		$title = Title::newFromText( $text );
-		if ( $title !== null && $title->getNamespace() !== NS_MEDIA && $title->getNamespace() > -1 ) {
-			$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
-			$target = $page->getRedirectTarget();
-			if ( $target !== null ) {
-				$output = $target->getPrefixedText();
-			}
+		if ( $title === null || $title->getNamespace() === NS_MEDIA || $title->getNamespace() < 0 ) {
+			return $text;
 		}
 
-		return [ $output, 'noparse' => false ];
+		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
+		$target = $page->getRedirectTarget();
+		if ( $target === null ) {
+			return $text;
+		}
+
+		// Replace redirect fragment with the one from the initial text. We need to check whether there is
+		// a # with no fragment after it, since it removes the redirect fragment if there is one.
+		if ( strpos( $text, '#' ) !== false ) {
+			$target = $target->createFragmentTarget( $title->getFragment() );
+		}
+
+		return $target->getFullText();
 	}
 
 	public static function arraymapRender( $parser, $frame, $args ) {
