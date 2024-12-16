@@ -382,15 +382,17 @@ final class SimpleFunctions {
 
 		$output = $text;
 		$title = Title::newFromText( $text );
-		if ( $title !== null && $title->getNamespace() !== NS_MEDIA && $title->getNamespace() > -1 ) {
-			$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
-			$target = $page->getRedirectTarget();
-			if ( $target !== null ) {
-				$output = $target->getPrefixedText();
-			}
+		if ( $title === null || $title->getNamespace() === NS_MEDIA || $title->getNamespace() < 0 ) {
+			return $text;
 		}
 
-		return [ $output, 'noparse' => false ];
+		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
+		$target = $page->getRedirectTarget();
+		if ( $target === null ) {
+			return $text;
+		}
+
+		return $target->getPrefixedText();
 	}
 
 	public static function arraymapRender( $parser, $frame, $args ) {
