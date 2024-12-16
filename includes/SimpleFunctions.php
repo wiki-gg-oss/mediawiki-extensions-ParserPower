@@ -380,7 +380,6 @@ final class SimpleFunctions {
 	public static function followRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
 
-		$output = $text;
 		$title = Title::newFromText( $text );
 		if ( $title === null || $title->getNamespace() === NS_MEDIA || $title->getNamespace() < 0 ) {
 			return $text;
@@ -392,7 +391,7 @@ final class SimpleFunctions {
 			return $text;
 		}
 
-		return $target->getPrefixedText();
+		return $target->getFullText();
 	}
 
 	public static function arraymapRender( $parser, $frame, $args ) {
