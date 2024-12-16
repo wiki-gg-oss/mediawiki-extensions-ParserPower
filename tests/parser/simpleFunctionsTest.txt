@@ -14,6 +14,14 @@ Redirect
 !! endarticle
 
 !! article
+Redirect X
+!! text
+#REDIRECT [[Target#X]]
+!! endarticle
+
+
+
+!! article
 Target
 !! text
 1
@@ -220,12 +228,14 @@ Target
 !! test
 {{#follow}}
 !! wikitext
-{{#follow: Unknown }} {{#follow: Unknown#Section }}
-{{#follow: Target }} {{#follow: Target#Section }}
-{{#follow: Redirect }} {{#follow: Redirect#Section }}
+{{#follow: Unknown }} {{#follow: Unknown# }} {{#follow: Unknown#Section }}
+{{#follow: Target }} {{#follow: Target# }} {{#follow: Target#Section }}
+{{#follow: Redirect }} {{#follow: Redirect# }} {{#follow: Redirect#Section }}
+{{#follow: Redirect X }} {{#follow: Redirect X# }} {{#follow: Redirect X#Section }}
 !! html/php
-<p>Unknown Unknown#Section
-Target Target#Section
-Target Target
+<p>Unknown Unknown# Unknown#Section
+Target Target# Target#Section
+Target Target Target#Section
+Target#X Target Target#Section
 </p>
 !! end
