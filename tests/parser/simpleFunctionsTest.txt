@@ -19,8 +19,6 @@ Redirect X
 #REDIRECT [[Target#X]]
 !! endarticle
 
-
-
 !! article
 Target
 !! text
