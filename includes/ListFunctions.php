@@ -1108,8 +1108,6 @@ final class ListFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function lstfltrRender( Parser $parser, PPFrame $frame, array $params ) {
-		$params = ParserPower::arrangeParams( $frame, $params );
-
 		$inList = ParserPower::expand( $frame, $params[2] ?? '' );
 
 		if ( $inList === '' ) {
@@ -1145,8 +1143,6 @@ final class ListFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function lstrmRender( Parser $parser, PPFrame $frame, array $params ) {
-		$params = ParserPower::arrangeParams( $frame, $params );
-
 		$inList = ParserPower::expand( $frame, $params[1] ?? '' );
 
 		if ( $inList === '' ) {
