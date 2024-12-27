@@ -2240,7 +2240,7 @@ final class ListFunctions {
 		$default
 	) {
 		if ( $inList === '' ) {
-			return [ $default . 'no input', 'noparse' => false ];
+			return [ $default, 'noparse' => false ];
 		}
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
@@ -2277,7 +2277,7 @@ final class ListFunctions {
 		}
 
 		if ( count( $outValues ) === 0 ) {
-			return [ $default . '0 count', 'noparse' => false ];
+			return [ $default, 'noparse' => false ];
 		}
 
 		$outList = implode( $outSep, $outValues );
