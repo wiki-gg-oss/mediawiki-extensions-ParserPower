@@ -335,17 +335,27 @@ final class SimpleFunctions {
 			return [ '', 'noparse' => false ];
 		}
 
-		$lastItem = $frame->expand( $params[count( $params ) - 1] );
+		$lastBits = $params[count( $params ) - 1]->splitArg();
+		$frame->expand( $lastBits['name'] );
+		$lastValue = $frame->expand( $lastBits['value'] );
+
 		$default = '';
 		$mwDefaultFound = false;
 		$mwDefault = $parser->getMagicWordFactory()->get( 'default' );
 
 		$keyFound = false;
 		foreach ( $params as $param ) {
-			$pair = explode( '=', $frame->expand( $param ), 2 );
+			$bits = $param->splitArg();
+			if ( $bits['index'] === '' ) {
+				$key = ParserPower::expand( $frame, $bits['name'] );
+				$value = ParserPower::expand( $frame, $bits['value'] );
+			} else {
+				$key = ParserPower::expand( $frame, $bits['value'] );
+				$value = null;
+			}
 
 			if ( !$keyFound ) {
-				$key = ParserPower::unescape( trim( $pair[0] ) );
+				$key = ParserPower::unescape( $key );
 				if ( $key === $switchKey ) {
 					$keyFound = true;
 				} elseif ( $mwDefault->matchStartToEnd( $key ) ) {
@@ -353,18 +363,18 @@ final class SimpleFunctions {
 				}
 			}
 
-			if ( count( $pair ) > 1 ) {
+			if ( $value !== null ) {
 				if ( $keyFound ) {
-					return [ ParserPower::unescape( trim( $pair[1] ) ), 'noparse' => false ];
+					return [ ParserPower::unescape( $value ), 'noparse' => false ];
 				} elseif ( $mwDefaultFound ) {
-					$default = $pair[1];
+					$default = $value;
 					$mwDefaultFound = false;
 				}
 			}
 		}
 
-		if ( strpos( $lastItem, '=' ) === false ) {
-			$default = $lastItem;
+		if ( $lastBits['index'] !== '' ) {
+			$default = $lastValue;
 		}
 		return [ ParserPower::expand( $frame, $default, ParserPower::UNESCAPE ), 'noparse' => false ];
 	}

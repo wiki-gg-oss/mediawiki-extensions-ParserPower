@@ -69,12 +69,22 @@ class ParserPower {
 	 */
 	public static function arrangeParams( PPFrame $frame, array $unexpandedParams ) {
 		$params = [];
-		foreach ( $unexpandedParams as $unexpandedParam ) {
-			$param = explode( '=', $frame->expand( $unexpandedParam ), 2 );
-			if ( count( $param ) == 2 ) {
-				$params[trim( $param[0] )] = trim( $param[1] );
+
+		if ( isset( $unexpandedParams[0] ) && is_string( $unexpandedParams[0] ) ) {
+			$pair = explode( '=', array_shift( $unexpandedParams ), 2 );
+			if ( count( $pair ) === 2 ) {
+				$params[trim( $pair[0] )] = trim( $pair[1] );
 			} else {
-				$params[] = trim( $param[0] );
+				$params[] = trim( $pair[0] );
+			}
+		}
+
+		foreach ( $unexpandedParams as $unexpandedParam ) {
+			$bits = $unexpandedParam->splitArg();
+			if ( $bits['index'] === '' ) {
+				$params[ParserPower::expand( $frame, $bits['name'] )] = ParserPower::expand( $frame, $bits['value'] );
+			} else {
+				$params[] = ParserPower::expand( $frame, $bits['value'] );
 			}
 		}
 
