@@ -344,7 +344,7 @@ final class SimpleFunctions {
 			$bits = $param->splitArg();
 			if ( $bits['index'] === '' ) {
 				$key = ParserPower::expand( $frame, $bits['name'] );
-				$value = ParserPower::expand( $frame, $bits['value'] );
+				$value = $bits['value'];
 			} else {
 				$key = ParserPower::expand( $frame, $bits['value'] );
 				$value = null;
@@ -361,7 +361,7 @@ final class SimpleFunctions {
 
 			if ( $value !== null ) {
 				if ( $keyFound ) {
-					return [ ParserPower::unescape( $value ), 'noparse' => false ];
+					return [ ParserPower::expand( $frame, $value, ParserPower::UNESCAPE ), 'noparse' => false ];
 				} elseif ( $mwDefaultFound ) {
 					$default = $value;
 					$mwDefaultFound = false;
