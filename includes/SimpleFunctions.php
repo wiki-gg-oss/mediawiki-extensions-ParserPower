@@ -343,15 +343,15 @@ final class SimpleFunctions {
 		foreach ( $params as $param ) {
 			$bits = $param->splitArg();
 			if ( $bits['index'] === '' ) {
-				$key = ParserPower::expand( $frame, $bits['name'] );
+				$key = $bits['name'];
 				$value = $bits['value'];
 			} else {
-				$key = ParserPower::expand( $frame, $bits['value'] );
+				$key = $bits['value'];
 				$value = null;
 			}
 
 			if ( !$keyFound ) {
-				$key = ParserPower::unescape( $key );
+				$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
 				if ( $key === $switchKey ) {
 					$keyFound = true;
 				} elseif ( $mwDefault->matchStartToEnd( $key ) ) {
