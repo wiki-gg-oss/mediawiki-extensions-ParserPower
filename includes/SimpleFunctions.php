@@ -369,11 +369,11 @@ final class SimpleFunctions {
 			}
 		}
 
-		$lastBits = $params[count( $params ) - 1]->splitArg();
-		if ( $lastBits['index'] !== '' ) {
-			$default = $lastBits['value'];
+		if ( $value === null ) {
+			return [ is_string( $key ) ? $key : ParserPower::expand( $frame, $key, ParserPower::UNESCAPE ), 'noparse' => false ];
+		} else {
+			return [ ParserPower::expand( $frame, $default, ParserPower::UNESCAPE ), 'noparse' => false ];
 		}
-		return [ ParserPower::expand( $frame, $default, ParserPower::UNESCAPE ), 'noparse' => false ];
 	}
 
 	/**
