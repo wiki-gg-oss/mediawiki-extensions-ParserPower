@@ -335,10 +335,6 @@ final class SimpleFunctions {
 			return [ '', 'noparse' => false ];
 		}
 
-		$lastBits = $params[count( $params ) - 1]->splitArg();
-		$frame->expand( $lastBits['name'] );
-		$lastValue = $frame->expand( $lastBits['value'] );
-
 		$default = '';
 		$mwDefaultFound = false;
 		$mwDefault = $parser->getMagicWordFactory()->get( 'default' );
@@ -373,8 +369,9 @@ final class SimpleFunctions {
 			}
 		}
 
+		$lastBits = $params[count( $params ) - 1]->splitArg();
 		if ( $lastBits['index'] !== '' ) {
-			$default = $lastValue;
+			$default = $lastBits['value'];
 		}
 		return [ ParserPower::expand( $frame, $default, ParserPower::UNESCAPE ), 'noparse' => false ];
 	}
