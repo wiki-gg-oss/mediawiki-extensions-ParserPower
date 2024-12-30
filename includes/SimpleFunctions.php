@@ -509,10 +509,10 @@ final class SimpleFunctions {
 		}
 
 		// set parameters
-		$formatter = isset( $arg[1] ) ? trim( $frame->expand( $arg[0] ) ) : '';
-		$glue = isset( $arg[1] ) ? trim( $frame->expand( $arg[1] ) ) : '';
-		$mustContainString = isset( $arg[2] ) ? trim( $frame->expand( $arg[2] ) ) : '';
-		$onlyShowString = isset( $arg[3] ) ? trim( $frame->expand( $arg[3] ) ) : '';
+		$formatter = isset( $args[1] ) ? trim( $frame->expand( $args[0] ) ) : '';
+		$glue = isset( $args[1] ) ? trim( $frame->expand( $args[1] ) ) : '';
+		$mustContainString = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
+		$onlyShowString = isset( $args[3] ) ? trim( $frame->expand( $args[3] ) ) : '';
 		$formatterArgs = $frame->getNamedArguments();
 
 		// make arrays
