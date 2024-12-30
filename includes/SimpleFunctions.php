@@ -582,10 +582,10 @@ final class SimpleFunctions {
 
 	public static function iargmapRender( Parser $parser, PPFrame $frame, array $args ) {
 		if ( !isset( $args[0] ) ) {
-			return [ '', 'noparse' => false ];
+			return [ '<strong class="error">iargmap error: The parameter "formatter" is required.</strong>', 'noparse' => false ];
 		}
 		if ( !isset( $args[1] ) ) {
-			return [ '', 'noparse' => false ];
+			return [ '<strong class="error">iargmap error: The parameter "n" is required.</strong>', 'noparse' => false ];
 		}
 
 		// set parameters
@@ -595,18 +595,21 @@ final class SimpleFunctions {
 		$allFormatterArgs = $frame->getNumberedArguments();
 		
 		// check against bad entries
-		if ( ( count( $allFormatterArgs ) == 0 ) ||  ( !is_numeric( $numberOfArgumentsPerFormatter ) ) ) {
-			return [ '', 'noparse' => false ];
+		if ( count( $allFormatterArgs ) == 0 ) {
+			return [ '<strong class="error">iargmap error: No formatter arguments were given.</strong>', 'noparse' => false ];
+		}
+		if ( !is_numeric( $numberOfArgumentsPerFormatter ) ) {
+			return [ '<strong class="error">iargmap error: "n" must be an integer.</strong>', 'noparse' => false ];
 		}
 
 		if (  intval( $numberOfArgumentsPerFormatter ) != floatval( $numberOfArgumentsPerFormatter ) ) {
-			return [ '', 'noparse' => false ];
+			return [ '<strong class="error">iargmap error: "n" must be an integer.</strong>', 'noparse' => false ];
 		}
 
 		$imax = count( $allFormatterArgs ) / intval( $numberOfArgumentsPerFormatter );
 
 		if ( !is_int( $imax ) ) {
-			return [ '', 'noparse' => false ];
+			return [ '<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>', 'noparse' => false ];
 		}
 
 		// write formatter calls
