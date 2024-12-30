@@ -235,6 +235,39 @@ final class ListFunctions {
 	}
 
 	/**
+	 * This function trims whitespace from the end of each value while also filtering empty values from the array,
+	 * then slicing it according to specified offset and length. It also performs un-escaping on each item.
+	 * Note that values that are only empty after the unescape are preserved.
+	 *
+	 * @param array $inValues The array to trim, unescape, and remove empty values from.
+	 * @param int $inOffset
+	 * @param ?int $inLength
+	 * @return array A new array with trimmed values, character escapes replaced, and empty values pre unescape removed.
+	 */
+	private static function arrayTrimUnescape( array $inValues, int $offset = 0, ?int $length = null ): array {
+		if ( $offset > 0 ) {
+			$offset = $offset - 1;
+		}
+
+		$trimmedValues = [];
+		foreach ( $inValues as $inValue ) {
+			$trimmedValue = trim( $inValue );
+			if ( !ParserPower::isEmpty( $trimmedValue ) ) {
+				$trimmedValues[] = $trimmedValue;
+			}
+		}
+
+		$trimmedValues = array_slice( $trimmedValues, $offset, $length );
+
+		$outValues = [];
+		foreach ( $trimmedValues as $trimmedValue ) {
+			$outValues[] = ParserPower::unescape( $trimmedValue );
+		}
+
+		return $outValues;
+	}
+
+	/**
 	 * This function gets the specified element from the array after filtering out any empty values before it so that
 	 * the empty values are skipped in index counting. The returned element is unescaped.
 	 *
@@ -242,99 +275,16 @@ final class ListFunctions {
 	 * @param array $inValues The array to get the element from.
 	 * @return string The array element, trimmed and with character escapes replaced, or empty string if not found.
 	 */
-	private static function arrayElementTrimUnescape( int $inIndex, array $inValues ): string {
-		if ( $inIndex > 0 ) {
-			$curOutIndex = 1;
-			$count = count( $inValues );
-			for ( $curInIndex = 0; $curInIndex < $count; ++$curInIndex ) {
-				$trimmedValue = trim( $inValues[$curInIndex] );
-				if ( !ParserPower::isEmpty( $trimmedValue ) ) {
-					if ( $inIndex === $curOutIndex ) {
-						return ParserPower::unescape( $trimmedValue );
-					} else {
-						++$curOutIndex;
-					}
-				}
-			}
-		} elseif ( $inIndex < 0 ) {
-			$curOutIndex = -1;
-			for ( $curInIndex = count( $inValues ) - 1; $curInIndex > -1; --$curInIndex ) {
-				$trimmedValue = trim( $inValues[$curInIndex] );
-				if ( !ParserPower::isEmpty( $trimmedValue ) ) {
-					if ( $inIndex === $curOutIndex ) {
-						return ParserPower::unescape( $trimmedValue );
-					} else {
-						--$curOutIndex;
-					}
-				}
-			}
-		}
-
-		return '';
-	}
-
-	/**
-	 * This function trims whitespace each value while also filtering emoty values from the array, then slicing it
-	 * according to specified offset and length. It also performs un-escaping on each item. Note that values
-	 * that are only empty after the unescape are preserved.
-	 *
-	 * @param int $inOffset
-	 * @param ?int $inLength
-	 * @param array $inValues The array to trim, remove empty values from, slice, and unescape.
-	 * @return array A new array with trimmed values, character escapes replaced, and empty values pre unescape removed.
-	 */
-	private static function arrayTrimSliceUnescape( int $inOffset, ?int $inLength, array $inValues ): array {
-		$midValues = [];
-		$outValues = [];
-
-		foreach ( $inValues as $inValue ) {
-			$trimmedValue = trim( $inValue );
-			if ( !ParserPower::isEmpty( $trimmedValue ) ) {
-				$midValues[] = $trimmedValue;
-			}
-		}
-
-		if ( $inOffset > 0 ) {
-			$offset = $inOffset - 1;
+	private static function arrayElementTrimUnescape( int $index, array $inValues ): string {
+		if ( $index > 0 ) {
+			$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
+		} elseif ( $index < 0 ) {
+			$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
 		} else {
-			$offset = $inOffset;
+			$outValues = [];
 		}
 
-		if ( $offset < 0 ) {
-			$length = -$offset;
-		} else {
-			$length = count( $midValues ) - $offset;
-		}
-		if ( $inLength !== null ) {
-			$length = intval( $inLength );
-		}
-
-		$midValues = array_slice( $midValues, $offset, $length );
-		foreach ( $midValues as $midValue ) {
-			$outValues[] = ParserPower::unescape( $midValue );
-		}
-
-		return $outValues;
-	}
-
-	/**
-	 * This function trims whitespace from the end of each value while also filter emoty values from the array. It also
-	 * performs un-escaping on each item. Note that values that are only empty after the unescape are preserved.
-	 *
-	 * @param array $inValues The array to trim, unescape, and remove empty values from.
-	 * @return array A new array with trimmed values, character escapes replaced, and empty values preunescape removed.
-	 */
-	private static function arrayTrimUnescape( array $inValues ): array {
-		$outValues = [];
-
-		foreach ( $inValues as $inValue ) {
-			$trimmedValue = trim( $inValue );
-			if ( !ParserPower::isEmpty( $trimmedValue ) ) {
-				$outValues[] = ParserPower::unescape( $trimmedValue );
-			}
-		}
-
-		return $outValues;
+		return $outValues[0] ?? '';
 	}
 
 	/**
@@ -445,7 +395,7 @@ final class ListFunctions {
 			$length = intval( $inLength );
 		}
 
-		$values = self::arrayTrimSliceUnescape( $offset, $length, self::explodeList( $inSep, $inList ) );
+		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ), $offset, $length );
 
 		if ( count( $values ) > 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $values ) );
