@@ -26,7 +26,7 @@ class SortKeyValueComparer {
 	 * @param bool $valueSort true to perform a value sort for values with the same key.
 	 * @param int $valueOptions The options for the value sort.
 	 */
-	public function __construct( $sortKeyOptions, $valueSort, $valueOptions = 0 ) {
+	public function __construct( int $sortKeyOptions, bool $valueSort, int $valueOptions = 0 ) {
 		$this->mSortKeyCompare = $this->getComparer( $sortKeyOptions );
 		if ( $valueSort ) {
 			$this->mValueCompare = $this->getComparer( $valueOptions );
@@ -41,7 +41,7 @@ class SortKeyValueComparer {
 	 * @param array $pair2 A sort-key value pair to compare to $pair1
 	 * @return int Number > 0 if str1 is less than str2; Number < 0 if str1 is greater than str2; 0 if they are equal.
 	 */
-	public function compare( array $pair1, array $pair2 ) {
+	public function compare( array $pair1, array $pair2 ): int {
 		$result = call_user_func( $this->mSortKeyCompare, $pair1[0], $pair2[0] );
 
 		if ( $result === 0 ) {
@@ -61,7 +61,7 @@ class SortKeyValueComparer {
 	 * @param int $options
 	 * @return callable
 	 */
-	private function getComparer( $options ) {
+	private function getComparer( int $options ): callable {
 		if ( $options & ListFunctions::SORT_NUMERIC ) {
 			if ( $options & ListFunctions::SORT_DESC ) {
 				return [ ComparisonUtils::class, 'numericrstrcmp' ];

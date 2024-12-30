@@ -65,7 +65,7 @@ class ParserPower {
 	 * @param array $unexpandedParams The parameters and values together, not yet exploded or trimmed.
 	 * @return array The parameter values associated with the appropriate named or numbered keys
 	 */
-	public static function arrangeParams( PPFrame $frame, array $unexpandedParams ) {
+	public static function arrangeParams( PPFrame $frame, array $unexpandedParams ): array {
 		$params = [];
 
 		if ( isset( $unexpandedParams[0] ) && is_string( $unexpandedParams[0] ) ) {
@@ -95,7 +95,7 @@ class ParserPower {
 	 * @param string $value The value to check.
 	 * @return bool true for a value that is not null or an empty string.
 	 */
-	public static function isEmpty( $value ) {
+	public static function isEmpty( string $value ): bool {
 		return $value === null || $value === '';
 	}
 
@@ -107,7 +107,7 @@ class ParserPower {
 	 * @param int $flags
 	 * @return string
 	 */
-	public static function expand( PPFrame $frame, $input, $flags = 0 ) {
+	public static function expand( PPFrame $frame, $input, int $flags = 0 ): string {
 		if ( $flags & self::NO_VARS ) {
 			$expanded = $frame->expand( $input, PPFrame::NO_ARGS | PPFrame::NO_TEMPLATES );
 		} else {
@@ -157,7 +157,7 @@ class ParserPower {
 	 * @param string $input The string to escape.
 	 * @return string The string with all escape sequences replaced.
 	 */
-	public static function unescape( $input ) {
+	public static function unescape( string $input ): string {
 		$output = '';
 		$offset = 0;
 		$length = strlen( $input );
@@ -197,7 +197,7 @@ class ParserPower {
 	 * @param string $input The string to escape.
 	 * @return string The escaped string.
 	 */
-	public static function escape( $input ) {
+	public static function escape( string $input ): string {
 		$output = '';
 		$offset = 0;
 		$length = strlen( $input );
@@ -252,7 +252,7 @@ class ParserPower {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPattern( $inValue, $token, $pattern ) {
+	public static function applyPattern( string $inValue, string $token, string $pattern ): string {
 		return self::applyPatternWithIndex( $inValue, '', 0, $token, $pattern );
 	}
 
@@ -267,7 +267,7 @@ class ParserPower {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern ) {
+	public static function applyPatternWithIndex( string $inValue, string $indexToken, int $index, string $token, string $pattern ): string {
 		if ( $pattern === '' ) {
 			return $inValue;
 		}
@@ -293,7 +293,7 @@ class ParserPower {
 	 * @param string $pattern Pattern containing tokens to be replaced by field values.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyFieldPattern( $inValue, $fieldSep, array $tokens, $tokenCount, $pattern ) {
+	public static function applyFieldPattern( string $inValue, string $fieldSep, array $tokens, int $tokenCount, string $pattern ): string {
 		return self::applyFieldPatternWithIndex( $inValue, $fieldSep, '', 0, $tokens, $tokenCount, $pattern );
 	}
 
@@ -311,14 +311,14 @@ class ParserPower {
 	 * @return string The result of the token replacement within the pattern.
 	 */
 	public static function applyFieldPatternWithIndex(
-		$inValue,
-		$fieldSep,
-		$indexToken,
-		$index,
+		string $inValue,
+		string $fieldSep,
+		int $indexToken,
+		int $index,
 		array $tokens,
-		$tokenCount,
-		$pattern
-	) {
+		int $tokenCount,
+		string $pattern
+	): string {
 		if ( $pattern === '' ) {
 			return $inValue;
 		}

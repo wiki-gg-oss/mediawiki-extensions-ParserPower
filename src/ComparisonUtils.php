@@ -13,7 +13,7 @@ final class ComparisonUtils {
 	 * @param string $string2 A string to compare to $string1.
 	 * @return int Number > 0 if str1 is less than str2; Number < 0 if str1 is greater than str2; 0 if they are equal.
 	 */
-	public static function numericstrcmp( $string1, $string2 ) {
+	public static function numericstrcmp( string $string1, string $string2 ): int {
 		return ( is_numeric( $string1 ) ? $string1 : 0 ) - ( is_numeric( $string2 ) ? $string2 : 0 );
 	}
 
@@ -25,7 +25,7 @@ final class ComparisonUtils {
 	 * @param string $string2 A string to compare to $string1.
 	 * @return int Number > 0 if str1 is less than str2; Number < 0 if str1 is greater than str2; 0 if they are equal.
 	 */
-	public static function numericrstrcmp( $string1, $string2 ) {
+	public static function numericrstrcmp( string $string1, string $string2 ): int {
 		return ( is_numeric( $string2 ) ? $string2 : 0 ) - ( is_numeric( $string1 ) ? $string1 : 0 );
 	}
 
@@ -36,7 +36,7 @@ final class ComparisonUtils {
 	 * @param string $string2 A string to compare to $string1.
 	 * @return int Number > 0 if str1 is less than str2; Number < 0 if str1 is greater than str2; 0 if they are equal.
 	 */
-	public static function rstrcmp( $string1, $string2 ) {
+	public static function rstrcmp( string $string1, string $string2 ): int {
 		return strcmp( $string2, $string1 );
 	}
 
@@ -47,7 +47,7 @@ final class ComparisonUtils {
 	 * @param string $string2 A string to compare to $string1.
 	 * @return int Number > 0 if str1 is less than str2; Number < 0 if str1 is greater than str2; 0 if they are equal.
 	 */
-	public static function rstrcasecmp( $string1, $string2 ) {
+	public static function rstrcasecmp( string $string1, string $string2 ): int {
 		return strcasecmp( $string2, $string1 );
 	}
 }
