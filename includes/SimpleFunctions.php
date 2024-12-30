@@ -44,6 +44,7 @@ final class SimpleFunctions {
 		$parser->setFunctionHook( 'ueswitch', [ __CLASS__, 'ueswitchRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'follow', [ __CLASS__, 'followRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'argmap', [ __CLASS__, 'argmapRender' ], Parser::SFH_OBJECT_ARGS );
+		$parser->setFunctionHook( 'iargmap', [ __CLASS__, 'iargmapRender' ], Parser::SFH_OBJECT_ARGS );
 
 		// Do not load if Page Forms is installed.
 		if ( !defined( 'PF_VERSION' ) ) {
@@ -563,6 +564,60 @@ final class SimpleFunctions {
 
 			// construct final formatter call
 			$val = implode( '|', $processedFormatterArg );
+			$formatterCall = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
+			if ( $formatterCall instanceof PPNode_Hash_Array ) {
+				$formatterCall = $formatterCall->value;
+			}
+			$formatterCall = implode( '', $formatterCall );
+
+			// parse formatter call
+			$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
+		}
+
+		if ( $glue === '\n' ) {
+			$glue = '<br />';
+		}
+		return implode( $glue, $formatterCalls );
+	}
+
+	public static function iargmapRender( Parser $parser, PPFrame $frame, array $args ) {
+		if ( !isset( $args[0] ) ) {
+			return [ '', 'noparse' => false ];
+		}
+		if ( !isset( $args[1] ) ) {
+			return [ '', 'noparse' => false ];
+		}
+
+		// set parameters
+		$formatter = trim( $frame->expand( $args[0] ) );
+		$numberOfArgumentsPerFormatter = trim( $frame->expand( $args[1] ) );
+		$glue = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
+		$allFormatterArgs = $frame->getNumberedArguments();
+		
+		// check against bad entries
+		if ( ( count( $allFormatterArgs ) == 0 ) ||  ( !is_numeric( $numberOfArgumentsPerFormatter ) ) ) {
+			return [ '', 'noparse' => false ];
+		}
+
+		if (  intval( $numberOfArgumentsPerFormatter ) != floatval( $numberOfArgumentsPerFormatter ) ) {
+			return [ '', 'noparse' => false ];
+		}
+
+		$imax = count( $allFormatterArgs ) / intval( $numberOfArgumentsPerFormatter );
+
+		if ( !is_int( $imax ) ) {
+			return [ '', 'noparse' => false ];
+		}
+
+		// write formatter calls
+		$formatterCalls = [];
+		for ( $i = 0; $i < $imax; $i++) { 
+			$formatterArgs = [];
+			for ( $n = 0; $n < $numberOfArgumentsPerFormatter; $n++) {
+				$formatterArgs[] = trim( $frame->expand( $allFormatterArgs[ $i * $numberOfArgumentsPerFormatter + $n + 1] ) );
+			}
+
+			$val = implode( '|', $formatterArgs );
 			$formatterCall = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
 			if ( $formatterCall instanceof PPNode_Hash_Array ) {
 				$formatterCall = $formatterCall->value;
