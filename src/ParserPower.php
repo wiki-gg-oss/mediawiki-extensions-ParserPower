@@ -80,7 +80,7 @@ class ParserPower {
 		foreach ( $unexpandedParams as $unexpandedParam ) {
 			$bits = $unexpandedParam->splitArg();
 			if ( $bits['index'] === '' ) {
-				$params[ParserPower::expand( $frame, $bits['name'] )] = $bits['value'];
+				$params[self::expand( $frame, $bits['name'] )] = $bits['value'];
 			} else {
 				$params[] = $bits['value'];
 			}
