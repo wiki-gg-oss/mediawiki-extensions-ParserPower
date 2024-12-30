@@ -507,24 +507,11 @@ final class SimpleFunctions {
 			return [ '', 'noparse' => false ];
 		}
 
-		// sort arguments, this is to disregard the position of named arguments
-		$namedArgs = [];
-		$unnamedArgs = [];
-		foreach ( $args as $arg ) {
-			$arg = $frame->expand( $arg );
-			if ( strpos( $arg, '=' ) !== false ) {
-				[ $key, $value ] = explode( '=', $arg, 2 );
-				$namedArgs[trim( $key )] = trim( $value );
-			} else {
-				$unnamedArgs[] = $arg;
-			}
-		}
-
 		// set parameters
-		$formatter = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[0] ) ) : '';
-		$glue = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[1] ) ) : '';
-		$mustContainString = isset( $unnamedArgs[2] ) ? trim( $frame->expand( $unnamedArgs[2] ) ) : '';
-		$onlyShowString = isset( $unnamedArgs[3] ) ? trim( $frame->expand( $unnamedArgs[3] ) ) : '';
+		$formatter = isset( $arg[1] ) ? trim( $frame->expand( $arg[0] ) ) : '';
+		$glue = isset( $arg[1] ) ? trim( $frame->expand( $arg[1] ) ) : '';
+		$mustContainString = isset( $arg[2] ) ? trim( $frame->expand( $arg[2] ) ) : '';
+		$onlyShowString = isset( $arg[3] ) ? trim( $frame->expand( $arg[3] ) ) : '';
 		$formatterArgs = $frame->getNamedArguments();
 
 		// make arrays
