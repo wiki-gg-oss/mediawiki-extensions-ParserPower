@@ -295,7 +295,7 @@ final class ListFunctions {
 	 * the empty values are skipped in index counting. The returned element is unescaped.
 	 *
 	 * @param int $inIndex The 1-based index of the array element to get, or a negative value to start from the end.
-	 * @param array|null $inValues The array to get the element from.
+	 * @param ?array $inValues The array to get the element from.
 	 * @return string The array element, trimmed and with character escapes replaced, or empty string if not found.
 	 */
 	private static function arrayElementTrimUnescape( $inIndex, $inValues ) {
@@ -835,7 +835,7 @@ final class ListFunctions {
 	 * @param string $inValue The value to change into one or more template parameters.
 	 * @param string $template The template to pass the parameters to.
 	 * @param string $fieldSep The delimiter separating the parameter values.
-	 * @return string The result of the template.
+	 * @return string|void The result of the template.
 	 */
 	private static function applyTemplate( Parser $parser, PPFrame $frame, $inValue, $template, $fieldSep ) {
 		$inValue = trim( $inValue );
@@ -1219,7 +1219,7 @@ final class ListFunctions {
 	 * @param string $fieldSep Separator between fields, if any.
 	 * @param string $indexToken Replace the current 1-based index of the element. Null/empty to skip.
 	 * @param string $token The token in the pattern that represents where the list value should go.
-	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
+	 * @param ?array $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern of text containing token that list values are inserted into at that token.
 	 * @return array An array with only values that generated unique keys via the given pattern.
 	 */
@@ -1444,7 +1444,7 @@ final class ListFunctions {
 	 * @param string $fieldSep Separator between fields, if any.
 	 * @param int $indexToken
 	 * @param string $token The token in the pattern that represents where the list value should go.
-	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
+	 * @param ?array $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern of text containing token that list values are inserted into at that token.
 	 * @return array An array where each value has been paired with a sort key in a two-element array.
 	 */
@@ -1560,7 +1560,7 @@ final class ListFunctions {
 	 * @param string $fieldSep The delimiter separating values in the input list.
 	 * @param string $indexToken Replace the current 1-based index of the element. Null/empty to skip.
 	 * @param string $token The token in the pattern that represents where the list value should go.
-	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
+	 * @param ?array $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
 	 * @param int $sortOptions Options for the key sort as handled by #listsort.
 	 * @param bool $subsort Whether to perform a value sort where sort keys are equal.
@@ -2071,7 +2071,7 @@ final class ListFunctions {
 	 * @param array $tokens1 The list of tokens to replace when performing the replacement for $inValue1.
 	 * @param array $tokens2 The list of tokens to replace when performing the replacement for $inValue2.
 	 * @param string $pattern Pattern containing tokens to be replaced by field (or unsplit) values.
-	 * @return string The result of the token replacement within the pattern.
+	 * @return string|void The result of the token replacement within the pattern.
 	 */
 	private static function applyTwoSetFieldPattern(
 		Parser $parser,
@@ -2144,7 +2144,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $inValues The input values, should be already exploded and fully preprocessed.
-	 * @param string $applyFunction Valid name of the function to call for both match and merge processes.
+	 * @param callable $applyFunction Valid name of the function to call for both match and merge processes.
 	 * @param array $matchParams Parameter values for the matching process, with open spots for the values.
 	 * @param array $mergeParams Parameter values for the merging process, with open spots for the values.
 	 * @param int $valueIndex1 The index in $matchParams and $mergeParams where the first value is to go.

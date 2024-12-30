@@ -118,7 +118,7 @@ final class SimpleFunctions {
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the name of the page they would have linked to.
 	 *
-	 * @param string $text The text within the tag function.
+	 * @param ?string $text The text within the tag function.
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
@@ -151,7 +151,7 @@ final class SimpleFunctions {
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the text that any links would return.
 	 *
-	 * @param string $text The text within the tag function.
+	 * @param ?string $text The text within the tag function.
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
@@ -171,7 +171,7 @@ final class SimpleFunctions {
 	 * This function replaces the links found by linktextRender and replaces them with their appropriate link text.
 	 *
 	 * @param array $matches The parameters and values together, not yet exploded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output along with relevant parser options.
 	 */
 	public static function linktextReplace( $matches ) {
 		$parts = explode( '|', $matches[1], 2 );
@@ -185,7 +185,7 @@ final class SimpleFunctions {
 	/**
 	 * This function escapes all appropriate characters in the given text and returns the result.
 	 *
-	 * @param string $text The text within the tag function.
+	 * @param ?string $text The text within the tag function.
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
