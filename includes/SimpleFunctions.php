@@ -24,7 +24,7 @@ final class SimpleFunctions {
 	 * @param Parser &$parser The parser object being initialized.
 	 * @return void
 	 */
-	public static function setup( &$parser ) {
+	public static function setup( Parser &$parser ): void {
 		$parser->setFunctionHook( 'trim', [ __CLASS__, 'trimRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'uesc', [ __CLASS__, 'uescRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'uescnowiki', [ __CLASS__, 'uescnowikiRender' ], Parser::SFH_OBJECT_ARGS );
@@ -61,7 +61,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function trimRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function trimRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$text = ParserPower::expand( $frame, $params[0] ?? '' );
 
 		return [ $text, 'noparse' => false ];
@@ -76,7 +76,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function uescRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function uescRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
 
 		return [ $text, 'noparse' => false ];
@@ -92,7 +92,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function uescnowikiRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function uescnowikiRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
 
 		return [ '<nowiki>' . $text . '</nowiki>', 'noparse' => false ];
@@ -107,7 +107,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function trimuescRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function trimuescRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
 
 		return [ trim( $text ), 'noparse' => false ];
@@ -124,7 +124,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function linkpageRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
+	public static function linkpageRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text ) {
@@ -141,7 +141,7 @@ final class SimpleFunctions {
 	 * @param array $matches The parameters and values together, not yet exploded or trimmed.
 	 * @return string The function output along with relevant parser options.
 	 */
-	public static function linkpageReplace( $matches ) {
+	public static function linkpageReplace( array $matches ): string {
 		$parts = explode( '|', $matches[1], 2 );
 		return $parts[0];
 	}
@@ -157,7 +157,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function linktextRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
+	public static function linktextRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text !== '' ) {
@@ -173,7 +173,7 @@ final class SimpleFunctions {
 	 * @param array $matches The parameters and values together, not yet exploded or trimmed.
 	 * @return string The function output along with relevant parser options.
 	 */
-	public static function linktextReplace( $matches ) {
+	public static function linktextReplace( array $matches ): string {
 		$parts = explode( '|', $matches[1], 2 );
 		if ( count( $parts ) == 2 ) {
 			return $parts[1];
@@ -191,7 +191,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function escRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
+	public static function escRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
 		$text = ParserPower::escape( $text );
 
 		$text = $parser->replaceVariables( $text, $frame );
@@ -207,7 +207,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function ueifRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function ueifRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$condition = ParserPower::expand( $frame, $params[0] ?? '' );
 
 		if ( $condition !== '' ) {
@@ -227,7 +227,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function orRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function orRender( Parser $parser, PPFrame $frame, array $params ): array {
 		foreach ( $params as $param ) {
 			$inValue = ParserPower::expand( $frame, $param );
 
@@ -247,7 +247,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function ueorRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function ueorRender( Parser $parser, PPFrame $frame, array $params ): array {
 		foreach ( $params as $param ) {
 			$inValue = ParserPower::expand( $frame, $param );
 
@@ -267,7 +267,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function ueifeqRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function ueifeqRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$leftValue = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
 		$rightValue = ParserPower::expand( $frame, $params[1] ?? '', ParserPower::UNESCAPE );
 
@@ -288,7 +288,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function tokenRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function tokenRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$inValue = ParserPower::expand( $frame, $params[0] ?? '' );
 
 		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
@@ -305,7 +305,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function tokenifRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function tokenifRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$inValue = ParserPower::expand( $frame, $params[0] ?? '' );
 
 		if ( $inValue === '' ) {
@@ -328,7 +328,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function ueswitchRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function ueswitchRender( Parser $parser, PPFrame $frame, array $params ): array {
 		$switchKey = isset( $params[0] ) ? ParserPower::expand( $frame, array_shift( $params ), ParserPower::UNESCAPE ) : '';
 
 		if ( count( $params ) === 0 ) {
@@ -387,7 +387,7 @@ final class SimpleFunctions {
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public static function followRender( Parser $parser, PPFrame $frame, array $params ) {
+	public static function followRender( Parser $parser, PPFrame $frame, array $params ): string {
 		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
 
 		$title = Title::newFromText( $text );
@@ -502,7 +502,7 @@ final class SimpleFunctions {
 		return implode( $new_delimiter, $results_array );
 	}
 
-	public static function argmapRender( Parser $parser, PPFrame $frame, array $args ) {
+	public static function argmapRender( Parser $parser, PPFrame $frame, array $args ): array {
 		if ( !isset( $args[0] ) ) {
 			return [ '', 'noparse' => false ];
 		}
