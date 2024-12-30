@@ -227,7 +227,11 @@ final class ListFunctions {
 			$values = explode( $sep, $list );
 		}
 
-		return $values;
+		if ( $values === false ) {
+			return [];
+		} else {
+			return $values;
+		}
 	}
 
 	/**
@@ -235,13 +239,13 @@ final class ListFunctions {
 	 * the empty values are skipped in index counting. The returned element is unescaped.
 	 *
 	 * @param int $inIndex The 1-based index of the array element to get, or a negative value to start from the end.
-	 * @param ?array $inValues The array to get the element from.
+	 * @param array $inValues The array to get the element from.
 	 * @return string The array element, trimmed and with character escapes replaced, or empty string if not found.
 	 */
-	private static function arrayElementTrimUnescape( int $inIndex, ?array $inValues ): string {
+	private static function arrayElementTrimUnescape( int $inIndex, array $inValues ): string {
 		if ( $inIndex > 0 ) {
 			$curOutIndex = 1;
-			$count = ( is_array( $inValues ) || $inValues instanceof Countable ) ? count( $inValues ) : 0;
+			$count = count( $inValues );
 			for ( $curInIndex = 0; $curInIndex < $count; ++$curInIndex ) {
 				$trimmedValue = trim( $inValues[$curInIndex] );
 				if ( !ParserPower::isEmpty( $trimmedValue ) ) {
