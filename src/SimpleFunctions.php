@@ -90,7 +90,7 @@ final class SimpleFunctions {
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the name of the page they would have linked to.
 	 *
-	 * @param string $text The text within the tag function.
+	 * @param ?string $text The text within the tag function.
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
@@ -134,7 +134,7 @@ final class SimpleFunctions {
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the text that any links would return.
 	 *
-	 * @param string $text The text within the tag function.
+	 * @param ?string $text The text within the tag function.
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
@@ -168,7 +168,7 @@ final class SimpleFunctions {
 	/**
 	 * This function escapes all appropriate characters in the given text and returns the result.
 	 *
-	 * @param string $text The text within the tag function.
+	 * @param ?string $text The text within the tag function.
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.

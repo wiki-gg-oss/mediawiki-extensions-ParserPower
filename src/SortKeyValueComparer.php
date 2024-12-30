@@ -59,7 +59,7 @@ class SortKeyValueComparer {
 	 * Get Comparer class
 	 *
 	 * @param int $options
-	 * @return void
+	 * @return callable
 	 */
 	private function getComparer( $options ) {
 		if ( $options & ListFunctions::SORT_NUMERIC ) {
