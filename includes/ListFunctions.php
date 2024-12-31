@@ -707,15 +707,14 @@ final class ListFunctions {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	private static function applyPattern( Parser $parser, PPFrame $frame, $inValue, $token, $pattern ) {
-		return ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern );
+	private static function applyPattern( PPFrame $frame, $inValue, $token, $pattern ) {
+		return ParserPower::applyPattern( $frame, $inValue, $token, $pattern );
 	}
 
 	/**
 	 * Replaces the indicated index token in the pattern with the given index and the token
 	 * in the pattern with the input value.
 	 *
-	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters.
 	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
@@ -724,16 +723,8 @@ final class ListFunctions {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	private static function applyPatternWithIndex(
-		Parser $parser,
-		PPFrame $frame,
-		$inValue,
-		$indexToken,
-		$index,
-		$token,
-		$pattern
-	) {
-		return ParserPower::applyPatternWithIndex( $parser, $frame, $inValue, $indexToken, $index, $token, $pattern );
+	private static function applyPatternWithIndex( PPFrame $frame, $inValue, $indexToken, $index, $token, $pattern ) {
+		return ParserPower::applyPatternWithIndex( $frame, $inValue, $indexToken, $index, $token, $pattern );
 	}
 
 	/**
@@ -748,23 +739,14 @@ final class ListFunctions {
 	 * @param string $pattern Pattern containing tokens to be replaced by field values.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	private static function applyFieldPattern(
-		Parser $parser,
-		PPFrame $frame,
-		$inValue,
-		$fieldSep,
-		array $tokens,
-		$tokenCount,
-		$pattern
-	) {
-		return ParserPower::applyFieldPattern( $parser, $frame, $inValue, $fieldSep, $tokens, $tokenCount, $pattern );
+	private static function applyFieldPattern( PPFrame $frame, $inValue, $fieldSep, array $tokens, $tokenCount, $pattern ) {
+		return ParserPower::applyFieldPattern( $frame, $inValue, $fieldSep, $tokens, $tokenCount, $pattern );
 	}
 
 	/**
 	 * Replaces the index token with the given index, and then breaks the input value into fields and then replaces the
 	 * indicated tokens in the pattern with those field values.
 	 *
-	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters
 	 * @param string $fieldSep The delimiter separating the fields in the value.
@@ -776,7 +758,6 @@ final class ListFunctions {
 	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyFieldPatternWithIndex(
-		Parser $parser,
 		PPFrame $frame,
 		$inValue,
 		$fieldSep,
@@ -787,7 +768,6 @@ final class ListFunctions {
 		$pattern
 	) {
 		return ParserPower::applyFieldPatternWithIndex(
-			$parser,
 			$frame,
 			$inValue,
 			$fieldSep,
@@ -957,7 +937,6 @@ final class ListFunctions {
 			foreach ( $inValues as $value ) {
 				if ( trim( $value ) !== '' ) {
 					$result = self::applyFieldPatternWithIndex(
-						$parser,
 						$frame,
 						$value,
 						$fieldSep,
@@ -967,6 +946,8 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
+					$result = $parser->preprocessToDom( $result, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+					$result = self::expand( $frame, $result, self::UNESCAPE );
 					$result = $parser->replaceVariables( ParserPower::unescape( trim( $result ) ), $frame );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
@@ -978,15 +959,9 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $inValues as $value ) {
 				if ( trim( $value ) !== '' ) {
-					$result = self::applyPatternWithIndex(
-						$parser,
-						$frame,
-						$value,
-						$indexToken,
-						$index,
-						$token,
-						$pattern
-					);
+					$result = self::applyPatternWithIndex( $frame, $value, $indexToken, $index, $token, $pattern );
+					$result = $parser->preprocessToDom( $result, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+					$result = ParserPower::expand( $frame, $result, ParserPower::UNESCAPE );
 					$result = $parser->replaceVariables( ParserPower::unescape( $result ), $frame );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
@@ -1238,7 +1213,6 @@ final class ListFunctions {
 			foreach ( $inValues as $value ) {
 				if ( trim( $value ) !== '' ) {
 					$key = self::applyFieldPatternWithIndex(
-						$parser,
 						$frame,
 						$value,
 						$fieldSep,
@@ -1248,6 +1222,8 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
+					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+					$key = self::expand( $frame, $key, self::UNESCAPE );
 					$key = $parser->replaceVariables( ParserPower::unescape( $key ), $frame );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
@@ -1260,7 +1236,9 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $inValues as $value ) {
 				if ( trim( $value ) !== '' ) {
-					$key = self::applyPatternWithIndex( $parser, $frame, $value, $indexToken, $index, $token, $pattern );
+					$key = self::applyPatternWithIndex( $frame, $value, $indexToken, $index, $token, $pattern );
+					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
 					$key = $parser->replaceVariables( ParserPower::unescape( $key ), $frame );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
@@ -1462,7 +1440,6 @@ final class ListFunctions {
 			foreach ( $values as $value ) {
 				if ( trim( $value ) !== '' ) {
 					$key = self::applyFieldPatternWithIndex(
-						$parser,
 						$frame,
 						$value,
 						$fieldSep,
@@ -1472,6 +1449,8 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
+					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+					$key = self::expand( $frame, $key, self::UNESCAPE );
 					$key = $parser->replaceVariables( ParserPower::unescape( $key ), $frame );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
@@ -1481,7 +1460,9 @@ final class ListFunctions {
 			$index = 1;
 			foreach ( $values as $value ) {
 				if ( trim( $value ) !== '' ) {
-					$key = self::applyPatternWithIndex( $parser, $frame, $value, $indexToken, $index, $token, $pattern );
+					$key = self::applyPatternWithIndex( $frame, $value, $indexToken, $index, $token, $pattern );
+					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
 					$key = $parser->replaceVariables( ParserPower::unescape( $key ), $frame );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
@@ -1770,7 +1751,6 @@ final class ListFunctions {
 			foreach ( $inValues as $inValue ) {
 				if ( trim( $inValue ) !== '' ) {
 					$outValue = self::applyFieldPatternWithIndex(
-						$parser,
 						$frame,
 						$inValue,
 						$fieldSep,
@@ -1780,6 +1760,8 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
+					$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+					$outValue = self::expand( $frame, $outValue, self::UNESCAPE );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 						++$index;
@@ -1789,7 +1771,9 @@ final class ListFunctions {
 		} else {
 			foreach ( $inValues as $inValue ) {
 				if ( trim( $inValue ) !== '' ) {
-					$outValue = self::applyPatternWithIndex( $parser, $frame, $inValue, $indexToken, $index, $token, $pattern );
+					$outValue = self::applyPatternWithIndex( $frame, $inValue, $indexToken, $index, $token, $pattern );
+					$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+					$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 						++$index;

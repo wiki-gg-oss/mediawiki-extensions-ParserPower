@@ -233,22 +233,20 @@ class ParserPower {
 	/**
 	 * Replaces the indicated token in the pattern with the input value.
 	 *
-	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters.
 	 * @param string $token The token to replace.
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPattern( Parser $parser, PPFrame $frame, $inValue, $token, $pattern ) {
-		return self::applyPatternWithIndex( $parser, $frame, $inValue, '', 0, $token, $pattern );
+	public static function applyPattern( PPFrame $frame, $inValue, $token, $pattern ) {
+		return self::applyPatternWithIndex( $frame, $inValue, '', 0, $token, $pattern );
 	}
 
 	/**
 	 * Replaces the indicated index token in the pattern with the given index and the token in the
 	 * pattern with the input value.
 	 *
-	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters.
 	 * @param string $indexToken The token to replace with the index, or null/empty value to skip index replacement.
@@ -257,15 +255,7 @@ class ParserPower {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPatternWithIndex(
-		Parser $parser,
-		PPFrame $frame,
-		$inValue,
-		$indexToken,
-		$index,
-		$token,
-		$pattern
-	) {
+	public static function applyPatternWithIndex( PPFrame $frame, $inValue, $indexToken, $index, $token, $pattern ) {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
 			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
@@ -278,8 +268,7 @@ class ParserPower {
 		} else {
 			$outValue = $inValue;
 		}
-		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return self::expand( $frame, $outValue, self::UNESCAPE );
+		return $outValue;
 	}
 
 	/**
@@ -294,33 +283,14 @@ class ParserPower {
 	 * @param string $pattern Pattern containing tokens to be replaced by field values.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyFieldPattern(
-		Parser $parser,
-		PPFrame $frame,
-		$inValue,
-		$fieldSep,
-		array $tokens,
-		$tokenCount,
-		$pattern
-	) {
-		return self::applyFieldPatternWithIndex(
-			$parser,
-			$frame,
-			$inValue,
-			$fieldSep,
-			'',
-			0,
-			$tokens,
-			$tokenCount,
-			$pattern
-		);
+	public static function applyFieldPattern( PPFrame $frame, $inValue, $fieldSep, array $tokens, $tokenCount, $pattern ) {
+		return self::applyFieldPatternWithIndex( $frame, $inValue, $fieldSep, '', 0, $tokens, $tokenCount, $pattern );
 	}
 
 	/**
 	 * Replaces the index token with the given index, and then breaks the input value into fields and then replaces the
 	 * indicated tokens in the pattern with those field values.
 	 *
-	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters
 	 * @param string $fieldSep The delimiter separating the fields in the value.
@@ -332,7 +302,6 @@ class ParserPower {
 	 * @return string The result of the token replacement within the pattern.
 	 */
 	public static function applyFieldPatternWithIndex(
-		Parser $parser,
 		PPFrame $frame,
 		$inValue,
 		$fieldSep,
@@ -356,7 +325,6 @@ class ParserPower {
 		} else {
 			$outValue = $inValue;
 		}
-		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return self::expand( $frame, $outValue, self::UNESCAPE );
+		return $outValue;
 	}
 }

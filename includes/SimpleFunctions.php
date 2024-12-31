@@ -289,7 +289,10 @@ final class SimpleFunctions {
 		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
 		$pattern = $params[2] ?? 'x';
 
-		$outValue = ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern );
+		$outValue = ParserPower::applyPattern( $frame, $inValue, $token, $pattern );
+		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+		$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outValue );
 	}
 
@@ -312,7 +315,10 @@ final class SimpleFunctions {
 		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
 		$pattern = $params[2] ?? 'x';
 
-		$outValue = ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern );
+		$outValue = ParserPower::applyPattern( $frame, $inValue, $token, $pattern );
+		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+		$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outValue );
 	}
 
