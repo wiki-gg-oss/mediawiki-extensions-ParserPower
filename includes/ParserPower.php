@@ -130,9 +130,13 @@ class ParserPower {
 			return '';
 		}
 
-		$dom = $parser->preprocessToDom( $text, Preprocessor::DOM_FOR_INCLUSION );
+		if ( $frame->isTemplate() ) {
+			$dom = $parser->preprocessToDom( $text, Preprocessor::DOM_FOR_INCLUSION );
+			$frame = $frame->newChild();
+		} else {
+			$dom = $parser->preprocessToDom( $text );
+		}
 
-		$frame = $frame->newChild();
 		return $frame->expand( $dom );
 	}
 
