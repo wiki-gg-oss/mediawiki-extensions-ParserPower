@@ -259,16 +259,18 @@ class ParserPower {
 	 */
 	public static function applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern ) {
 		$inValue = trim( $inValue );
-		if ( trim( $pattern ) !== '' ) {
-			if ( $indexToken !== null && $indexToken !== '' ) {
-				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
-			}
-			if ( $token !== null && $token !== '' ) {
-				$outValue = str_replace( $token, $inValue, $outValue );
-			}
-		} else {
-			$outValue = $inValue;
+		if ( trim( $pattern ) === '' ) {
+			return $inValue;
 		}
+
+		$outValue = $pattern;
+		if ( $indexToken !== null && $indexToken !== '' ) {
+			$outValue = str_replace( $indexToken, strval( $index ), $outValue );
+		}
+		if ( $token !== null && $token !== '' ) {
+			$outValue = str_replace( $token, $inValue, $outValue );
+		}
+
 		return $outValue;
 	}
 
@@ -309,18 +311,20 @@ class ParserPower {
 		$pattern
 	) {
 		$inValue = trim( $inValue );
-		if ( trim( $pattern ) !== '' ) {
-			if ( $indexToken !== null && $indexToken !== '' ) {
-				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
-			}
-			$fields = explode( $fieldSep, $inValue, $tokenCount );
-			$fieldCount = count( $fields );
-			for ( $i = 0; $i < $tokenCount; $i++ ) {
-				$outValue = str_replace( $tokens[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
-			}
-		} else {
-			$outValue = $inValue;
+		if ( trim( $pattern ) === '' ) {
+			return $inValue;
 		}
+
+		$outValue = $pattern;
+		if ( $indexToken !== null && $indexToken !== '' ) {
+			$outValue = str_replace( $indexToken, strval( $index ), $outValue );
+		}
+		$fields = explode( $fieldSep, $inValue, $tokenCount );
+		$fieldCount = count( $fields );
+		for ( $i = 0; $i < $tokenCount; $i++ ) {
+			$outValue = str_replace( $tokens[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
+		}
+
 		return $outValue;
 	}
 }
