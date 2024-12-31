@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\ParserPower;
 
 use Parser;
 use PPFrame;
+use Preprocessor;
 
 class ParserPower {
 	/**
@@ -113,6 +114,26 @@ class ParserPower {
 		}
 
 		return $expanded;
+	}
+
+	/**
+	 * Replace variables within a text, that has been unescaped.
+	 * In this context, template arguments can not be used.
+	 *
+	 * @param Parser $parser
+	 * @param PPFrame $frame
+	 * @param string $text
+	 * @return string
+	 */
+	public static function evaluateUnescaped( Parser $parser, PPFrame $frame, $text ) {
+		if ( $text === '' ) {
+			return '';
+		}
+
+		$dom = $parser->preprocessToDom( $text, Preprocessor::DOM_FOR_INCLUSION );
+
+		$frame = $frame->newChild();
+		return $frame->expand( $dom );
 	}
 
 	/**
