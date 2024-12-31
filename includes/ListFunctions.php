@@ -1069,8 +1069,6 @@ final class ListFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function lstfltrRender( Parser $parser, PPFrame $frame, array $params ) {
-		$params = ParserPower::arrangeParams( $frame, $params );
-
 		$inList = ParserPower::expand( $frame, $params[2] ?? '' );
 
 		if ( $inList === '' ) {
@@ -1106,8 +1104,6 @@ final class ListFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function lstrmRender( Parser $parser, PPFrame $frame, array $params ) {
-		$params = ParserPower::arrangeParams( $frame, $params );
-
 		$inList = ParserPower::expand( $frame, $params[1] ?? '' );
 
 		if ( $inList === '' ) {
@@ -1979,7 +1975,7 @@ final class ListFunctions {
 			$outSep,
 			$sortMode,
 			$sortOptions,
-			'',
+			0,
 			'',
 			'',
 			'',
@@ -2021,7 +2017,7 @@ final class ListFunctions {
 			$outSep,
 			$sortMode,
 			$sortOptions,
-			'',
+			0,
 			'',
 			'',
 			'',
@@ -2205,7 +2201,7 @@ final class ListFunctions {
 		$default
 	) {
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default . 'no input' );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
@@ -2242,7 +2238,7 @@ final class ListFunctions {
 		}
 
 		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default . '0 count' );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
 		$count = strval( count( $outValues ) );
