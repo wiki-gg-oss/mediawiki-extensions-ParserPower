@@ -19,3 +19,20 @@ lstcnt
 "10"
 </p>
 !! end
+
+!! test
+{{#lstsep}}
+!! wikitext
+"{{#lstsep:}}"
+"{{#lstsep: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"abcdefghij"
+"a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
