@@ -802,7 +802,6 @@ final class ListFunctions {
 	 * @return string The result of the template.
 	 */
 	private static function applyTemplate( Parser $parser, PPFrame $frame, $inValue, $template, $fieldSep ) {
-		$inValue = trim( $inValue );
 		if ( $inValue === '' ) {
 			return;
 		}
@@ -823,7 +822,10 @@ final class ListFunctions {
 		if ( $outValue instanceof PPNode_Hash_Array ) {
 			$outValue = $outValue->value;
 		}
-		return $parser->replaceVariables( implode( '', $outValue ), $frame );
+		$outValue = implode( '', $outValue );
+
+		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+		return ParserPower::expand( $frame, $outValue );
 	}
 
 	/**
@@ -839,7 +841,7 @@ final class ListFunctions {
 		if ( $valueSep !== '' ) {
 			$includeValues = self::arrayTrimUnescape( self::explodeList( $valueSep, $values ) );
 		} else {
-			$includeValues = [ ParserPower::unescape( trim( $values ) ) ];
+			$includeValues = [ ParserPower::unescape( $values ) ];
 		}
 
 		$outValues = [];
@@ -875,7 +877,7 @@ final class ListFunctions {
 		if ( $valueSep !== '' ) {
 			$excludeValues = self::arrayTrimUnescape( self::explodeList( $valueSep, $values ) );
 		} else {
-			$excludeValues = [ ParserPower::unescape( trim( $values ) ) ];
+			$excludeValues = [ ParserPower::unescape( $values ) ];
 		}
 
 		$outValues = [];
@@ -927,7 +929,7 @@ final class ListFunctions {
 			$tokenCount = count( $tokens );
 			$index = 1;
 			foreach ( $inValues as $value ) {
-				if ( trim( $value ) !== '' ) {
+				if ( $value !== '' ) {
 					$result = self::applyFieldPatternWithIndex(
 						$value,
 						$fieldSep,
@@ -938,8 +940,8 @@ final class ListFunctions {
 						$pattern
 					);
 					$result = $parser->preprocessToDom( $result, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$result = self::expand( $frame, $result, self::UNESCAPE );
-					$result = $parser->replaceVariables( ParserPower::unescape( trim( $result ) ), $frame );
+					$result = ParserPower::expand( $frame, $result, ParserPower::UNESCAPE );
+					$result = $parser->replaceVariables( $result, $frame );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
@@ -949,11 +951,11 @@ final class ListFunctions {
 		} else {
 			$index = 1;
 			foreach ( $inValues as $value ) {
-				if ( trim( $value ) !== '' ) {
+				if ( $value !== '' ) {
 					$result = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
 					$result = $parser->preprocessToDom( $result, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
 					$result = ParserPower::expand( $frame, $result, ParserPower::UNESCAPE );
-					$result = $parser->replaceVariables( ParserPower::unescape( $result ), $frame );
+					$result = $parser->replaceVariables( $result, $frame );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
@@ -1018,7 +1020,7 @@ final class ListFunctions {
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = $params["pattern"] ?? '';
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
@@ -1202,7 +1204,7 @@ final class ListFunctions {
 			$tokenCount = count( $tokens );
 			$index = 1;
 			foreach ( $inValues as $value ) {
-				if ( trim( $value ) !== '' ) {
+				if ( $value !== '' ) {
 					$key = self::applyFieldPatternWithIndex(
 						$value,
 						$fieldSep,
@@ -1213,8 +1215,8 @@ final class ListFunctions {
 						$pattern
 					);
 					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$key = self::expand( $frame, $key, self::UNESCAPE );
-					$key = $parser->replaceVariables( ParserPower::unescape( $key ), $frame );
+					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
+					$key = $parser->replaceVariables( $key, $frame );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
@@ -1225,11 +1227,11 @@ final class ListFunctions {
 		} else {
 			$index = 1;
 			foreach ( $inValues as $value ) {
-				if ( trim( $value ) !== '' ) {
+				if ( $value !== '' ) {
 					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
 					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
 					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
-					$key = $parser->replaceVariables( ParserPower::unescape( $key ), $frame );
+					$key = $parser->replaceVariables( $key, $frame );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
@@ -1300,7 +1302,7 @@ final class ListFunctions {
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = $params["pattern"] ?? '';
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
@@ -1428,7 +1430,7 @@ final class ListFunctions {
 			$tokenCount = count( $tokens );
 			$index = 1;
 			foreach ( $values as $value ) {
-				if ( trim( $value ) !== '' ) {
+				if ( $value !== '' ) {
 					$key = self::applyFieldPatternWithIndex(
 						$value,
 						$fieldSep,
@@ -1439,8 +1441,8 @@ final class ListFunctions {
 						$pattern
 					);
 					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$key = self::expand( $frame, $key, self::UNESCAPE );
-					$key = $parser->replaceVariables( ParserPower::unescape( $key ), $frame );
+					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
+					$key = $parser->replaceVariables( $key, $frame );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
 				}
@@ -1448,11 +1450,11 @@ final class ListFunctions {
 		} else {
 			$index = 1;
 			foreach ( $values as $value ) {
-				if ( trim( $value ) !== '' ) {
+				if ( $value !== '' ) {
 					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
 					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
 					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
-					$key = $parser->replaceVariables( ParserPower::unescape( $key ), $frame );
+					$key = $parser->replaceVariables( $key, $frame );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
 				}
@@ -1594,7 +1596,7 @@ final class ListFunctions {
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = $params["pattern"] ?? '';
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
 		$subsort = ParserPower::expand( $frame, $params["subsort"] ?? '' );
@@ -1738,7 +1740,7 @@ final class ListFunctions {
 			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
 			$tokenCount = count( $tokens );
 			foreach ( $inValues as $inValue ) {
-				if ( trim( $inValue ) !== '' ) {
+				if ( $inValue !== '' ) {
 					$outValue = self::applyFieldPatternWithIndex(
 						$inValue,
 						$fieldSep,
@@ -1749,7 +1751,7 @@ final class ListFunctions {
 						$pattern
 					);
 					$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$outValue = self::expand( $frame, $outValue, self::UNESCAPE );
+					$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 						++$index;
@@ -1758,7 +1760,7 @@ final class ListFunctions {
 			}
 		} else {
 			foreach ( $inValues as $inValue ) {
-				if ( trim( $inValue ) !== '' ) {
+				if ( $inValue !== '' ) {
 					$outValue = self::applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern );
 					$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
 					$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
@@ -1886,7 +1888,7 @@ final class ListFunctions {
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = $params["pattern"] ?? '';
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
@@ -1956,7 +1958,7 @@ final class ListFunctions {
 
 		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::NO_VARS | ParserPower::UNESCAPE );
-		$pattern = $params[3] ?? 'x';
+		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params[5] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
@@ -2052,8 +2054,6 @@ final class ListFunctions {
 		array $tokens2,
 		$pattern
 	) {
-		$inValue1 = trim( $inValue1 );
-		$inValue2 = trim( $inValue2 );
 		$tokenCount1 = count( $tokens1 );
 		$tokenCount2 = count( $tokens2 );
 
@@ -2077,7 +2077,7 @@ final class ListFunctions {
 			}
 		}
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
+		return ParserPower::expand( $frame, $outValue );
 	}
 
 	/**
@@ -2142,12 +2142,12 @@ final class ListFunctions {
 				while ( count( $otherValues ) > 0 ) {
 					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = array_shift( $otherValues );
 					$doMerge = call_user_func_array( $applyFunction, $matchParams );
-					$doMerge = $parser->replaceVariables( ParserPower::unescape( trim( $doMerge ) ), $frame );
+					$doMerge = $parser->replaceVariables( ParserPower::unescape( $doMerge ), $frame );
 					$doMerge = self::decodeBool( $doMerge );
 
 					if ( $doMerge ) {
 						$value1 = call_user_func_array( $applyFunction, $mergeParams );
-						$value1 = $parser->replaceVariables( ParserPower::unescape( trim( $value1 ) ), $frame );
+						$value1 = $parser->replaceVariables( ParserPower::unescape( $value1 ), $frame );
 						$matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $value1;
 					} else {
 						$inValues[] = $value2;
@@ -2345,8 +2345,8 @@ final class ListFunctions {
 		$token1 = ParserPower::expand( $frame, $params["token1"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token2 = ParserPower::expand( $frame, $params["token2"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$matchPattern = $params["matchpattern"] ?? '';
-		$mergePattern = $params["mergepattern"] ?? '';
+		$matchPattern = ParserPower::expand( $frame, $params["matchpattern"] ?? '', ParserPower::NO_VARS );
+		$mergePattern = ParserPower::expand( $frame, $params["mergepattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );

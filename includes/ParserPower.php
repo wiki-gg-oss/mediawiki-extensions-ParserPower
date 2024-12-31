@@ -258,8 +258,7 @@ class ParserPower {
 	 * @return string The result of the token replacement within the pattern.
 	 */
 	public static function applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern ) {
-		$inValue = trim( $inValue );
-		if ( trim( $pattern ) === '' ) {
+		if ( $pattern === '' ) {
 			return $inValue;
 		}
 
@@ -310,8 +309,7 @@ class ParserPower {
 		$tokenCount,
 		$pattern
 	) {
-		$inValue = trim( $inValue );
-		if ( trim( $pattern ) === '' ) {
+		if ( $pattern === '' ) {
 			return $inValue;
 		}
 
