@@ -36,3 +36,252 @@ lstcnt
 "a!b!c!d!e!f!g!h!i!j"
 </p>
 !! end
+
+!! test
+{{#lstelem}}
+!! wikitext
+"{{#lstelem:}}"
+"{{#lstelem: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+!! html/php
+<p>""
+"a"
+"a"
+</p>
+!! end
+
+!! test
+{{#lstelem}} index
+!! wikitext
+0: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | 0 }}"
+2: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | 2 }}"
+11: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | 11 }}"
+-2: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | -2 }}"
+-11: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | -11 }}"
+!! html/php
+<p>0: ""
+2: "b"
+11: ""
+-2: "i"
+-11: ""
+</p>
+!! end
+
+!! test
+{{#lstsub}}
+!! wikitext
+"{{#lstsub:}}"
+"{{#lstsub: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"abcdefghij"
+"a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#lstsub}} index
+!! wikitext
+0: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 0 }}"
+1: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 1 }}"
+3: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 }}"
+11: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 11 }}"
+-1: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | -1 }}"
+-3: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | -3 }}"
+-11: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | -11 }}"
+!! html/php
+<p>0: "a!b!c!d!e!f!g!h!i!j"
+1: "a!b!c!d!e!f!g!h!i!j"
+3: "c!d!e!f!g!h!i!j"
+11: ""
+-1: "j"
+-3: "h!i!j"
+-11: "a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#lstsub}} length
+!! wikitext
+0: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | 0 }}"
+1: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | 1 }}"
+3: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | 3 }}"
+9: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | 9 }}"
+-1: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | -1 }}"
+-3: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | -3 }}"
+-9: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | -9 }}"
+!! html/php
+<p>0: ""
+1: "c"
+3: "c!d!e"
+9: "c!d!e!f!g!h!i!j"
+-1: "c!d!e!f!g!h!i"
+-3: "c!d!e!f!g"
+-9: ""
+</p>
+!! end
+
+!! test
+{{#lstfnd}}
+!! wikitext
+"{{#lstfnd:}}"
+"{{#lstfnd: E }}"
+"{{#lstfnd: E | }}"
+"{{#lstfnd: E | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cs }}"
+!! html/php
+<p>""
+""
+""
+"e"
+"e"
+"e"
+"e"
+""
+</p>
+!! end
+
+!! test
+{{#lstfnd}} item
+!! wikitext
+"{{#lstfnd: | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+a: "{{#lstfnd: a | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+e: "{{#lstfnd: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+j: "{{#lstfnd: j | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+x: "{{#lstfnd: x | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+c;d: "{{#lstfnd: c;d | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+!! html/php
+<p>""
+a: "a"
+e: "e"
+j: "j"
+x: ""
+c;d: ""
+</p>
+!! end
+
+!! test
+{{#lstfnd}} case sensitivity
+!! wikitext
+"{{#lstfnd: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}" / "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+ncs: "{{#lstfnd: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; | NcS }}" / "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | NcS }}"
+cs: "{{#lstfnd: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cS }}" / "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cS }}"
+!! html/php
+<p>"e" / "e"
+ncs: "e" / "e"
+cs: "e" / ""
+</p>
+!! end
+
+!! test
+{{#lstind}}
+!! wikitext
+"{{#lstind:}}"
+"{{#lstind: E }}"
+"{{#lstind: E | }}"
+"{{#lstind: E | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstind: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstind: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstind: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstind: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cs }}"
+!! html/php
+<p>""
+""
+""
+"5"
+"5"
+"5"
+"5"
+""
+</p>
+!! end
+
+!! test
+{{#lstind}} item
+!! wikitext
+"{{#lstind: | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+a: "{{#lstind: a | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+e: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+j: "{{#lstind: j | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+x: "{{#lstind: x | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+c;d: "{{#lstind: c;d | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+!! html/php
+<p>""
+a: "1"
+e: "5"
+j: "10"
+x: ""
+c;d: ""
+</p>
+!! end
+
+!! test
+{{#lstind}} options
+!! wikitext
+"{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | }}"
+ncs: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | NcS }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | NcS }}"
+cs: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | cS }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | cS }}"
+asc: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | aSC }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | aSC }}"
+desc: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | DeSc }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | DeSc }}"
+pos: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | POs }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | POs }}"
+neg: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | Neg }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | Neg }}"
+ncs asc pos: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | NcS aSC POs }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | NcS aSC POs }}"
+cs desc neg: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | cS DeSc Neg }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | cS DeSc Neg }}"
+!! html/php
+<p>"5" / "5"
+ncs: "5" / "5"
+cs: "5" / ""
+asc: "5" / "5"
+desc: "8" / "8"
+pos: "5" / "5"
+neg: "-6" / "-6"
+ncs asc pos: "5" / "5"
+cs desc neg: "-3" / ""
+</p>
+!! end
+
+!! test
+{{#lstapp}}
+!! wikitext
+"{{#lstapp:}}"
+"{{#lstapp: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstapp: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstapp: a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstapp: | ; | x }}"
+"{{#lstapp: a; b ;c;d;;e ;f; ;g; h;i;j | ; | x }}"
+!! html/php
+<p>""
+"a,b,c,d,e,f,g,h,i,j"
+"a;b;c;d;e;f;g;h;i;j"
+"a;b;c;d;e;f;g;h;i;j"
+"x"
+"a;b;c;d;e;f;g;h;i;j;x"
+</p>
+!! end
+
+!! test
+{{#lstprep}}
+!! wikitext
+"{{#lstprep:}}"
+"{{#lstprep: x }}"
+"{{#lstprep: x | ; }}"
+"{{#lstprep: x | ; | }}"
+"{{#lstprep: | ; | a; b ;c;d;;e ;f; ;g; h;i;j }}"
+"{{#lstprep: x | ; | a; b ;c;d;;e ;f; ;g; h;i;j }}"
+!! html/php
+<p>""
+"x"
+"x"
+"x"
+"a;b;c;d;e;f;g;h;i;j"
+"x;a;b;c;d;e;f;g;h;i;j"
+</p>
+!! end
