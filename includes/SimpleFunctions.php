@@ -574,9 +574,8 @@ final class SimpleFunctions {
 			$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
 		}
 
-		if ( $glue === '\n' ) {
-			$glue = '<br />';
-		}
+		// proper '\n' handling
+		$glue = str_replace( '\n', "\n", $glue );
 		return implode( $glue, $formatterCalls );
 	}
 
@@ -631,9 +630,8 @@ final class SimpleFunctions {
 			$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
 		}
 
-		if ( $glue === '\n' ) {
-			$glue = '<br />';
-		}
+		// proper '\n' handling
+		$glue = str_replace( '\n', "\n", $glue );
 		return implode( $glue, $formatterCalls );
 	}
 }
