@@ -571,7 +571,7 @@ final class SimpleFunctions {
 			$formatterCall = implode( '', $formatterCall );
 
 			// parse formatter call
-			$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
+			$formatterCalls[] = trim( $parser->replaceVariables( $formatterCall, $frame ) );
 		}
 
 		// proper '\n' handling
@@ -627,7 +627,7 @@ final class SimpleFunctions {
 			$formatterCall = implode( '', $formatterCall );
 
 			// parse formatter call
-			$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
+			$formatterCalls[] = trim( $parser->replaceVariables( $formatterCall, $frame ) );
 		}
 
 		// proper '\n' handling
