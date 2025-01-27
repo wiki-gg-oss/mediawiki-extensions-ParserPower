@@ -13,6 +13,7 @@ namespace MediaWiki\Extension\ParserPower;
 
 use Parser;
 use PPFrame;
+use Preprocessor;
 
 class ParserPower {
 	/**
@@ -126,6 +127,30 @@ class ParserPower {
 	}
 
 	/**
+	 * Replace variables within a text, that has been unescaped.
+	 * In this context, template arguments can not be used.
+	 *
+	 * @param Parser $parser
+	 * @param PPFrame $frame
+	 * @param string $text
+	 * @return string
+	 */
+	public static function evaluateUnescaped( Parser $parser, PPFrame $frame, $text ) {
+		if ( $text === '' ) {
+			return '';
+		}
+
+		if ( $frame->isTemplate() ) {
+			$dom = $parser->preprocessToDom( $text, Preprocessor::DOM_FOR_INCLUSION );
+			$frame = $frame->newChild();
+		} else {
+			$dom = $parser->preprocessToDom( $text );
+		}
+
+		return $frame->expand( $dom );
+	}
+
+	/**
 	 * Replaces all escape sequences with the appropriate characters. It should be calling *after* trimming strings to
 	 * protect any leading or trailing whitespace that was escaped.
 	 *
@@ -222,23 +247,19 @@ class ParserPower {
 	/**
 	 * Replaces the indicated token in the pattern with the input value.
 	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters.
 	 * @param string $token The token to replace.
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPattern( Parser $parser, PPFrame $frame, $inValue, $token, $pattern ) {
-		return self::applyPatternWithIndex( $parser, $frame, $inValue, '', 0, $token, $pattern );
+	public static function applyPattern( $inValue, $token, $pattern ) {
+		return self::applyPatternWithIndex( $inValue, '', 0, $token, $pattern );
 	}
 
 	/**
 	 * Replaces the indicated index token in the pattern with the given index and the token in the
 	 * pattern with the input value.
 	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters.
 	 * @param string $indexToken The token to replace with the index, or null/empty value to skip index replacement.
 	 * @param int $index The numeric index of this value.
@@ -246,36 +267,25 @@ class ParserPower {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPatternWithIndex(
-		Parser $parser,
-		PPFrame $frame,
-		$inValue,
-		$indexToken,
-		$index,
-		$token,
-		$pattern
-	) {
-		$inValue = trim( $inValue );
-		if ( trim( $pattern ) !== '' ) {
-			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
-			if ( $indexToken !== null && $indexToken !== '' ) {
-				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
-			}
-			if ( $token !== null && $token !== '' ) {
-				$outValue = str_replace( $token, $inValue, $outValue );
-			}
-		} else {
-			$outValue = $inValue;
+	public static function applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern ) {
+		if ( $pattern === '' ) {
+			return $inValue;
 		}
-		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return self::expand( $frame, $outValue, self::UNESCAPE );
+
+		$outValue = $pattern;
+		if ( $indexToken !== null && $indexToken !== '' ) {
+			$outValue = str_replace( $indexToken, strval( $index ), $outValue );
+		}
+		if ( $token !== null && $token !== '' ) {
+			$outValue = str_replace( $token, $inValue, $outValue );
+		}
+
+		return $outValue;
 	}
 
 	/**
 	 * Breaks the input value into fields and then replaces the indicated tokens in the pattern with those field values.
 	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters
 	 * @param string $fieldSep The delimiter separating the fields in the value.
 	 * @param array $tokens The list of tokens to replace.
@@ -283,34 +293,14 @@ class ParserPower {
 	 * @param string $pattern Pattern containing tokens to be replaced by field values.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyFieldPattern(
-		Parser $parser,
-		PPFrame $frame,
-		$inValue,
-		$fieldSep,
-		array $tokens,
-		$tokenCount,
-		$pattern
-	) {
-		return self::applyFieldPatternWithIndex(
-			$parser,
-			$frame,
-			$inValue,
-			$fieldSep,
-			'',
-			0,
-			$tokens,
-			$tokenCount,
-			$pattern
-		);
+	public static function applyFieldPattern( $inValue, $fieldSep, array $tokens, $tokenCount, $pattern ) {
+		return self::applyFieldPatternWithIndex( $inValue, $fieldSep, '', 0, $tokens, $tokenCount, $pattern );
 	}
 
 	/**
 	 * Replaces the index token with the given index, and then breaks the input value into fields and then replaces the
 	 * indicated tokens in the pattern with those field values.
 	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters
 	 * @param string $fieldSep The delimiter separating the fields in the value.
 	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
@@ -321,8 +311,6 @@ class ParserPower {
 	 * @return string The result of the token replacement within the pattern.
 	 */
 	public static function applyFieldPatternWithIndex(
-		Parser $parser,
-		PPFrame $frame,
 		$inValue,
 		$fieldSep,
 		$indexToken,
@@ -331,21 +319,20 @@ class ParserPower {
 		$tokenCount,
 		$pattern
 	) {
-		$inValue = trim( $inValue );
-		if ( trim( $pattern ) !== '' ) {
-			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
-			if ( $indexToken !== null && $indexToken !== '' ) {
-				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
-			}
-			$fields = explode( $fieldSep, $inValue, $tokenCount );
-			$fieldCount = count( $fields );
-			for ( $i = 0; $i < $tokenCount; $i++ ) {
-				$outValue = str_replace( $tokens[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
-			}
-		} else {
-			$outValue = $inValue;
+		if ( $pattern === '' ) {
+			return $inValue;
 		}
-		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return self::expand( $frame, $outValue, self::UNESCAPE );
+
+		$outValue = $pattern;
+		if ( $indexToken !== null && $indexToken !== '' ) {
+			$outValue = str_replace( $indexToken, strval( $index ), $outValue );
+		}
+		$fields = explode( $fieldSep, $inValue, $tokenCount );
+		$fieldCount = count( $fields );
+		for ( $i = 0; $i < $tokenCount; $i++ ) {
+			$outValue = str_replace( $tokens[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
+		}
+
+		return $outValue;
 	}
 }

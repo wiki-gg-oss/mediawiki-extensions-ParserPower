@@ -63,9 +63,7 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function trimRender( Parser $parser, PPFrame $frame, array $params ) {
-		$text = ParserPower::expand( $frame, $params[0] ?? '' );
-
-		return [ $text, 'noparse' => false ];
+		return ParserPower::expand( $frame, $params[0] ?? '' );
 	}
 
 	/**
@@ -80,7 +78,7 @@ final class SimpleFunctions {
 	public static function uescRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
 
-		return [ $text, 'noparse' => false ];
+		return ParserPower::evaluateUnescaped( $parser, $frame, $text );
 	}
 
 	/**
@@ -96,7 +94,7 @@ final class SimpleFunctions {
 	public static function uescnowikiRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
 
-		return [ '<nowiki>' . $text . '</nowiki>', 'noparse' => false ];
+		return ParserPower::evaluateUnescaped( $parser, $frame, '<nowiki>' . $text . '</nowiki>' );
 	}
 
 	/**
@@ -109,9 +107,9 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function trimuescRender( Parser $parser, PPFrame $frame, array $params ) {
-		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
+		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
 
-		return [ trim( $text ), 'noparse' => false ];
+		return ParserPower::evaluateUnescaped( $parser, $frame, $text );
 	}
 
 	/**
@@ -128,7 +126,7 @@ final class SimpleFunctions {
 	public static function linkpageRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
 		$text = $parser->replaceVariables( $text, $frame );
 
-		if ( $text ) {
+		if ( $text !== '' ) {
 			$text = preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linkpageReplace' ], $text );
 		}
 
@@ -193,11 +191,7 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public static function escRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
-		$text = ParserPower::escape( $text );
-
-		$text = $parser->replaceVariables( $text, $frame );
-
-		return [ $text, 'markerType' => 'none' ];
+		return [ ParserPower::escape( $text ), 'markerType' => 'none' ];
 	}
 
 	/**
@@ -217,7 +211,7 @@ final class SimpleFunctions {
 			$value = ParserPower::expand( $frame, $params[2] ?? '', ParserPower::UNESCAPE );
 		}
 
-		return [ $value, 'noparse' => false ];
+		return ParserPower::evaluateUnescaped( $parser, $frame, $value );
 	}
 
 	/**
@@ -233,11 +227,11 @@ final class SimpleFunctions {
 			$inValue = ParserPower::expand( $frame, $param );
 
 			if ( $inValue !== '' ) {
-				return [ $inValue, 'noparse' => false ];
+				return $inValue;
 			}
 		}
 
-		return [ '', 'noparse' => false ];
+		return '';
 	}
 
 	/**
@@ -253,11 +247,12 @@ final class SimpleFunctions {
 			$inValue = ParserPower::expand( $frame, $param );
 
 			if ( $inValue !== '' ) {
-				return [ ParserPower::unescape( $inValue ), 'noparse' => false ];
+				$inValue = ParserPower::unescape( $inValue );
+				return ParserPower::evaluateUnescaped( $parser, $frame, $inValue );
 			}
 		}
 
-		return [ '', 'noparse' => false ];
+		return '';
 	}
 
 	/**
@@ -278,7 +273,7 @@ final class SimpleFunctions {
 			$value = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
 		}
 
-		return [ $value, 'noparse' => false ];
+		return ParserPower::evaluateUnescaped( $parser, $frame, $value );
 	}
 
 	/**
@@ -295,7 +290,11 @@ final class SimpleFunctions {
 		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
 		$pattern = $params[2] ?? 'x';
 
-		return [ ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern ), 'noparse' => false ];
+		$outValue = ParserPower::applyPattern( $inValue, $token, $pattern );
+		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+		$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outValue );
 	}
 
 	/**
@@ -311,14 +310,17 @@ final class SimpleFunctions {
 
 		if ( $inValue === '' ) {
 			$default = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
-
-			return [ $default, 'noparse' => false ];
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
 		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
 		$pattern = $params[2] ?? 'x';
 
-		return [ ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern ), 'noparse' => false ];
+		$outValue = ParserPower::applyPattern( $inValue, $token, $pattern );
+		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
+		$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outValue );
 	}
 
 	/**
@@ -333,7 +335,7 @@ final class SimpleFunctions {
 		$switchKey = isset( $params[0] ) ? ParserPower::expand( $frame, array_shift( $params ), ParserPower::UNESCAPE ) : '';
 
 		if ( count( $params ) === 0 ) {
-			return [ '', 'noparse' => false ];
+			return '';
 		}
 
 		$lastBits = $params[count( $params ) - 1]->splitArg();
@@ -366,7 +368,8 @@ final class SimpleFunctions {
 
 			if ( $value !== null ) {
 				if ( $keyFound ) {
-					return [ ParserPower::unescape( $value ), 'noparse' => false ];
+					$value = ParserPower::unescape( $value );
+					return ParserPower::evaluateUnescaped( $parser, $frame, $value );
 				} elseif ( $mwDefaultFound ) {
 					$default = $value;
 					$mwDefaultFound = false;
@@ -377,7 +380,8 @@ final class SimpleFunctions {
 		if ( $lastBits['index'] !== '' ) {
 			$default = $lastValue;
 		}
-		return [ ParserPower::expand( $frame, $default, ParserPower::UNESCAPE ), 'noparse' => false ];
+		$default = ParserPower::expand( $frame, $default, ParserPower::UNESCAPE );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 	}
 
 	/**
@@ -505,7 +509,7 @@ final class SimpleFunctions {
 
 	public static function argmapRender( Parser $parser, PPFrame $frame, array $args ) {
 		if ( !isset( $args[0] ) ) {
-			return [ '', 'noparse' => false ];
+			return '';
 		}
 
 		// set parameters
