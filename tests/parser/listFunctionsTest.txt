@@ -482,3 +482,53 @@ cs desc neg: "-3" / ""
 "a, c, d, e, h, i"
 </p>
 !! end
+
+!! test
+{{#lstfltr}}
+!! wikitext
+"{{#lstfltr:}}"
+"{{#lstfltr: b;F; g ;J }}"
+"{{#lstfltr: b;F; g ;J | ; }}"
+"{{#lstfltr:           | ; | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstfltr: b;F; g ;J | ; | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstfltr: b;F; g ;J | ; | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstfltr: b;F; g ;J | ; | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
+"{{#lstfltr: b;F; g ;J | ; | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | x y }}"
+"{{#lstfltr: b;F; g ;J | ; | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | cS }}"
+!! html/php
+<p>""
+""
+""
+""
+"b, f, g, j"
+"b, f, g, j"
+"b!f!g!j"
+"b!f!g!j"
+"b!g"
+</p>
+!! end
+
+!! test
+{{#lstrm}}
+!! wikitext
+"{{#lstrm:}}"
+"{{#lstrm: B }}"
+"{{#lstrm:   | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstrm: B | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstrm: B | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstrm: B | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
+"{{#lstrm: B | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | x y }}"
+"{{#lstrm: b | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | cS }}"
+"{{#lstrm: B | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | cS }}"
+!! html/php
+<p>""
+""
+"a, b, c, d, e, f, g, h, i, j"
+"a, c, d, e, f, g, h, i, j"
+"a, c, d, e, f, g, h, i, j"
+"a!c!d!e!f!g!h!i!j"
+"a!c!d!e!f!g!h!i!j"
+"a!c!d!e!f!g!h!i!j"
+"a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
