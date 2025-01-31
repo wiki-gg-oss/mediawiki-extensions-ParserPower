@@ -13,6 +13,12 @@ Template:Empty
 !! endarticle
 
 !! article
+Template:Unknown
+!! text
+x y
+!! endarticle
+
+!! article
 Template:Remove
 !! text
 rEMovE
@@ -22,12 +28,6 @@ rEMovE
 Template:Remove/keep
 !! text
 KeEP
-!! endarticle
-
-!! article
-Template:Remove/random
-!! text
-x y
 !! endarticle
 
 !! article
@@ -43,15 +43,15 @@ Template:Remove/if fields
 !! endarticle
 
 !! article
-Template:Unique/constant
-!! text
-x
-!! endarticle
-
-!! article
 Template:Unique/value
 !! text
 {{#switch: {{{1}}} | b | c | f = x | {{{1}}} }}
+!! endarticle
+
+!! article
+Template:Sort/value
+!! text
+{{#switch: {{lc: {{{1}}} }} | a = 3 | c = 2 | 1 }}
 !! endarticle
 
 !! test
@@ -427,8 +427,8 @@ cs desc neg: "-3" / ""
 {{#listfilter}} by template
 !! wikitext
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = empty }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = unknown }}"
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/keep }}"
-"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/random }}"
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove }}"
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/if value }}"
 "{{#listfilter: list = a:k, b :l ,c: m,:n,d :o:,e:p: p, ,f:q :r, g : s | template = remove/if fields | fieldsep = : }}"
@@ -589,7 +589,7 @@ cs desc neg: "-3" / ""
 {{#listunique}} by template
 !! wikitext
 "{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = empty }}"
-"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unique/constant }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unknown }}"
 "{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unique/value }}"
 !! html/php
 <p>"a"
@@ -614,5 +614,121 @@ cs desc neg: "-3" / ""
 "a!b!C!D!E!f"
 "a!b!C!D!E!f"
 "a!b!C!D!A!c!E!f"
+</p>
+!! end
+
+!! test
+{{#listsort}}
+!! wikitext
+"{{#listsort:}}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | duplicates = x y }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | duplicates = STrIp }}"
+"{{#listsort: list = f; D ;C;A;;F ;B; ;e; a;c;C | insep = ; }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | outsep = ! }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | intro = ( | outro = ) }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listsort: list =                            | default = def }}"
+!! html/php
+<p>""
+"A, a, B, C, c, C, D, e, f, F"
+"A, a, B, C, c, C, D, e, f, F"
+"A, a, B, C, c, D, e, f, F"
+"A, a, B, C, c, C, D, e, f, F"
+"A!a!B!C!c!C!D!e!f!F"
+"(A, a, B, C, c, C, D, e, f, F)"
+"10(A, a, B, C, c, C, D, e, f, F)10"
+"def"
+</p>
+!! end
+
+!! test
+{{#listsort}} by pattern
+!! wikitext
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | pattern = }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | pattern = x | token = @ }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | pattern = {\{#expr: 10 - @ }\} | indextoken = @ }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | pattern = {\{#switch: {\{lc: @ }\} \! a = 3 \! c = 2 \! 1 }\} | token = @ }}"
+!! html/php
+<p>"A, a, B, C, c, C, D, e, f, F"
+"f, D, C, A, F, B, e, a, c, C"
+"C, c, a, e, B, F, A, C, D, f"
+"f, D, F, B, e, C, c, C, A, a"
+</p>
+!! end
+
+!! test
+{{#listsort}} by template
+!! wikitext
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = unknown }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = sort/value }}"
+!! html/php
+<p>"f, D, C, A, F, B, e, a, c, C"
+"f, D, C, A, F, B, e, a, c, C"
+"f, D, F, B, e, C, c, C, A, a"
+</p>
+!! end
+
+!! test
+{{#listsort}} options
+!! wikitext
+alpha asc ncs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortoptions = }}"
+alpha asc cs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortoptions = x cS y }}"
+alpha desc ncs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortoptions = DeSc }}"
+alpha desc cs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortoptions = DeSc cS }}"
+numeric asc: "{{#listsort: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | sortoptions = NuMEric }}"
+numeric desc: "{{#listsort: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | sortoptions = NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A, a, B, C, c, C, D, e, f, F"
+alpha asc cs: "A, B, C, C, D, F, a, c, e, f"
+alpha desc ncs: "f, F, e, D, C, c, C, B, A, a"
+alpha desc cs: "f, e, c, a, F, D, C, C, B, A"
+numeric asc: "1, 1, 2, 3, 3, 3, 4, 4, 6, 6"
+numeric desc: "6, 6, 4, 4, 3, 3, 3, 2, 1, 1"
+</p>
+!! end
+
+!! test
+{{#listsort}} subsort options
+!! wikitext
+alpha asc ncs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty | subsort = yES }}"
+alpha asc cs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty | subsort = yES | subsortoptions = x cS y }}"
+alpha desc ncs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty | subsort = yES | subsortoptions = DeSc }}"
+alpha desc cs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty | subsort = yES | subsortoptions = DeSc cS }}"
+numeric asc: "{{#listsort: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | template = empty | subsort = yES | subsortoptions = NuMEric }}"
+numeric desc: "{{#listsort: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | template = empty | subsort = yES | subsortoptions = NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A, a, B, C, c, C, D, e, f, F"
+alpha asc cs: "A, B, C, C, D, F, a, c, e, f"
+alpha desc ncs: "f, F, e, D, C, c, C, B, A, a"
+alpha desc cs: "f, e, c, a, F, D, C, C, B, A"
+numeric asc: "1, 1, 2, 3, 3, 3, 4, 4, 6, 6"
+numeric desc: "6, 6, 4, 4, 3, 3, 3, 2, 1, 1"
+</p>
+!! end
+
+!! test
+{{#lstsrt}}
+!! wikitext
+"{{#lstsrt:}}"
+"{{#lstsrt: f, D ,C,A,,F ,B, ,e, a,c,C }}"
+"{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; }}"
+alpha asc ncs: "{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; | ! }}"
+alpha asc cs: "{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; | ! | x cS y }}"
+alpha desc ncs: "{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; | ! | DeSc }}"
+alpha desc cs: "{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; | ! | DeSc cS }}"
+numeric asc: "{{#lstsrt: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | ! | NuMEric }}"
+numeric desc: "{{#lstsrt: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | ! | NuMEric DeSc }}"
+!! html/php
+<p>""
+"A, a, B, C, c, C, D, e, f, F"
+"A, a, B, C, c, C, D, e, f, F"
+alpha asc ncs: "A!a!B!C!c!C!D!e!f!F"
+alpha asc cs: "A!B!C!C!D!F!a!c!e!f"
+alpha desc ncs: "f!F!e!D!C!c!C!B!A!a"
+alpha desc cs: "f!e!c!a!F!D!C!C!B!A"
+numeric asc: "1!1!2!3!3!3!4!4!6!6"
+numeric desc: "6!6!4!4!3!3!3!2!1!1"
 </p>
 !! end
