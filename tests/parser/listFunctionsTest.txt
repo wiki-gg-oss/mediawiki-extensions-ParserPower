@@ -42,6 +42,18 @@ Template:Remove/if fields
 {{#switch: {{{1}}},{{{2|}}} | b ,l | c, m | ,n | d ,o: | e,p: p | f,q :r = rEMovE }}
 !! endarticle
 
+!! article
+Template:Unique/constant
+!! text
+x
+!! endarticle
+
+!! article
+Template:Unique/value
+!! text
+{{#switch: {{{1}}} | b | c | f = x | {{{1}}} }}
+!! endarticle
+
 !! test
 {{#lstcnt}}
 !! wikitext
@@ -530,5 +542,77 @@ cs desc neg: "-3" / ""
 "a!c!d!e!f!g!h!i!j"
 "a!c!d!e!f!g!h!i!j"
 "a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#listunique}}
+!! wikitext
+"{{#listunique:}}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | uniquecs = x y }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | uniquecs = yES }}"
+"{{#listunique: list = a; b ;C;D;;A ;b; ;c; D;E;f | insep = ; }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | outsep = ! }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | intro = ( | outro = ) }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listunique: default = def }}"
+!! html/php
+<p>""
+"a, b, C, D, E, f"
+"a, b, C, D, E, f"
+"a, b, C, D, A, c, E, f"
+"a, b, C, D, E, f"
+"a!b!C!D!E!f"
+"(a, b, C, D, E, f)"
+"6(a, b, C, D, E, f)6"
+"def"
+</p>
+!! end
+
+!! test
+{{#listunique}} by pattern
+!! wikitext
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | pattern = }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | pattern = x }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | pattern = {\{#expr: trunc( @ / 2 ) }\} | indextoken = @ }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | pattern = {\{#switch: @ \! b \! c \! f = x \! @ }\} | token = @ }}"
+!! html/php
+<p>"a, b, C, D, E, f"
+"a, b, C, D, E, f"
+"a, b, D, b, D, f"
+"a, b, C, D, A, E"
+</p>
+!! end
+
+!! test
+{{#listunique}} by template
+!! wikitext
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = empty }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unique/constant }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unique/value }}"
+!! html/php
+<p>"a"
+"a"
+"a, b, C, D, A, E"
+</p>
+!! end
+
+!! test
+{{#lstuniq}}
+!! wikitext
+"{{#lstuniq:}}"
+"{{#lstuniq: a, b ,C,D,,A ,b, ,c, D,E,f }}"
+"{{#lstuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; }}"
+"{{#lstuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | ! }}"
+"{{#lstuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | ! | x y }}"
+"{{#lstuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | ! | cS }}"
+!! html/php
+<p>""
+"a, b, C, D, E, f"
+"a, b, C, D, E, f"
+"a!b!C!D!E!f"
+"a!b!C!D!E!f"
+"a!b!C!D!A!c!E!f"
 </p>
 !! end
