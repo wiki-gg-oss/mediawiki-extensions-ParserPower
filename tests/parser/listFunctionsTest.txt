@@ -7,6 +7,41 @@ version=2
 lstcnt
 !! endfunctionhooks
 
+!! article
+Template:Empty
+!! text
+!! endarticle
+
+!! article
+Template:Remove
+!! text
+rEMovE
+!! endarticle
+
+!! article
+Template:Remove/keep
+!! text
+KeEP
+!! endarticle
+
+!! article
+Template:Remove/random
+!! text
+x y
+!! endarticle
+
+!! article
+Template:Remove/if value
+!! text
+{{#switch: {{{1}}} | b | f | g | j = rEMovE }}
+!! endarticle
+
+!! article
+Template:Remove/if fields
+!! text
+{{#switch: {{{1}}},{{{2|}}} | b ,l | c, m | ,n | d ,o: | e,p: p | f,q :r = rEMovE }}
+!! endarticle
+
 !! test
 {{#lstcnt}}
 !! wikitext
@@ -136,7 +171,7 @@ lstcnt
 "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
 "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
 "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
-"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cs }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cS }}"
 !! html/php
 <p>""
 ""
@@ -283,5 +318,123 @@ cs desc neg: "-3" / ""
 "x"
 "a;b;c;d;e;f;g;h;i;j"
 "x;a;b;c;d;e;f;g;h;i;j"
+</p>
+!! end
+
+!! test
+{{#listfilter}}
+!! wikitext
+"{{#listfilter:}}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#listfilter: list = a; b ;c;d;;e ;f; ;g; h;i;j | insep = ; }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = ; }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = ( | outro = ) }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | default = def }}"
+"{{#listfilter: default = def }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a;b;c;d;e;f;g;h;i;j"
+"(a, b, c, d, e, f, g, h, i, j)"
+"10(a, b, c, d, e, f, g, h, i, j)10"
+"a, b, c, d, e, f, g, h, i, j"
+"def"
+</p>
+!! end
+
+!! test
+{{#listfilter}} by pattern
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = KeEP }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = x y }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = rEMovE }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = {\{#switch: @ \! 2 \! 6 \! 7 \! 10 = rEMovE }\} | indextoken = @ }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = {\{#switch: @ \! b \! f \! g \! j = rEMovE }\} | token = @ }}"
+"{{#listfilter: list = a:k, b :l ,c: m,:n,d :o:,e:p: p, ,f:q :r, g : s | pattern = {\{#switch: @1,@2 \! b ,l \! c, m \! ,n \! d ,o: \! e,p: p \! f,q :r = rEMovE }\} | token = @1 , @2 | fieldsep = : }}"
+"{{#listfilter: list = a:k, b :l ,c: m,:n,d :o:,e:p: p, ,f:q :r, g : s | pattern = {\{#switch: @1,@2 \! b ,l \! c, m \! ,n \! d ,o: \! e,p: p \! f,q :r = rEMovE }\} | token = @1 ; @2 | fieldsep = : | tokensep = ; }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+""
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a:k, g&#160;: s"
+"a:k, g&#160;: s"
+</p>
+!! end
+
+!! test
+{{#listfilter}} by template
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = empty }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/keep }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/random }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/if value }}"
+"{{#listfilter: list = a:k, b :l ,c: m,:n,d :o:,e:p: p, ,f:q :r, g : s | template = remove/if fields | fieldsep = : }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+""
+"a, c, d, e, h, i"
+"a:k, b :l, c: m, d :o:, e:p: p, f:q :r, g&#160;: s"
+</p>
+!! end
+
+!! test
+{{#listfilter}} by exclusion
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b,F, g ,J }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b;F; g ;J | removesep = ; }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b;F; g ;J | removesep = ; | removecs = x y }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b;F; g ;J | removesep = ; | removecs = yES }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, f, h, i, j"
+</p>
+!! end
+
+!! test
+{{#listfilter}} by inclusion
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = b,F, g ,J }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = b;F; g ;J | keepsep = ; }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = b;F; g ;J | keepsep = ; | keepcs = x y }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = b;F; g ;J | keepsep = ; | keepcs = yES }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"b, f, g, j"
+"b, f, g, j"
+"b, f, g, j"
+"b, g"
+</p>
+!! end
+
+!! test
+{{#listfilter}} mode priority
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = a,c,d,e,h,i | remove = a,b,c,d,e,f,g,h,i,j }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = a,c,d,e,h,i | template = remove }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = a,c,d,e,h,i | pattern = rEMovE }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b,f,g,j | template = remove }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b,f,g,j | pattern = rEMovE }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/if value | pattern = rEMovE }}"
+!! html/php
+<p>"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
 </p>
 !! end
