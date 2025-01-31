@@ -48,10 +48,35 @@ Template:Remove/if fields
 "{{#lstcnt:}}"
 "{{#lstcnt: ,,,, }}"
 "{{#lstcnt: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstcnt: a, b ,C,D,,A ,b, ,c, D,E,f }}"
+"{{#lstcnt: a; b ;C;D;;A ;b; ;c; D;E;f | ; }}"
 !! html/php
 <p>"0"
 "0"
 "10"
+"10"
+"10"
+</p>
+!! end
+
+!! test
+{{#lstcntuniq}}
+!! wikitext
+"{{#lstcntuniq:}}"
+"{{#lstcntuniq: ,,,, }}"
+"{{#lstcntuniq: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstcntuniq: a, b ,C,D,,A ,b, ,c, D,E,f }}"
+"{{#lstcntuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; }}"
+"{{#lstcntuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | x y }}"
+"{{#lstcntuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | cS }}"
+!! html/php
+<p>"0"
+"0"
+"10"
+"6"
+"6"
+"6"
+"8"
 </p>
 !! end
 
