@@ -25,6 +25,18 @@ rEMovE
 !! endarticle
 
 !! article
+Template:Id
+!! text
+{{{1}}}
+!! endarticle
+
+!! article
+Template:Opposite
+!! text
+{{#expr: 9 - {{{1}}} }}
+!! endarticle
+
+!! article
 Template:Remove/keep
 !! text
 KeEP
@@ -52,6 +64,12 @@ Template:Unique/value
 Template:Sort/value
 !! text
 {{#switch: {{lc: {{{1}}} }} | a = 3 | c = 2 | 1 }}
+!! endarticle
+
+!! article
+Template:Map/value
+!! text
+{{#switch: {{{1}}} | b | f | g | j = - }}{{{1}}}
 !! endarticle
 
 !! test
@@ -725,6 +743,214 @@ numeric desc: "{{#lstsrt: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | ! | NuMEric DeSc }}"
 "A, a, B, C, c, C, D, e, f, F"
 "A, a, B, C, c, C, D, e, f, F"
 alpha asc ncs: "A!a!B!C!c!C!D!e!f!F"
+alpha asc cs: "A!B!C!C!D!F!a!c!e!f"
+alpha desc ncs: "f!F!e!D!C!c!C!B!A!a"
+alpha desc cs: "f!e!c!a!F!D!C!C!B!A"
+numeric asc: "1!1!2!3!3!3!4!4!6!6"
+numeric desc: "6!6!4!4!3!3!3!2!1!1"
+</p>
+!! end
+
+!! test
+{{#listmap}}
+!! wikitext
+"{{#listmap:}}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#listmap: list = a; b ;c;d;;e ;f; ;g; h;i;j | insep = ; }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = ; }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = ( | outro = ) }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | default = def }}"
+"{{#listmap: default = def }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a;b;c;d;e;f;g;h;i;j"
+"(a, b, c, d, e, f, g, h, i, j)"
+"10(a, b, c, d, e, f, g, h, i, j)10"
+"a, b, c, d, e, f, g, h, i, j"
+"def"
+</p>
+!! end
+
+!! test
+{{#listmap}} by pattern
+!! wikitext
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = x y }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = {\{#expr: @ mod 3 }\} | indextoken = @ }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = {\{#switch: @ \! b \! f \! g \! j = - }\}@ | token = @ }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"x y, x y, x y, x y, x y, x y, x y, x y, x y, x y"
+"1, 2, 0, 1, 2, 0, 1, 2, 0, 1"
+"a, -b, c, d, e, -f, -g, h, i, -j"
+</p>
+!! end
+
+!! test
+{{#listmap}} by template
+!! wikitext
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = empty }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = unknown }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = map/value }}"
+!! html/php
+<p>", , , , , , , , , "
+"x y, x y, x y, x y, x y, x y, x y, x y, x y, x y"
+"a, -b, c, d, e, -f, -g, h, i, -j"
+</p>
+!! end
+
+!! test
+{{#listmap}} sortmode
+!! wikitext
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = x y }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = nOSorT }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = soRT }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = PReSOrt }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = PoStsORt }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = pRe/POStsoRt }}"
+!! html/php
+<p>"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+"9, 8, 7, 6, 5, 4, 3, 2, 1, 0"
+"0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+"0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+</p>
+!! end
+
+!! test
+{{#listmap}} sortoptions
+!! wikitext
+alpha asc ncs: "{{#listmap: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortmode = PoStsORt | sortoptions = }}"
+alpha asc cs: "{{#listmap: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortmode = PoStsORt | sortoptions = x cS y }}"
+alpha desc ncs: "{{#listmap: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortmode = PoStsORt | sortoptions = DeSc }}"
+alpha desc cs: "{{#listmap: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortmode = PoStsORt | sortoptions = DeSc cS }}"
+numeric asc: "{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | sortmode = PoStsORt | sortoptions = NuMEric }}"
+numeric desc: "{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | sortmode = PoStsORt | sortoptions = NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A, a, B, C, c, C, D, e, f, F"
+alpha asc cs: "A, B, C, C, D, F, a, c, e, f"
+alpha desc ncs: "f, F, e, D, C, c, C, B, A, a"
+alpha desc cs: "f, e, c, a, F, D, C, C, B, A"
+numeric asc: "1, 1, 2, 3, 3, 3, 4, 4, 6, 6"
+numeric desc: "6, 6, 4, 4, 3, 3, 3, 2, 1, 1"
+</p>
+!! end
+
+!! test
+{{#listmap}} duplicates
+!! wikitext
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = x y }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = STrIp }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = PResTrIP }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = posTStriP }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = pRE/PoStsTRip }}"
+!! html/php
+<p>"6, 4, 3, 1, 6, 2, 4, 1, 3, 3"
+"6, 4, 3, 1, 6, 2, 4, 1, 3, 3"
+"6, 4, 3, 1, 2"
+"6, 4, 3, 1, 2"
+"6, 4, 3, 1, 2"
+"6, 4, 3, 1, 2"
+</p>
+!! end
+
+!! test
+{{#lstmap}}
+!! wikitext
+"{{#lstmap:}}"
+"{{#lstmap: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | x y }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | nOSorT }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | soRT }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | PReSOrt }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | PoStsORt }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | pRe/POStsoRt }}"
+!! html/php
+<p>""
+"5, 6, 7, 8, 9, 0, 1, 2, 3, 4"
+"5, 6, 7, 8, 9, 0, 1, 2, 3, 4"
+"x, x, x, x, x, x, x, x, x, x"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4!3!2!1!0!9!8!7!6!5"
+"4!3!2!1!0!9!8!7!6!5"
+"4!3!2!1!0!9!8!7!6!5"
+"9!8!7!6!5!4!3!2!1!0"
+"9!8!7!6!5!4!3!2!1!0"
+"9!8!7!6!5!4!3!2!1!0"
+"9!8!7!6!5!4!3!2!1!0"
+</p>
+!! end
+
+!! test
+{{#lstmap}} sortoptions
+!! wikitext
+alpha asc ncs: "{{#lstmap: f; D ;C;A;;F ;B; ;e; a;c;C | ; | @ | @ | ! | PoStsORt | }}"
+alpha asc cs: "{{#lstmap: f; D ;C;A;;F ;B; ;e; a;c;C | ; | @ | @ | ! | PoStsORt | x cS y }}"
+alpha desc ncs: "{{#lstmap: f; D ;C;A;;F ;B; ;e; a;c;C | ; | @ | @ | ! | PoStsORt | DeSc }}"
+alpha desc cs: "{{#lstmap: f; D ;C;A;;F ;B; ;e; a;c;C | ; | @ | @ | ! | PoStsORt | DeSc cS }}"
+numeric asc: "{{#lstmap: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | @ | @ | ! | PoStsORt | NuMEric }}"
+numeric desc: "{{#lstmap: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | @ | @ | ! | PoStsORt | NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A!a!B!C!c!C!D!e!f!F"
+alpha asc cs: "A!B!C!C!D!F!a!c!e!f"
+alpha desc ncs: "f!F!e!D!C!c!C!B!A!a"
+alpha desc cs: "f!e!c!a!F!D!C!C!B!A"
+numeric asc: "1!1!2!3!3!3!4!4!6!6"
+numeric desc: "6!6!4!4!3!3!3!2!1!1"
+</p>
+!! end
+
+!! test
+{{#lstmaptemp}}
+!! wikitext
+"{{#lstmaptemp:}}"
+"{{#lstmaptemp: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 }}"
+"{{#lstmaptemp: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | opposite }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | x y }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | nOSorT }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | soRT }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | PReSOrt }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | PoStsORt }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | pRe/POStsoRt }}"
+!! html/php
+<p>""
+"{{|1=5}}, {{|1=6}}, {{|1=7}}, {{|1=8}}, {{|1=9}}, {{|1=0}}, {{|1=1}}, {{|1=2}}, {{|1=3}}, {{|1=4}}"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4!3!2!1!0!9!8!7!6!5"
+"4!3!2!1!0!9!8!7!6!5"
+"4!3!2!1!0!9!8!7!6!5"
+"0!1!2!3!4!5!6!7!8!9"
+"9!8!7!6!5!4!3!2!1!0"
+"0!1!2!3!4!5!6!7!8!9"
+"0!1!2!3!4!5!6!7!8!9"
+</p>
+!! end
+
+!! test
+{{#lstmaptemp}} sortoptions
+!! wikitext
+alpha asc ncs: "{{#lstmaptemp: f; D ;C;A;;F ;B; ;e; a;c;C | id | ; | ! | PoStsORt | }}"
+alpha asc cs: "{{#lstmaptemp: f; D ;C;A;;F ;B; ;e; a;c;C | id | ; | ! | PoStsORt | x cS y }}"
+alpha desc ncs: "{{#lstmaptemp: f; D ;C;A;;F ;B; ;e; a;c;C | id | ; | ! | PoStsORt | DeSc }}"
+alpha desc cs: "{{#lstmaptemp: f; D ;C;A;;F ;B; ;e; a;c;C | id | ; | ! | PoStsORt | DeSc cS }}"
+numeric asc: "{{#lstmaptemp: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | id | ; | ! | PoStsORt | NuMEric }}"
+numeric desc: "{{#lstmaptemp: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | id | ; | ! | PoStsORt | NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A!a!B!C!c!C!D!e!f!F"
 alpha asc cs: "A!B!C!C!D!F!a!c!e!f"
 alpha desc ncs: "f!F!e!D!C!c!C!B!A!a"
 alpha desc cs: "f!e!c!a!F!D!C!C!B!A"
