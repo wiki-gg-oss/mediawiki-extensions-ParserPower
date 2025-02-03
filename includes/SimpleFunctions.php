@@ -292,7 +292,7 @@ final class SimpleFunctions {
 		$inValue = ParserPower::expand( $frame, $params[0] ?? '' );
 
 		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
-		$pattern = $params[2] ?? 'x';
+		$pattern = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::NO_VARS );
 
 		return [ ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern ), 'noparse' => false ];
 	}
@@ -315,7 +315,7 @@ final class SimpleFunctions {
 		}
 
 		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
-		$pattern = $params[2] ?? 'x';
+		$pattern = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::NO_VARS );
 
 		return [ ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern ), 'noparse' => false ];
 	}

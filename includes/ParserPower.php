@@ -319,7 +319,7 @@ class ParserPower {
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters
 	 * @param string $fieldSep The delimiter separating the fields in the value.
-	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
+	 * @param string $indexToken The token to replace with the index, or null/empty value to skip index replacement.
 	 * @param int $index The numeric index of this value.
 	 * @param array $tokens The list of tokens to replace.
 	 * @param int $tokenCount The number of tokens.
@@ -331,7 +331,7 @@ class ParserPower {
 		PPFrame $frame,
 		string $inValue,
 		string $fieldSep,
-		int $indexToken,
+		string $indexToken,
 		int $index,
 		array $tokens,
 		int $tokenCount,

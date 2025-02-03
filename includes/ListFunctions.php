@@ -680,7 +680,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters.
-	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
+	 * @param string $indexToken The token to replace with the index, or null/empty value to skip index replacement.
 	 * @param int $index The numeric index of this value.
 	 * @param string $token The token to replace.
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
@@ -730,7 +730,7 @@ final class ListFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters
 	 * @param string $fieldSep The delimiter separating the fields in the value.
-	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
+	 * @param string $indexToken The token to replace with the index, or null/empty value to skip index replacement.
 	 * @param int $index The numeric index of this value.
 	 * @param array $tokens The list of tokens to replace.
 	 * @param int $tokenCount The number of tokens.
@@ -742,7 +742,7 @@ final class ListFunctions {
 		PPFrame $frame,
 		string $inValue,
 		string $fieldSep,
-		int $indexToken,
+		string $indexToken,
 		int $index,
 		array $tokens,
 		int $tokenCount,
@@ -910,7 +910,7 @@ final class ListFunctions {
 		string $token,
 		string $tokenSep,
 		string $pattern
-	): string {
+	): array {
 		$outValues = [];
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
 			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
@@ -1402,7 +1402,7 @@ final class ListFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $values The input list.
 	 * @param string $fieldSep Separator between fields, if any.
-	 * @param int $indexToken
+	 * @param string $indexToken
 	 * @param string $token The token in the pattern that represents where the list value should go.
 	 * @param ?array $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern of text containing token that list values are inserted into at that token.
@@ -1413,7 +1413,7 @@ final class ListFunctions {
 		PPFrame $frame,
 		array $values,
 		string $fieldSep,
-		int $indexToken,
+		string $indexToken,
 		string $token,
 		?array $tokens,
 		string $pattern
