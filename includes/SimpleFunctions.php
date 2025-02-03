@@ -44,6 +44,7 @@ final class SimpleFunctions {
 		$parser->setFunctionHook( 'ueswitch', [ __CLASS__, 'ueswitchRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'follow', [ __CLASS__, 'followRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'argmap', [ __CLASS__, 'argmapRender' ], Parser::SFH_OBJECT_ARGS );
+		$parser->setFunctionHook( 'iargmap', [ __CLASS__, 'iargmapRender' ], Parser::SFH_OBJECT_ARGS );
 
 		// Do not load if Page Forms is installed.
 		if ( !defined( 'PF_VERSION' ) ) {
@@ -337,10 +338,6 @@ final class SimpleFunctions {
 			return '';
 		}
 
-		$lastBits = $params[count( $params ) - 1]->splitArg();
-		$frame->expand( $lastBits['name'] );
-		$lastValue = $frame->expand( $lastBits['value'] );
-
 		$default = '';
 		$mwDefaultFound = false;
 		$mwDefault = $parser->getMagicWordFactory()->get( 'default' );
@@ -349,15 +346,15 @@ final class SimpleFunctions {
 		foreach ( $params as $param ) {
 			$bits = $param->splitArg();
 			if ( $bits['index'] === '' ) {
-				$key = ParserPower::expand( $frame, $bits['name'] );
-				$value = ParserPower::expand( $frame, $bits['value'] );
+				$key = $bits['name'];
+				$value = $bits['value'];
 			} else {
-				$key = ParserPower::expand( $frame, $bits['value'] );
+				$key = $bits['value'];
 				$value = null;
 			}
 
 			if ( !$keyFound ) {
-				$key = ParserPower::unescape( $key );
+				$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
 				if ( $key === $switchKey ) {
 					$keyFound = true;
 				} elseif ( $mwDefault->matchStartToEnd( $key ) ) {
@@ -367,7 +364,7 @@ final class SimpleFunctions {
 
 			if ( $value !== null ) {
 				if ( $keyFound ) {
-					$value = ParserPower::unescape( $value );
+					$value = ParserPower::expand( $frame, $value, ParserPower::UNESCAPE );
 					return ParserPower::evaluateUnescaped( $parser, $frame, $value );
 				} elseif ( $mwDefaultFound ) {
 					$default = $value;
@@ -376,10 +373,11 @@ final class SimpleFunctions {
 			}
 		}
 
-		if ( $lastBits['index'] !== '' ) {
-			$default = $lastValue;
+		if ( $value === null ) {
+			$default = is_string( $key ) ? $key : ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
+		} else {
+			$default = ParserPower::expand( $frame, $default, ParserPower::UNESCAPE );
 		}
-		$default = ParserPower::expand( $frame, $default, ParserPower::UNESCAPE );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 	}
 
@@ -511,24 +509,11 @@ final class SimpleFunctions {
 			return '';
 		}
 
-		// sort arguments, this is to disregard the position of named arguments
-		$namedArgs = [];
-		$unnamedArgs = [];
-		foreach ( $args as $arg ) {
-			$arg = $frame->expand( $arg );
-			if ( strpos( $arg, '=' ) !== false ) {
-				[ $key, $value ] = explode( '=', $arg, 2 );
-				$namedArgs[trim( $key )] = trim( $value );
-			} else {
-				$unnamedArgs[] = $arg;
-			}
-		}
-
 		// set parameters
-		$formatter = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[0] ) ) : '';
-		$glue = isset( $unnamedArgs[1] ) ? trim( $frame->expand( $unnamedArgs[1] ) ) : '';
-		$mustContainString = isset( $unnamedArgs[2] ) ? trim( $frame->expand( $unnamedArgs[2] ) ) : '';
-		$onlyShowString = isset( $unnamedArgs[3] ) ? trim( $frame->expand( $unnamedArgs[3] ) ) : '';
+		$formatter = isset( $args[1] ) ? trim( $frame->expand( $args[0] ) ) : '';
+		$glue = isset( $args[1] ) ? trim( $frame->expand( $args[1] ) ) : '';
+		$mustContainString = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
+		$onlyShowString = isset( $args[3] ) ? trim( $frame->expand( $args[3] ) ) : '';
 		$formatterArgs = $frame->getNamedArguments();
 
 		// make arrays
@@ -587,12 +572,67 @@ final class SimpleFunctions {
 			$formatterCall = implode( '', $formatterCall );
 
 			// parse formatter call
-			$formatterCalls[] = $parser->replaceVariables( $formatterCall, $frame );
+			$formatterCalls[] = trim( $parser->replaceVariables( $formatterCall, $frame ) );
 		}
 
-		if ( $glue === '\n' ) {
-			$glue = '<br />';
+		// proper '\n' handling
+		$glue = str_replace( '\n', "\n", $glue );
+		return implode( $glue, $formatterCalls );
+	}
+
+	public static function iargmapRender( Parser $parser, PPFrame $frame, array $args ) {
+		if ( !isset( $args[0] ) ) {
+			return [ '<strong class="error">iargmap error: The parameter "formatter" is required.</strong>', 'noparse' => false ];
 		}
+		if ( !isset( $args[1] ) ) {
+			return [ '<strong class="error">iargmap error: The parameter "n" is required.</strong>', 'noparse' => false ];
+		}
+
+		// set parameters
+		$formatter = trim( $frame->expand( $args[0] ) );
+		$numberOfArgumentsPerFormatter = trim( $frame->expand( $args[1] ) );
+		$glue = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
+		$allFormatterArgs = $frame->getNumberedArguments();
+		
+		// check against bad entries
+		if ( count( $allFormatterArgs ) == 0 ) {
+			return [ '<strong class="error">iargmap error: No formatter arguments were given.</strong>', 'noparse' => false ];
+		}
+		if ( !is_numeric( $numberOfArgumentsPerFormatter ) ) {
+			return [ '<strong class="error">iargmap error: "n" must be an integer.</strong>', 'noparse' => false ];
+		}
+
+		if (  intval( $numberOfArgumentsPerFormatter ) != floatval( $numberOfArgumentsPerFormatter ) ) {
+			return [ '<strong class="error">iargmap error: "n" must be an integer.</strong>', 'noparse' => false ];
+		}
+
+		$imax = count( $allFormatterArgs ) / intval( $numberOfArgumentsPerFormatter );
+
+		if ( !is_int( $imax ) ) {
+			return [ '<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>', 'noparse' => false ];
+		}
+
+		// write formatter calls
+		$formatterCalls = [];
+		for ( $i = 0; $i < $imax; $i++) { 
+			$formatterArgs = [];
+			for ( $n = 0; $n < $numberOfArgumentsPerFormatter; $n++) {
+				$formatterArgs[] = trim( $frame->expand( $allFormatterArgs[ $i * $numberOfArgumentsPerFormatter + $n + 1] ) );
+			}
+
+			$val = implode( '|', $formatterArgs );
+			$formatterCall = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
+			if ( $formatterCall instanceof PPNode_Hash_Array ) {
+				$formatterCall = $formatterCall->value;
+			}
+			$formatterCall = implode( '', $formatterCall );
+
+			// parse formatter call
+			$formatterCalls[] = trim( $parser->replaceVariables( $formatterCall, $frame ) );
+		}
+
+		// proper '\n' handling
+		$glue = str_replace( '\n', "\n", $glue );
 		return implode( $glue, $formatterCalls );
 	}
 }
