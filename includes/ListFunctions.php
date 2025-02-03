@@ -2093,18 +2093,27 @@ final class ListFunctions {
 		}
 
 		$outValue = ParserPower::expand( $frame, $pattern, ParserPower::NO_VARS );
-		if ( $inValue1 != '' ) {
-			$fields = explode( $fieldSep, $inValue1, $tokenCount1 );
-			$fieldCount = count( $fields );
-			for ( $i = 0; $i < $tokenCount1; $i++ ) {
-				$outValue = str_replace( $tokens1[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
+		if ( $fieldSep === '' ) {
+			if ( $inValue1 !== '' ) {
+				$outValue = str_replace( $tokens1[0], $inValue1, $outValue );
 			}
-		}
-		if ( $inValue2 != '' ) {
-			$fields = explode( $fieldSep, $inValue2, $tokenCount2 );
-			$fieldCount = count( $fields );
-			for ( $i = 0; $i < $tokenCount2; $i++ ) {
-				$outValue = str_replace( $tokens2[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
+			if ( $inValue2 !== '' ) {
+				$outValue = str_replace( $tokens2[0], $inValue2, $outValue );
+			}
+		} else {
+			if ( $inValue1 !== '' ) {
+				$fields = explode( $fieldSep, $inValue1, $tokenCount1 );
+				$fieldCount = count( $fields );
+				for ( $i = 0; $i < $tokenCount1; $i++ ) {
+					$outValue = str_replace( $tokens1[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
+				}
+			}
+			if ( $inValue2 !== '' ) {
+				$fields = explode( $fieldSep, $inValue2, $tokenCount2 );
+				$fieldCount = count( $fields );
+				for ( $i = 0; $i < $tokenCount2; $i++ ) {
+					$outValue = str_replace( $tokens2[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
+				}
 			}
 		}
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
@@ -2255,8 +2264,8 @@ final class ListFunctions {
 			$tokens2 = [ $token2 ];
 		}
 
-		$matchParams = [ $parser, $frame, null, null, $fieldSep, $tokens1, $tokens2, $matchPattern ];
-		$mergeParams = [ $parser, $frame, null, null, $fieldSep, $tokens1, $tokens2, $mergePattern ];
+		$matchParams = [ $parser, $frame, '', '', $fieldSep, $tokens1, $tokens2, $matchPattern ];
+		$mergeParams = [ $parser, $frame, '', '', $fieldSep, $tokens1, $tokens2, $mergePattern ];
 		$outValues = self::iterativeListMerge(
 			$parser,
 			$frame,
