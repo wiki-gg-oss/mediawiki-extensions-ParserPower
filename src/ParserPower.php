@@ -11,8 +11,8 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class ParserPower {
 	/**

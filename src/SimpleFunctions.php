@@ -13,9 +13,9 @@ namespace MediaWiki\Extension\ParserPower;
 
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
-use Parser;
-use PPFrame;
-use PPNode_Hash_Array;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Parser\PPNode_Hash_Array;
 
 final class SimpleFunctions {
 	/**

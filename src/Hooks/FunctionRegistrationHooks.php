@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\ParserPower\Hooks;
 
 use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\SimpleFunctions;
-use Parser;
+use MediaWiki\Parser\Parser;
 
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
