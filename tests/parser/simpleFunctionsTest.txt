@@ -237,3 +237,41 @@ Target Target Target#Section
 Target#X Target Target#Section
 </p>
 !! end
+
+!! test
+{{#token}}
+!! wikitext
+"{{#token:}}"
+"{{#token: \_{\{!}\}\\0 }}"
+"{{#token: y | @ }}"
+"{{#token:   | \\@ | \_{\{!}\}\\0\\@\\@ }}"
+"{{#token: y | \\@ | \_{\{!}\}\\0\\@\\@ }}"
+!! html/php
+<p>""
+" |\0"
+"x"
+" |\0\"
+" |\0\y\y"
+</p>
+!! end
+
+!! test
+{{#tokenif}}
+!! wikitext
+"{{#tokenif:}}"
+"{{#tokenif: \_{\{!}\}\\0 }}"
+"{{#tokenif: y | @ }}"
+"{{#tokenif:   | \\@ | \_{\{!}\}\\0\\@\\@ }}"
+"{{#tokenif: y | \\@ | \_{\{!}\}\\0\\@\\@ }}"
+"{{#tokenif:   | \\@ | \_{\{!}\}\\0\\@\\@ | \_{\{!}\}\\0z }}"
+"{{#tokenif: y | \\@ | \_{\{!}\}\\0\\@\\@ | \_{\{!}\}\\0z }}"
+!! html/php
+<p>""
+" |\0"
+"x"
+""
+" |\0\y\y"
+" |\0z"
+" |\0\y\y"
+</p>
+!! end
