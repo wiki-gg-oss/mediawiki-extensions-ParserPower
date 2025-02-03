@@ -502,11 +502,11 @@ final class SimpleFunctions {
 
 	public static function argmapRender( Parser $parser, PPFrame $frame, array $args ) {
 		if ( !isset( $args[0] ) ) {
-			return [ '', 'noparse' => false ];
+			return [ '<strong class="error">argmap error: The parameter "formatter" is required.</strong>', 'noparse' => false ];
 		}
 
 		// set parameters
-		$formatter = isset( $args[1] ) ? trim( $frame->expand( $args[0] ) ) : '';
+		$formatter = trim( $frame->expand( $args[0] ) );
 		$glue = isset( $args[1] ) ? trim( $frame->expand( $args[1] ) ) : '';
 		$mustContainString = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
 		$onlyShowString = isset( $args[3] ) ? trim( $frame->expand( $args[3] ) ) : '';
