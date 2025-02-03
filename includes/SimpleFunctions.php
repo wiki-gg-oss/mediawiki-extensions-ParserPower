@@ -507,7 +507,7 @@ final class SimpleFunctions {
 
 		// set parameters
 		$formatter = trim( $frame->expand( $args[0] ) );
-		$glue = isset( $args[1] ) ? trim( $frame->expand( $args[1] ) ) : '';
+		$glue = isset( $args[1] ) ? trim( $frame->expand( $args[1] ) ) : ', ';
 		$mustContainString = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
 		$onlyShowString = isset( $args[3] ) ? trim( $frame->expand( $args[3] ) ) : '';
 		$formatterArgs = $frame->getNamedArguments();
@@ -587,7 +587,7 @@ final class SimpleFunctions {
 		// set parameters
 		$formatter = trim( $frame->expand( $args[0] ) );
 		$numberOfArgumentsPerFormatter = trim( $frame->expand( $args[1] ) );
-		$glue = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
+		$glue = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : ', ';
 		$allFormatterArgs = $frame->getNumberedArguments();
 		
 		// check against bad entries
