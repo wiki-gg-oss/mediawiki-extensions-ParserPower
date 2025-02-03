@@ -2027,7 +2027,7 @@ final class ListFunctions {
 	 * @param array $tokens1 The list of tokens to replace when performing the replacement for $inValue1.
 	 * @param array $tokens2 The list of tokens to replace when performing the replacement for $inValue2.
 	 * @param string $pattern Pattern containing tokens to be replaced by field (or unsplit) values.
-	 * @return string|void The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyTwoSetFieldPattern(
 		Parser $parser,
@@ -2038,14 +2038,14 @@ final class ListFunctions {
 		array $tokens1,
 		array $tokens2,
 		string $pattern
-	) {
+	): string {
 		$inValue1 = trim( $inValue1 );
 		$inValue2 = trim( $inValue2 );
 		$tokenCount1 = count( $tokens1 );
 		$tokenCount2 = count( $tokens2 );
 
 		if ( $inValue1 === '' || $inValue2 === '' ) {
-			return;
+			return '';
 		}
 
 		$outValue = $pattern;

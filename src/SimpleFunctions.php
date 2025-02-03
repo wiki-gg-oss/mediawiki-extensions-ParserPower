@@ -88,6 +88,10 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public function linkpageRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
+		if ( $text === null ) {
+			return [ '', 'markerType' => 'none' ];
+		}
+
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text ) {
@@ -121,6 +125,10 @@ final class SimpleFunctions {
 	 * @return array The function output along with relevant parser options.
 	 */
 	public function linktextRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
+		if ( $text === null ) {
+			return [ '', 'markerType' => 'none' ];
+		}
+
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text !== '' ) {
