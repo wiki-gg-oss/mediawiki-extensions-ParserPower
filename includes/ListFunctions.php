@@ -1875,7 +1875,7 @@ final class ListFunctions {
 			$outValues[] = self::applyTemplate( $parser, $frame, $inValue, $template, $fieldSep );
 		}
 
-		if ( $sortMode === 'sort' & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
