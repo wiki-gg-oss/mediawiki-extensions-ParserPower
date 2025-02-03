@@ -27,7 +27,19 @@ rEMovE
 !! article
 Template:Id
 !! text
-{{{1}}}
+{{{1}}}{{{2|}}}
+!! endarticle
+
+!! article
+Template:Yes
+!! text
+yES
+!! endarticle
+
+!! article
+Template:No
+!! text
+No
 !! endarticle
 
 !! article
@@ -70,6 +82,12 @@ Template:Sort/value
 Template:Map/value
 !! text
 {{#switch: {{{1}}} | b | f | g | j = - }}{{{1}}}
+!! endarticle
+
+!! article
+Template:Match/by len
+!! text
+{{#ifexpr: {{#len: {{{1}}} }} + {{#len: {{{2}}} }} < 3 | yES }}
 !! endarticle
 
 !! test
@@ -956,5 +974,110 @@ alpha desc ncs: "f!F!e!D!C!c!C!B!A!a"
 alpha desc cs: "f!e!c!a!F!D!C!C!B!A"
 numeric asc: "1!1!2!3!3!3!4!4!6!6"
 numeric desc: "6!6!4!4!3!3!3!2!1!1"
+</p>
+!! end
+
+!! test
+{{#listmerge}}
+!! wikitext
+"{{#listmerge:}}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#listmerge: list = a; b ;c;d;;e ;f; ;g; h;i;j | insep = ; }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = ; }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = ( | outro = ) }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | default = def }}"
+"{{#listmerge: default = def }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a;b;c;d;e;f;g;h;i;j"
+"(a, b, c, d, e, f, g, h, i, j)"
+"10(a, b, c, d, e, f, g, h, i, j)10"
+"a, b, c, d, e, f, g, h, i, j"
+"def"
+</p>
+!! end
+
+!! test
+{{#listmerge}} by pattern
+!! wikitext
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = x y }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = No }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = No | mergepattern = x y }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = yES }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = yES | mergepattern = x y }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = {\{#ifexpr: {\{#len: @1 }\} + {\{#len: @2 }\} < 3 \! yES }\} | mergepattern = @1@2 | token1 = @1 | token2 = @2 }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+", , , , "
+"x y"
+"ab, cd, ef, gh, ij"
+</p>
+!! end
+
+!! test
+{{#listmerge}} by template
+!! wikitext
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = empty | mergetemplate = empty }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = unknown | mergetemplate = empty }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = no | mergetemplate = empty }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = no | mergetemplate = unknown }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = yes | mergetemplate = empty }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = yes | mergetemplate = unknown }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = match/by len | mergetemplate = id }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+""
+"x y"
+"ab, cd, ef, gh, ij"
+</p>
+!! end
+
+!! test
+{{#listmerge}} sortmode
+!! wikitext
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = x y }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = nOSorT }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = soRT }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = PoStsORt }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = pRe/POStsoRt }}"
+!! html/php
+<p>"56, 78, 90, 12, 34"
+"56, 78, 90, 12, 34"
+"56, 78, 90, 12, 34"
+"56, 78, 90, 12, 34"
+"01, 23, 45, 67, 89"
+"56, 78, 90, 12, 34"
+"01, 23, 45, 67, 89"
+</p>
+!! end
+
+!! test
+{{#listmerge}} sortoptions
+!! wikitext
+alpha asc ncs: "{{#listmerge: list = f, D ,C,A,,F ,B, ,e, a,c,C | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = }}"
+alpha asc cs: "{{#listmerge: list = f, D ,C,A,,F ,B, ,e, a,c,C | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = x cS y }}"
+alpha desc ncs: "{{#listmerge: list = f, D ,C,A,,F ,B, ,e, a,c,C | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = DeSc }}"
+alpha desc cs: "{{#listmerge: list = f, D ,C,A,,F ,B, ,e, a,c,C | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = DeSc cS }}"
+numeric asc: "{{#listmerge: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = NuMEric }}"
+numeric desc: "{{#listmerge: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "Aa, BC, cC, De, fF"
+alpha asc cs: "AB, CC, DF, ac, ef"
+alpha desc ncs: "fF, eD, Cc, CB, Aa"
+alpha desc cs: "fe, ca, FD, CC, BA"
+numeric asc: "11, 23, 33, 44, 66"
+numeric desc: "66, 44, 33, 32, 11"
 </p>
 !! end
