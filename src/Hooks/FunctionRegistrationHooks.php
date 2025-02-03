@@ -1,5 +1,7 @@
 <?php
 
+/** @license GPL-2.0-or-later */
+
 namespace MediaWiki\Extension\ParserPower\Hooks;
 
 use MediaWiki\Extension\ParserPower\ListFunctions;

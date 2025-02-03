@@ -1,13 +1,6 @@
 <?php
-/**
- * List Class
- *
- * @package   ParserPower
- * @author    Eyes <eyes@aeongarden.com>, Samuel Hilson <shilson@fandom.com>
- * @copyright Copyright � 2013 Eyes
- * @copyright 2019 Wikia Inc.
- * @license   GPL-2.0-or-later
- */
+
+/** @license GPL-2.0-or-later */
 
 namespace MediaWiki\Extension\ParserPower;
 
