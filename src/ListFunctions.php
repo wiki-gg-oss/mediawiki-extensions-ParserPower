@@ -773,7 +773,7 @@ final class ListFunctions {
 	 * @param string $inValue The value to change into one or more template parameters.
 	 * @param string $template The template to pass the parameters to.
 	 * @param string $fieldSep The delimiter separating the parameter values.
-	 * @return string|void The result of the template.
+	 * @return string The result of the template.
 	 */
 	private static function applyTemplate(
 		Parser $parser,
@@ -781,10 +781,10 @@ final class ListFunctions {
 		string $inValue,
 		string $template,
 		string $fieldSep
-	) {
+	): string {
 		$inValue = trim( $inValue );
 		if ( $inValue === '' ) {
-			return;
+			return '';
 		}
 
 		if ( $fieldSep === '' ) {
@@ -2296,8 +2296,8 @@ final class ListFunctions {
 			$inValues = self::sortList( $inValues, $sortOptions );
 		}
 
-		$matchParams = [ $parser, $frame, null, null, $matchTemplate, $fieldSep ];
-		$mergeParams = [ $parser, $frame, null, null, $mergeTemplate, $fieldSep ];
+		$matchParams = [ $parser, $frame, '', '', $matchTemplate, $fieldSep ];
+		$mergeParams = [ $parser, $frame, '', '', $mergeTemplate, $fieldSep ];
 		$outValues = self::iterativeListMerge(
 			$parser,
 			$frame,

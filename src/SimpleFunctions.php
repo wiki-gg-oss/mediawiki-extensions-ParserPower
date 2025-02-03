@@ -4,17 +4,17 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\RedirectLookup;
-use MediaWiki\Title\Title;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
+use MediaWiki\Title\Title;
 
 final class SimpleFunctions {
 	public function __construct(
 		private readonly RedirectLookup $redirectLookup
-	) { }
+	) {
+	}
 
 	/**
 	 * This function performs the trim operation for the trim parser function.
@@ -560,7 +560,7 @@ final class SimpleFunctions {
 		$numberOfArgumentsPerFormatter = trim( $frame->expand( $args[1] ) );
 		$glue = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : ', ';
 		$allFormatterArgs = $frame->getNumberedArguments();
-		
+
 		// check against bad entries
 		if ( count( $allFormatterArgs ) == 0 ) {
 			return [ '<strong class="error">iargmap error: No formatter arguments were given.</strong>', 'noparse' => false ];
@@ -569,7 +569,7 @@ final class SimpleFunctions {
 			return [ '<strong class="error">iargmap error: "n" must be an integer.</strong>', 'noparse' => false ];
 		}
 
-		if (  intval( $numberOfArgumentsPerFormatter ) != floatval( $numberOfArgumentsPerFormatter ) ) {
+		if ( intval( $numberOfArgumentsPerFormatter ) != floatval( $numberOfArgumentsPerFormatter ) ) {
 			return [ '<strong class="error">iargmap error: "n" must be an integer.</strong>', 'noparse' => false ];
 		}
 
@@ -581,9 +581,9 @@ final class SimpleFunctions {
 
 		// write formatter calls
 		$formatterCalls = [];
-		for ( $i = 0; $i < $imax; $i++) { 
+		for ( $i = 0; $i < $imax; $i++ ) {
 			$formatterArgs = [];
-			for ( $n = 0; $n < $numberOfArgumentsPerFormatter; $n++) {
+			for ( $n = 0; $n < $numberOfArgumentsPerFormatter; $n++ ) {
 				$formatterArgs[] = trim( $frame->expand( $allFormatterArgs[ $i * $numberOfArgumentsPerFormatter + $n + 1] ) );
 			}
 
