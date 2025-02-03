@@ -1020,7 +1020,7 @@ final class ListFunctions {
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = $params["pattern"] ?? '';
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
@@ -1295,7 +1295,7 @@ final class ListFunctions {
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = $params["pattern"] ?? '';
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
@@ -1593,7 +1593,7 @@ final class ListFunctions {
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = $params["pattern"] ?? '';
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
 		$subsort = ParserPower::expand( $frame, $params["subsort"] ?? '' );
@@ -1883,7 +1883,7 @@ final class ListFunctions {
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = $params["pattern"] ?? '';
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
@@ -1953,7 +1953,7 @@ final class ListFunctions {
 
 		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::NO_VARS | ParserPower::UNESCAPE );
-		$pattern = $params[3] ?? 'x';
+		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params[5] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
@@ -2058,7 +2058,7 @@ final class ListFunctions {
 			return;
 		}
 
-		$outValue = ParserPower::expand( $frame, $pattern, ParserPower::NO_VARS );
+		$outValue = $pattern;
 		if ( $inValue1 != '' ) {
 			$fields = explode( $fieldSep, $inValue1, $tokenCount1 );
 			$fieldCount = count( $fields );
@@ -2342,8 +2342,8 @@ final class ListFunctions {
 		$token1 = ParserPower::expand( $frame, $params["token1"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$token2 = ParserPower::expand( $frame, $params["token2"] ?? '', ParserPower::NO_VARS | ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$matchPattern = $params["matchpattern"] ?? '';
-		$mergePattern = $params["mergepattern"] ?? '';
+		$matchPattern = ParserPower::expand( $frame, $params["matchpattern"] ?? '', ParserPower::NO_VARS );
+		$mergePattern = ParserPower::expand( $frame, $params["mergepattern"] ?? '', ParserPower::NO_VARS );
 		$outSep = ParserPower::expand( $frame, $params["outsep"] ?? ',\_', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );

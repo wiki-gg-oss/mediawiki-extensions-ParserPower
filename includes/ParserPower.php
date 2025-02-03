@@ -263,7 +263,7 @@ class ParserPower {
 	): string {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
-			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
+			$outValue = $pattern;
 			if ( $indexToken !== null && $indexToken !== '' ) {
 				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
 			}
@@ -339,7 +339,7 @@ class ParserPower {
 	): string {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
-			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
+			$outValue = $pattern;
 			if ( $indexToken !== null && $indexToken !== '' ) {
 				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
 			}
