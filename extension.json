@@ -12,6 +12,12 @@
 	"description": "A collection of extended parser functions for MediaWiki, particularly including functions for dealing with lists of values separated by a dynamically-specified delimiter.",
 	"descriptionmsg": "parserpower-desc",
 	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.43.0",
+		"platform": {
+			"php": ">= 8.1"
+		}
+	},
 	"MessagesDirs": {
 		"ParserPower": [
 			"i18n"
