@@ -2140,6 +2140,9 @@ final class ListFunctions {
 		$template,
 		$fieldSep
 	) {
+		if ( $fieldSep === '' ) {
+			$fieldSep = '|';
+		}
 		return self::applyTemplate( $parser, $frame, $inValue1 . $fieldSep . $inValue2, $template, $fieldSep );
 	}
 
