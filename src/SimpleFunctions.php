@@ -5,12 +5,17 @@
 namespace MediaWiki\Extension\ParserPower;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Title\Title;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
 
 final class SimpleFunctions {
+	public function __construct(
+		private readonly RedirectLookup $redirectLookup
+	) { }
+
 	/**
 	 * This function performs the trim operation for the trim parser function.
 	 *
@@ -350,11 +355,12 @@ final class SimpleFunctions {
 			return $text;
 		}
 
-		$page = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
-		$target = $page->getRedirectTarget();
+		$target = $this->redirectLookup->getRedirectTarget( $title );
 		if ( $target === null ) {
 			return $text;
 		}
+
+		$target = Title::newFromLinkTarget( $target );
 
 		// Replace redirect fragment with the one from the initial text. We need to check whether there is
 		// a # with no fragment after it, since it removes the redirect fragment if there is one.

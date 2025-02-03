@@ -6,6 +6,7 @@ namespace MediaWiki\Extension\ParserPower\Hooks;
 
 use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\SimpleFunctions;
+use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Parser\Parser;
 
 final class FunctionRegistrationHooks implements
@@ -14,8 +15,10 @@ final class FunctionRegistrationHooks implements
 	private readonly SimpleFunctions $simpleFunctions;
 	private readonly ListFunctions $listFunctions;
 
-	public function __construct() {
-		$this->simpleFunctions = new SimpleFunctions();
+	public function __construct(
+		RedirectLookup $redirectLookup
+	) {
+		$this->simpleFunctions = new SimpleFunctions( $redirectLookup );
 		$this->listFunctions = new ListFunctions();
 	}
 
