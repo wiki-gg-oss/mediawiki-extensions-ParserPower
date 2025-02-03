@@ -27,7 +27,7 @@
 		"ParserPowerMagic": "ParserPower.i18n.magic.php"
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\ParserPower\\": "includes/"
+		"MediaWiki\\Extension\\ParserPower\\": "src/"
 	},
 	"HookHandlers": {
 		"FunctionRegistration": {
