@@ -331,7 +331,7 @@ final class ListFunctions {
 	 * This function gets the specified element from the array after filtering out any empty values before it so that
 	 * the empty values are skipped in index counting. The returned element is unescaped.
 	 *
-	 * @param int $inIndex The 1-based index of the array element to get, or a negative value to start from the end.
+	 * @param int $index The 1-based index of the array element to get, or a negative value to start from the end.
 	 * @param array $inValues The array to get the element from.
 	 * @return string The array element, trimmed and with character escapes replaced, or empty string if not found.
 	 */
@@ -669,7 +669,13 @@ final class ListFunctions {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	private static function applyPattern( Parser $parser, PPFrame $frame, string $inValue, string $token, string $pattern ): string {
+	private static function applyPattern(
+		Parser $parser,
+		PPFrame $frame,
+		string $inValue,
+		string $token,
+		string $pattern
+	): string {
 		return ParserPower::applyPattern( $parser, $frame, $inValue, $token, $pattern );
 	}
 
@@ -772,7 +778,13 @@ final class ListFunctions {
 	 * @param int $count The count to replace the token with.
 	 * @return string The content wrapped by the intro and outro.
 	 */
-	private static function applyIntroAndOutro( string $intro, string $content, string $outro, string $countToken, int $count ): string {
+	private static function applyIntroAndOutro(
+		string $intro,
+		string $content,
+		string $outro,
+		string $countToken,
+		int $count
+	): string {
 		if ( $countToken !== null && $countToken !== '' ) {
 			$intro = str_replace( $countToken, strval( $count ), $intro );
 			$outro = str_replace( $countToken, strval( $count ), $outro );
@@ -791,7 +803,13 @@ final class ListFunctions {
 	 * @param string $fieldSep The delimiter separating the parameter values.
 	 * @return string|void The result of the template.
 	 */
-	private static function applyTemplate( Parser $parser, PPFrame $frame, string $inValue, string $template, string $fieldSep ) {
+	private static function applyTemplate(
+		Parser $parser,
+		PPFrame $frame,
+		string $inValue,
+		string $template,
+		string $fieldSep
+	) {
 		$inValue = trim( $inValue );
 		if ( $inValue === '' ) {
 			return;
