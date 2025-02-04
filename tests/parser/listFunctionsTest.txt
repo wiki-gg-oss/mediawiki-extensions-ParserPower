@@ -7,15 +7,1077 @@ version=2
 lstcnt
 !! endfunctionhooks
 
+!! article
+Template:Empty
+!! text
+!! endarticle
+
+!! article
+Template:Unknown
+!! text
+x y
+!! endarticle
+
+!! article
+Template:Remove
+!! text
+rEMovE
+!! endarticle
+
+!! article
+Template:Id
+!! text
+{{{1}}}{{{2|}}}
+!! endarticle
+
+!! article
+Template:Yes
+!! text
+yES
+!! endarticle
+
+!! article
+Template:No
+!! text
+No
+!! endarticle
+
+!! article
+Template:Opposite
+!! text
+{{#expr: 9 - {{{1}}} }}
+!! endarticle
+
+!! article
+Template:Remove/keep
+!! text
+KeEP
+!! endarticle
+
+!! article
+Template:Remove/if value
+!! text
+{{#switch: {{{1}}} | b | f | g | j = rEMovE }}
+!! endarticle
+
+!! article
+Template:Remove/if fields
+!! text
+{{#switch: {{{1}}},{{{2|}}} | b ,l | c, m | ,n | d ,o: | e,p: p | f,q :r = rEMovE }}
+!! endarticle
+
+!! article
+Template:Unique/value
+!! text
+{{#switch: {{{1}}} | b | c | f = x | {{{1}}} }}
+!! endarticle
+
+!! article
+Template:Sort/value
+!! text
+{{#switch: {{lc: {{{1}}} }} | a = 3 | c = 2 | 1 }}
+!! endarticle
+
+!! article
+Template:Map/value
+!! text
+{{#switch: {{{1}}} | b | f | g | j = - }}{{{1}}}
+!! endarticle
+
+!! article
+Template:Match/by len
+!! text
+{{#ifexpr: {{#len: {{{1}}} }} + {{#len: {{{2}}} }} < 3 | yES }}
+!! endarticle
+
 !! test
 {{#lstcnt}}
 !! wikitext
 "{{#lstcnt:}}"
 "{{#lstcnt: ,,,, }}"
 "{{#lstcnt: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstcnt: a, b ,C,D,,A ,b, ,c, D,E,f }}"
+"{{#lstcnt: a; b ;C;D;;A ;b; ;c; D;E;f | ; }}"
 !! html/php
 <p>"0"
 "0"
 "10"
+"10"
+"10"
+</p>
+!! end
+
+!! test
+{{#lstcntuniq}}
+!! wikitext
+"{{#lstcntuniq:}}"
+"{{#lstcntuniq: ,,,, }}"
+"{{#lstcntuniq: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstcntuniq: a, b ,C,D,,A ,b, ,c, D,E,f }}"
+"{{#lstcntuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; }}"
+"{{#lstcntuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | x y }}"
+"{{#lstcntuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | cS }}"
+!! html/php
+<p>"0"
+"0"
+"10"
+"6"
+"6"
+"6"
+"8"
+</p>
+!! end
+
+!! test
+{{#lstsep}}
+!! wikitext
+"{{#lstsep:}}"
+"{{#lstsep: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"abcdefghij"
+"a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#lstelem}}
+!! wikitext
+"{{#lstelem:}}"
+"{{#lstelem: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+!! html/php
+<p>""
+"a"
+"a"
+</p>
+!! end
+
+!! test
+{{#lstelem}} index
+!! wikitext
+0: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | 0 }}"
+2: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | 2 }}"
+11: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | 11 }}"
+-2: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | -2 }}"
+-11: "{{#lstelem: a; b ;c;d;;e ;f; ;g; h;i;j | ; | -11 }}"
+!! html/php
+<p>0: ""
+2: "b"
+11: ""
+-2: "i"
+-11: ""
+</p>
+!! end
+
+!! test
+{{#lstsub}}
+!! wikitext
+"{{#lstsub:}}"
+"{{#lstsub: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"abcdefghij"
+"a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#lstsub}} index
+!! wikitext
+0: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 0 }}"
+1: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 1 }}"
+3: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 }}"
+11: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 11 }}"
+-1: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | -1 }}"
+-3: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | -3 }}"
+-11: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | -11 }}"
+!! html/php
+<p>0: "a!b!c!d!e!f!g!h!i!j"
+1: "a!b!c!d!e!f!g!h!i!j"
+3: "c!d!e!f!g!h!i!j"
+11: ""
+-1: "j"
+-3: "h!i!j"
+-11: "a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#lstsub}} length
+!! wikitext
+0: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | 0 }}"
+1: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | 1 }}"
+3: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | 3 }}"
+9: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | 9 }}"
+-1: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | -1 }}"
+-3: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | -3 }}"
+-9: "{{#lstsub: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | 3 | -9 }}"
+!! html/php
+<p>0: ""
+1: "c"
+3: "c!d!e"
+9: "c!d!e!f!g!h!i!j"
+-1: "c!d!e!f!g!h!i"
+-3: "c!d!e!f!g"
+-9: ""
+</p>
+!! end
+
+!! test
+{{#lstfnd}}
+!! wikitext
+"{{#lstfnd:}}"
+"{{#lstfnd: E }}"
+"{{#lstfnd: E | }}"
+"{{#lstfnd: E | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cS }}"
+!! html/php
+<p>""
+""
+""
+"e"
+"e"
+"e"
+"e"
+""
+</p>
+!! end
+
+!! test
+{{#lstfnd}} item
+!! wikitext
+"{{#lstfnd: | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+a: "{{#lstfnd: a | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+e: "{{#lstfnd: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+j: "{{#lstfnd: j | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+x: "{{#lstfnd: x | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+c;d: "{{#lstfnd: c;d | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+!! html/php
+<p>""
+a: "a"
+e: "e"
+j: "j"
+x: ""
+c;d: ""
+</p>
+!! end
+
+!! test
+{{#lstfnd}} case sensitivity
+!! wikitext
+"{{#lstfnd: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}" / "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+ncs: "{{#lstfnd: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; | NcS }}" / "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | NcS }}"
+cs: "{{#lstfnd: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cS }}" / "{{#lstfnd: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cS }}"
+!! html/php
+<p>"e" / "e"
+ncs: "e" / "e"
+cs: "e" / ""
+</p>
+!! end
+
+!! test
+{{#lstind}}
+!! wikitext
+"{{#lstind:}}"
+"{{#lstind: E }}"
+"{{#lstind: E | }}"
+"{{#lstind: E | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstind: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstind: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstind: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstind: E | a; b ;c;d;;e ;f; ;g; h;i;j | ; | cs }}"
+!! html/php
+<p>""
+""
+""
+"5"
+"5"
+"5"
+"5"
+""
+</p>
+!! end
+
+!! test
+{{#lstind}} item
+!! wikitext
+"{{#lstind: | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+a: "{{#lstind: a | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+e: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+j: "{{#lstind: j | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+x: "{{#lstind: x | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+c;d: "{{#lstind: c;d | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+!! html/php
+<p>""
+a: "1"
+e: "5"
+j: "10"
+x: ""
+c;d: ""
+</p>
+!! end
+
+!! test
+{{#lstind}} options
+!! wikitext
+"{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | }}"
+ncs: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | NcS }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | NcS }}"
+cs: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | cS }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | cS }}"
+asc: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | aSC }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | aSC }}"
+desc: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | DeSc }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | DeSc }}"
+pos: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | POs }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | POs }}"
+neg: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | Neg }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | Neg }}"
+ncs asc pos: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | NcS aSC POs }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | NcS aSC POs }}"
+cs desc neg: "{{#lstind: e | a; b ;c;d;;e ;f; ;g; e;i;j | ; | cS DeSc Neg }}" / "{{#lstind: E | a; b ;c;d;;e ;f; ;g; e;i;j | ; | cS DeSc Neg }}"
+!! html/php
+<p>"5" / "5"
+ncs: "5" / "5"
+cs: "5" / ""
+asc: "5" / "5"
+desc: "8" / "8"
+pos: "5" / "5"
+neg: "-6" / "-6"
+ncs asc pos: "5" / "5"
+cs desc neg: "-3" / ""
+</p>
+!! end
+
+!! test
+{{#lstapp}}
+!! wikitext
+"{{#lstapp:}}"
+"{{#lstapp: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstapp: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstapp: a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
+"{{#lstapp: | ; | x }}"
+"{{#lstapp: a; b ;c;d;;e ;f; ;g; h;i;j | ; | x }}"
+!! html/php
+<p>""
+"a,b,c,d,e,f,g,h,i,j"
+"a;b;c;d;e;f;g;h;i;j"
+"a;b;c;d;e;f;g;h;i;j"
+"x"
+"a;b;c;d;e;f;g;h;i;j;x"
+</p>
+!! end
+
+!! test
+{{#lstprep}}
+!! wikitext
+"{{#lstprep:}}"
+"{{#lstprep: x }}"
+"{{#lstprep: x | ; }}"
+"{{#lstprep: x | ; | }}"
+"{{#lstprep: | ; | a; b ;c;d;;e ;f; ;g; h;i;j }}"
+"{{#lstprep: x | ; | a; b ;c;d;;e ;f; ;g; h;i;j }}"
+!! html/php
+<p>""
+"x"
+"x"
+"x"
+"a;b;c;d;e;f;g;h;i;j"
+"x;a;b;c;d;e;f;g;h;i;j"
+</p>
+!! end
+
+!! test
+{{#lstjoin}}
+!! wikitext
+"{{#lstjoin:}}"
+"{{#lstjoin: a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k, l ,m,n,,o ,p, ,q, r,s,t }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | \_; }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t"
+"a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t"
+"a ;b ;c ;d ;e ;f ;g ;h ;i ;j ;k ;l ;m ;n ;o ;p ;q ;r ;s ;t"
+</p>
+!! end
+
+!! test
+{{#listfilter}}
+!! wikitext
+"{{#listfilter:}}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#listfilter: list = a; b ;c;d;;e ;f; ;g; h;i;j | insep = ; }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = ; }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = ( | outro = ) }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | default = def }}"
+"{{#listfilter: default = def }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a;b;c;d;e;f;g;h;i;j"
+"(a, b, c, d, e, f, g, h, i, j)"
+"10(a, b, c, d, e, f, g, h, i, j)10"
+"a, b, c, d, e, f, g, h, i, j"
+"def"
+</p>
+!! end
+
+!! test
+{{#listfilter}} by pattern
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = KeEP }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = x y }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = rEMovE }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = {\{#switch: @ \! 2 \! 6 \! 7 \! 10 = rEMovE }\} | indextoken = @ }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = {\{#switch: @ \! b \! f \! g \! j = rEMovE }\} | token = @ }}"
+"{{#listfilter: list = a:k, b :l ,c: m,:n,d :o:,e:p: p, ,f:q :r, g : s | pattern = {\{#switch: @1,@2 \! b ,l \! c, m \! ,n \! d ,o: \! e,p: p \! f,q :r = rEMovE }\} | token = @1 , @2 | fieldsep = : }}"
+"{{#listfilter: list = a:k, b :l ,c: m,:n,d :o:,e:p: p, ,f:q :r, g : s | pattern = {\{#switch: @1,@2 \! b ,l \! c, m \! ,n \! d ,o: \! e,p: p \! f,q :r = rEMovE }\} | token = @1 ; @2 | fieldsep = : | tokensep = ; }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+""
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a:k, g&#160;: s"
+"a:k, g&#160;: s"
+</p>
+!! end
+
+!! test
+{{#listfilter}} by template
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = empty }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = unknown }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/keep }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/if value }}"
+"{{#listfilter: list = a:k, b :l ,c: m,:n,d :o:,e:p: p, ,f:q :r, g : s | template = remove/if fields | fieldsep = : }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+""
+"a, c, d, e, h, i"
+"a:k, b :l, c: m, d :o:, e:p: p, f:q :r, g&#160;: s"
+</p>
+!! end
+
+!! test
+{{#listfilter}} by exclusion
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b,F, g ,J }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b;F; g ;J | removesep = ; }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b;F; g ;J | removesep = ; | removecs = x y }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b;F; g ;J | removesep = ; | removecs = yES }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, f, h, i, j"
+</p>
+!! end
+
+!! test
+{{#listfilter}} by inclusion
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = b,F, g ,J }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = b;F; g ;J | keepsep = ; }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = b;F; g ;J | keepsep = ; | keepcs = x y }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = b;F; g ;J | keepsep = ; | keepcs = yES }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"b, f, g, j"
+"b, f, g, j"
+"b, f, g, j"
+"b, g"
+</p>
+!! end
+
+!! test
+{{#listfilter}} mode priority
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = a,c,d,e,h,i | remove = a,b,c,d,e,f,g,h,i,j }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = a,c,d,e,h,i | template = remove }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | keep = a,c,d,e,h,i | pattern = rEMovE }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b,f,g,j | template = remove }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | remove = b,f,g,j | pattern = rEMovE }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/if value | pattern = rEMovE }}"
+!! html/php
+<p>"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+"a, c, d, e, h, i"
+</p>
+!! end
+
+!! test
+{{#lstfltr}}
+!! wikitext
+"{{#lstfltr:}}"
+"{{#lstfltr: b;F; g ;J }}"
+"{{#lstfltr: b;F; g ;J | ; }}"
+"{{#lstfltr:           | ; | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstfltr: b;F; g ;J | ; | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstfltr: b;F; g ;J | ; | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstfltr: b;F; g ;J | ; | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
+"{{#lstfltr: b;F; g ;J | ; | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | x y }}"
+"{{#lstfltr: b;F; g ;J | ; | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | cS }}"
+!! html/php
+<p>""
+""
+""
+""
+"b, f, g, j"
+"b, f, g, j"
+"b!f!g!j"
+"b!f!g!j"
+"b!g"
+</p>
+!! end
+
+!! test
+{{#lstrm}}
+!! wikitext
+"{{#lstrm:}}"
+"{{#lstrm: B }}"
+"{{#lstrm:   | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstrm: B | a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#lstrm: B | a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
+"{{#lstrm: B | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
+"{{#lstrm: B | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | x y }}"
+"{{#lstrm: b | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | cS }}"
+"{{#lstrm: B | a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | cS }}"
+!! html/php
+<p>""
+""
+"a, b, c, d, e, f, g, h, i, j"
+"a, c, d, e, f, g, h, i, j"
+"a, c, d, e, f, g, h, i, j"
+"a!c!d!e!f!g!h!i!j"
+"a!c!d!e!f!g!h!i!j"
+"a!c!d!e!f!g!h!i!j"
+"a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#listunique}}
+!! wikitext
+"{{#listunique:}}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | uniquecs = x y }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | uniquecs = yES }}"
+"{{#listunique: list = a; b ;C;D;;A ;b; ;c; D;E;f | insep = ; }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | outsep = ! }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | intro = ( | outro = ) }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listunique: default = def }}"
+!! html/php
+<p>""
+"a, b, C, D, E, f"
+"a, b, C, D, E, f"
+"a, b, C, D, A, c, E, f"
+"a, b, C, D, E, f"
+"a!b!C!D!E!f"
+"(a, b, C, D, E, f)"
+"6(a, b, C, D, E, f)6"
+"def"
+</p>
+!! end
+
+!! test
+{{#listunique}} by pattern
+!! wikitext
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | pattern = }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | pattern = x }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | pattern = {\{#expr: trunc( @ / 2 ) }\} | indextoken = @ }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | pattern = {\{#switch: @ \! b \! c \! f = x \! @ }\} | token = @ }}"
+!! html/php
+<p>"a, b, C, D, E, f"
+"a, b, C, D, E, f"
+"a, b, D, b, D, f"
+"a, b, C, D, A, E"
+</p>
+!! end
+
+!! test
+{{#listunique}} by template
+!! wikitext
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = empty }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unknown }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unique/value }}"
+!! html/php
+<p>"a"
+"a"
+"a, b, C, D, A, E"
+</p>
+!! end
+
+!! test
+{{#lstuniq}}
+!! wikitext
+"{{#lstuniq:}}"
+"{{#lstuniq: a, b ,C,D,,A ,b, ,c, D,E,f }}"
+"{{#lstuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; }}"
+"{{#lstuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | ! }}"
+"{{#lstuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | ! | x y }}"
+"{{#lstuniq: a; b ;C;D;;A ;b; ;c; D;E;f | ; | ! | cS }}"
+!! html/php
+<p>""
+"a, b, C, D, E, f"
+"a, b, C, D, E, f"
+"a!b!C!D!E!f"
+"a!b!C!D!E!f"
+"a!b!C!D!A!c!E!f"
+</p>
+!! end
+
+!! test
+{{#listsort}}
+!! wikitext
+"{{#listsort:}}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | duplicates = x y }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | duplicates = STrIp }}"
+"{{#listsort: list = f; D ;C;A;;F ;B; ;e; a;c;C | insep = ; }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | outsep = ! }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | intro = ( | outro = ) }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listsort: list =                            | default = def }}"
+!! html/php
+<p>""
+"A, a, B, C, c, C, D, e, f, F"
+"A, a, B, C, c, C, D, e, f, F"
+"A, a, B, C, c, D, e, f, F"
+"A, a, B, C, c, C, D, e, f, F"
+"A!a!B!C!c!C!D!e!f!F"
+"(A, a, B, C, c, C, D, e, f, F)"
+"10(A, a, B, C, c, C, D, e, f, F)10"
+"def"
+</p>
+!! end
+
+!! test
+{{#listsort}} by pattern
+!! wikitext
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | pattern = }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | pattern = x | token = @ }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | pattern = {\{#expr: 10 - @ }\} | indextoken = @ }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | pattern = {\{#switch: {\{lc: @ }\} \! a = 3 \! c = 2 \! 1 }\} | token = @ }}"
+!! html/php
+<p>"A, a, B, C, c, C, D, e, f, F"
+"f, D, C, A, F, B, e, a, c, C"
+"C, c, a, e, B, F, A, C, D, f"
+"f, D, F, B, e, C, c, C, A, a"
+</p>
+!! end
+
+!! test
+{{#listsort}} by template
+!! wikitext
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = unknown }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = sort/value }}"
+!! html/php
+<p>"f, D, C, A, F, B, e, a, c, C"
+"f, D, C, A, F, B, e, a, c, C"
+"f, D, F, B, e, C, c, C, A, a"
+</p>
+!! end
+
+!! test
+{{#listsort}} options
+!! wikitext
+alpha asc ncs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortoptions = }}"
+alpha asc cs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortoptions = x cS y }}"
+alpha desc ncs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortoptions = DeSc }}"
+alpha desc cs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortoptions = DeSc cS }}"
+numeric asc: "{{#listsort: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | sortoptions = NuMEric }}"
+numeric desc: "{{#listsort: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | sortoptions = NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A, a, B, C, c, C, D, e, f, F"
+alpha asc cs: "A, B, C, C, D, F, a, c, e, f"
+alpha desc ncs: "f, F, e, D, C, c, C, B, A, a"
+alpha desc cs: "f, e, c, a, F, D, C, C, B, A"
+numeric asc: "1, 1, 2, 3, 3, 3, 4, 4, 6, 6"
+numeric desc: "6, 6, 4, 4, 3, 3, 3, 2, 1, 1"
+</p>
+!! end
+
+!! test
+{{#listsort}} subsort options
+!! wikitext
+alpha asc ncs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty | subsort = yES }}"
+alpha asc cs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty | subsort = yES | subsortoptions = x cS y }}"
+alpha desc ncs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty | subsort = yES | subsortoptions = DeSc }}"
+alpha desc cs: "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty | subsort = yES | subsortoptions = DeSc cS }}"
+numeric asc: "{{#listsort: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | template = empty | subsort = yES | subsortoptions = NuMEric }}"
+numeric desc: "{{#listsort: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | template = empty | subsort = yES | subsortoptions = NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A, a, B, C, c, C, D, e, f, F"
+alpha asc cs: "A, B, C, C, D, F, a, c, e, f"
+alpha desc ncs: "f, F, e, D, C, c, C, B, A, a"
+alpha desc cs: "f, e, c, a, F, D, C, C, B, A"
+numeric asc: "1, 1, 2, 3, 3, 3, 4, 4, 6, 6"
+numeric desc: "6, 6, 4, 4, 3, 3, 3, 2, 1, 1"
+</p>
+!! end
+
+!! test
+{{#lstsrt}}
+!! wikitext
+"{{#lstsrt:}}"
+"{{#lstsrt: f, D ,C,A,,F ,B, ,e, a,c,C }}"
+"{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; }}"
+alpha asc ncs: "{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; | ! }}"
+alpha asc cs: "{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; | ! | x cS y }}"
+alpha desc ncs: "{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; | ! | DeSc }}"
+alpha desc cs: "{{#lstsrt: f; D ;C;A;;F ;B; ;e; a;c;C | ; | ! | DeSc cS }}"
+numeric asc: "{{#lstsrt: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | ! | NuMEric }}"
+numeric desc: "{{#lstsrt: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | ! | NuMEric DeSc }}"
+!! html/php
+<p>""
+"A, a, B, C, c, C, D, e, f, F"
+"A, a, B, C, c, C, D, e, f, F"
+alpha asc ncs: "A!a!B!C!c!C!D!e!f!F"
+alpha asc cs: "A!B!C!C!D!F!a!c!e!f"
+alpha desc ncs: "f!F!e!D!C!c!C!B!A!a"
+alpha desc cs: "f!e!c!a!F!D!C!C!B!A"
+numeric asc: "1!1!2!3!3!3!4!4!6!6"
+numeric desc: "6!6!4!4!3!3!3!2!1!1"
+</p>
+!! end
+
+!! test
+{{#listmap}}
+!! wikitext
+"{{#listmap:}}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#listmap: list = a; b ;c;d;;e ;f; ;g; h;i;j | insep = ; }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = ; }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = ( | outro = ) }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | default = def }}"
+"{{#listmap: default = def }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a;b;c;d;e;f;g;h;i;j"
+"(a, b, c, d, e, f, g, h, i, j)"
+"10(a, b, c, d, e, f, g, h, i, j)10"
+"a, b, c, d, e, f, g, h, i, j"
+"def"
+</p>
+!! end
+
+!! test
+{{#listmap}} by pattern
+!! wikitext
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = x y }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = {\{#expr: @ mod 3 }\} | indextoken = @ }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = {\{#switch: @ \! b \! f \! g \! j = - }\}@ | token = @ }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"x y, x y, x y, x y, x y, x y, x y, x y, x y, x y"
+"1, 2, 0, 1, 2, 0, 1, 2, 0, 1"
+"a, -b, c, d, e, -f, -g, h, i, -j"
+</p>
+!! end
+
+!! test
+{{#listmap}} by template
+!! wikitext
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = empty }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = unknown }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = map/value }}"
+!! html/php
+<p>", , , , , , , , , "
+"x y, x y, x y, x y, x y, x y, x y, x y, x y, x y"
+"a, -b, c, d, e, -f, -g, h, i, -j"
+</p>
+!! end
+
+!! test
+{{#listmap}} sortmode
+!! wikitext
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = x y }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = nOSorT }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = soRT }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = PReSOrt }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = PoStsORt }}"
+"{{#listmap: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | template = opposite | sortmode = pRe/POStsoRt }}"
+!! html/php
+<p>"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+"9, 8, 7, 6, 5, 4, 3, 2, 1, 0"
+"0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+"0, 1, 2, 3, 4, 5, 6, 7, 8, 9"
+</p>
+!! end
+
+!! test
+{{#listmap}} sortoptions
+!! wikitext
+alpha asc ncs: "{{#listmap: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortmode = PoStsORt | sortoptions = }}"
+alpha asc cs: "{{#listmap: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortmode = PoStsORt | sortoptions = x cS y }}"
+alpha desc ncs: "{{#listmap: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortmode = PoStsORt | sortoptions = DeSc }}"
+alpha desc cs: "{{#listmap: list = f, D ,C,A,,F ,B, ,e, a,c,C | sortmode = PoStsORt | sortoptions = DeSc cS }}"
+numeric asc: "{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | sortmode = PoStsORt | sortoptions = NuMEric }}"
+numeric desc: "{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | sortmode = PoStsORt | sortoptions = NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A, a, B, C, c, C, D, e, f, F"
+alpha asc cs: "A, B, C, C, D, F, a, c, e, f"
+alpha desc ncs: "f, F, e, D, C, c, C, B, A, a"
+alpha desc cs: "f, e, c, a, F, D, C, C, B, A"
+numeric asc: "1, 1, 2, 3, 3, 3, 4, 4, 6, 6"
+numeric desc: "6, 6, 4, 4, 3, 3, 3, 2, 1, 1"
+</p>
+!! end
+
+!! test
+{{#listmap}} duplicates
+!! wikitext
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = x y }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = STrIp }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = PResTrIP }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = posTStriP }}"
+"{{#listmap: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | duplicates = pRE/PoStsTRip }}"
+!! html/php
+<p>"6, 4, 3, 1, 6, 2, 4, 1, 3, 3"
+"6, 4, 3, 1, 6, 2, 4, 1, 3, 3"
+"6, 4, 3, 1, 2"
+"6, 4, 3, 1, 2"
+"6, 4, 3, 1, 2"
+"6, 4, 3, 1, 2"
+</p>
+!! end
+
+!! test
+{{#lstmap}}
+!! wikitext
+"{{#lstmap:}}"
+"{{#lstmap: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | x y }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | nOSorT }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | soRT }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | PReSOrt }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | PoStsORt }}"
+"{{#lstmap: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | ; | @ | {\{#expr: 9 - @ }\} | ! | pRe/POStsoRt }}"
+!! html/php
+<p>""
+"5, 6, 7, 8, 9, 0, 1, 2, 3, 4"
+"5, 6, 7, 8, 9, 0, 1, 2, 3, 4"
+"x, x, x, x, x, x, x, x, x, x"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4!3!2!1!0!9!8!7!6!5"
+"4!3!2!1!0!9!8!7!6!5"
+"4!3!2!1!0!9!8!7!6!5"
+"9!8!7!6!5!4!3!2!1!0"
+"9!8!7!6!5!4!3!2!1!0"
+"9!8!7!6!5!4!3!2!1!0"
+"9!8!7!6!5!4!3!2!1!0"
+</p>
+!! end
+
+!! test
+{{#lstmap}} sortoptions
+!! wikitext
+alpha asc ncs: "{{#lstmap: f; D ;C;A;;F ;B; ;e; a;c;C | ; | @ | @ | ! | PoStsORt | }}"
+alpha asc cs: "{{#lstmap: f; D ;C;A;;F ;B; ;e; a;c;C | ; | @ | @ | ! | PoStsORt | x cS y }}"
+alpha desc ncs: "{{#lstmap: f; D ;C;A;;F ;B; ;e; a;c;C | ; | @ | @ | ! | PoStsORt | DeSc }}"
+alpha desc cs: "{{#lstmap: f; D ;C;A;;F ;B; ;e; a;c;C | ; | @ | @ | ! | PoStsORt | DeSc cS }}"
+numeric asc: "{{#lstmap: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | @ | @ | ! | PoStsORt | NuMEric }}"
+numeric desc: "{{#lstmap: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | ; | @ | @ | ! | PoStsORt | NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A!a!B!C!c!C!D!e!f!F"
+alpha asc cs: "A!B!C!C!D!F!a!c!e!f"
+alpha desc ncs: "f!F!e!D!C!c!C!B!A!a"
+alpha desc cs: "f!e!c!a!F!D!C!C!B!A"
+numeric asc: "1!1!2!3!3!3!4!4!6!6"
+numeric desc: "6!6!4!4!3!3!3!2!1!1"
+</p>
+!! end
+
+!! test
+{{#lstmaptemp}}
+!! wikitext
+"{{#lstmaptemp:}}"
+"{{#lstmaptemp: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 }}"
+"{{#lstmaptemp: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | opposite }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | x y }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | nOSorT }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | soRT }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | PReSOrt }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | PoStsORt }}"
+"{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! | pRe/POStsoRt }}"
+!! html/php
+<p>""
+"5, 6, 7, 8, 9, 0, 1, 2, 3, 4"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
+"4!3!2!1!0!9!8!7!6!5"
+"4!3!2!1!0!9!8!7!6!5"
+"4!3!2!1!0!9!8!7!6!5"
+"0!1!2!3!4!5!6!7!8!9"
+"9!8!7!6!5!4!3!2!1!0"
+"0!1!2!3!4!5!6!7!8!9"
+"0!1!2!3!4!5!6!7!8!9"
+</p>
+!! end
+
+!! test
+{{#lstmaptemp}} sortoptions
+!! wikitext
+alpha asc ncs: "{{#lstmaptemp: f; D ;C;A;;F ;B; ;e; a;c;C | id | ; | ! | PoStsORt | }}"
+alpha asc cs: "{{#lstmaptemp: f; D ;C;A;;F ;B; ;e; a;c;C | id | ; | ! | PoStsORt | x cS y }}"
+alpha desc ncs: "{{#lstmaptemp: f; D ;C;A;;F ;B; ;e; a;c;C | id | ; | ! | PoStsORt | DeSc }}"
+alpha desc cs: "{{#lstmaptemp: f; D ;C;A;;F ;B; ;e; a;c;C | id | ; | ! | PoStsORt | DeSc cS }}"
+numeric asc: "{{#lstmaptemp: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | id | ; | ! | PoStsORt | NuMEric }}"
+numeric desc: "{{#lstmaptemp: 6; 4 ;3;1;;6 ;2; ;4; 1;3;3 | id | ; | ! | PoStsORt | NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "A!a!B!C!c!C!D!e!f!F"
+alpha asc cs: "A!B!C!C!D!F!a!c!e!f"
+alpha desc ncs: "f!F!e!D!C!c!C!B!A!a"
+alpha desc cs: "f!e!c!a!F!D!C!C!B!A"
+numeric asc: "1!1!2!3!3!3!4!4!6!6"
+numeric desc: "6!6!4!4!3!3!3!2!1!1"
+</p>
+!! end
+
+!! test
+{{#listmerge}}
+!! wikitext
+"{{#listmerge:}}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j }}"
+"{{#listmerge: list = a; b ;c;d;;e ;f; ;g; h;i;j | insep = ; }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = ; }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = ( | outro = ) }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | intro = @( | outro = )@ | counttoken = @ }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | default = def }}"
+"{{#listmerge: default = def }}"
+!! html/php
+<p>""
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a;b;c;d;e;f;g;h;i;j"
+"(a, b, c, d, e, f, g, h, i, j)"
+"10(a, b, c, d, e, f, g, h, i, j)10"
+"a, b, c, d, e, f, g, h, i, j"
+"def"
+</p>
+!! end
+
+!! test
+{{#listmerge}} by pattern
+!! wikitext
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = x y }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = No }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = No | mergepattern = x y }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = yES }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = yES | mergepattern = x y }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchpattern = {\{#ifexpr: {\{#len: @1 }\} + {\{#len: @2 }\} < 3 \! yES }\} | mergepattern = @1@2 | token1 = @1 | token2 = @2 }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+", , , , "
+"x y"
+"ab, cd, ef, gh, ij"
+</p>
+!! end
+
+!! test
+{{#listmerge}} by template
+!! wikitext
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = empty | mergetemplate = empty }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = unknown | mergetemplate = empty }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = no | mergetemplate = empty }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = no | mergetemplate = unknown }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = yes | mergetemplate = empty }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = yes | mergetemplate = unknown }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | matchtemplate = match/by len | mergetemplate = id }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+"a, b, c, d, e, f, g, h, i, j"
+""
+"x y"
+"ab, cd, ef, gh, ij"
+</p>
+!! end
+
+!! test
+{{#listmerge}} sortmode
+!! wikitext
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = x y }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = nOSorT }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = soRT }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = PoStsORt }}"
+"{{#listmerge: list = 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | matchtemplate = match/by len | mergetemplate = id | sortmode = pRe/POStsoRt }}"
+!! html/php
+<p>"56, 78, 90, 12, 34"
+"56, 78, 90, 12, 34"
+"56, 78, 90, 12, 34"
+"56, 78, 90, 12, 34"
+"01, 23, 45, 67, 89"
+"56, 78, 90, 12, 34"
+"01, 23, 45, 67, 89"
+</p>
+!! end
+
+!! test
+{{#listmerge}} sortoptions
+!! wikitext
+alpha asc ncs: "{{#listmerge: list = f, D ,C,A,,F ,B, ,e, a,c,C | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = }}"
+alpha asc cs: "{{#listmerge: list = f, D ,C,A,,F ,B, ,e, a,c,C | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = x cS y }}"
+alpha desc ncs: "{{#listmerge: list = f, D ,C,A,,F ,B, ,e, a,c,C | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = DeSc }}"
+alpha desc cs: "{{#listmerge: list = f, D ,C,A,,F ,B, ,e, a,c,C | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = DeSc cS }}"
+numeric asc: "{{#listmerge: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = NuMEric }}"
+numeric desc: "{{#listmerge: list = 6, 4 ,3,1,,6 ,2, ,4, 1,3,3 | matchtemplate = match/by len | mergetemplate = id | sortmode = PReSOrt | sortoptions = NuMEric DeSc }}"
+!! html/php
+<p>alpha asc ncs: "Aa, BC, cC, De, fF"
+alpha asc cs: "AB, CC, DF, ac, ef"
+alpha desc ncs: "fF, eD, Cc, CB, Aa"
+alpha desc cs: "fe, ca, FD, CC, BA"
+numeric asc: "11, 23, 33, 44, 66"
+numeric desc: "66, 44, 33, 32, 11"
 </p>
 !! end
