@@ -650,7 +650,7 @@ final class ListFunctions {
 		if ( $inList1 === '' ) {
 			$values1 = [];
 		} else {
-			$inSep1 = ParserPower::expand( $frame, $params[1] ?? '', ParserPower::UNESCAPE );
+			$inSep1 = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
 			$inSep1 = $parser->getStripState()->unstripNoWiki( $inSep1 );
 			$values1 = self::arrayTrimUnescape( self::explodeList( $inSep1, $inList1 ) );
 		}
@@ -658,7 +658,7 @@ final class ListFunctions {
 		if ( $inList2 === '' ) {
 			$values2 = [];
 		} else {
-			$inSep2 = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
+			$inSep2 = ParserPower::expand( $frame, $params[3] ?? ',', ParserPower::UNESCAPE );
 			$inSep2 = $parser->getStripState()->unstripNoWiki( $inSep2 );
 			$values2 = self::arrayTrimUnescape( self::explodeList( $inSep2, $inList2 ) );
 		}
