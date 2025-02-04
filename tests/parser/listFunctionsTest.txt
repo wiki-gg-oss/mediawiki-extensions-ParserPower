@@ -398,9 +398,9 @@ cs desc neg: "-3" / ""
 {{#lstjoin}}
 !! wikitext
 "{{#lstjoin:}}"
-"{{#lstjoin: a  b  c de f   ghi j }}"
+"{{#lstjoin: a, b ,c,d,,e ,f, ,g, h,i,j }}"
 "{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; }}"
-"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k  l  m no p   qrs t }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k, l ,m,n,,o ,p, ,q, r,s,t }}"
 "{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; }}"
 "{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | \_; }}"
 !! html/php
