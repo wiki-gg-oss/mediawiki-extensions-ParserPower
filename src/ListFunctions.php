@@ -2003,22 +2003,44 @@ final class ListFunctions {
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
-		return self::applyTemplateToList(
-			$parser,
-			$frame,
-			$inList,
-			$template,
-			$inSep,
-			'',
-			$outSep,
-			$sortMode,
-			$sortOptions,
-			0,
-			'',
-			'',
-			'',
-			''
-		);
+		if ( $template === '' ) {
+			return self::applyPatternToList(
+				$parser,
+				$frame,
+				$inList,
+				$inSep,
+				'',
+				'',
+				'',
+				'',
+				'',
+				$outSep,
+				$sortMode,
+				$sortOptions,
+				0,
+				'',
+				'',
+				'',
+				''
+			);
+		} else {
+			return self::applyTemplateToList(
+				$parser,
+				$frame,
+				$inList,
+				$template,
+				$inSep,
+				'',
+				$outSep,
+				$sortMode,
+				$sortOptions,
+				0,
+				'',
+				'',
+				'',
+				''
+			);
+		}
 	}
 
 	/**
