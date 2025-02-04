@@ -2338,6 +2338,10 @@ final class ListFunctions {
 			3
 		);
 
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+			$outValues = self::sortList( $outValues, $sortOptions );
+		}
+
 		if ( count( $outValues ) === 0 ) {
 			return [ $default, 'noparse' => false ];
 		}
