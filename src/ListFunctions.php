@@ -362,7 +362,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstcntRender( Parser $parser, PPFrame $frame, array $params ) {
 		$list = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -375,7 +375,7 @@ final class ListFunctions {
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
-		return count( self::arrayTrimUnescape( self::explodeList( $sep, $list ) ) );
+		return (string)count( self::arrayTrimUnescape( self::explodeList( $sep, $list ) ) );
 	}
 
 	/**
@@ -384,7 +384,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstsepRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -408,7 +408,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output along with relevant parser options.
 	 */
 	public function lstelemRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -438,7 +438,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstsubRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -479,7 +479,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstfndRender( Parser $parser, PPFrame $frame, array $params ) {
 		$list = ParserPower::expand( $frame, $params[1] ?? '' );
@@ -518,7 +518,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstindRender( Parser $parser, PPFrame $frame, array $params ) {
 		$list = ParserPower::expand( $frame, $params[1] ?? '' );
@@ -540,13 +540,13 @@ final class ListFunctions {
 			if ( $options & self::INDEX_CS ) {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( $values[$index] === $item ) {
-						return strval( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			} else {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return strval( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			}
@@ -554,13 +554,13 @@ final class ListFunctions {
 			if ( $options & self::INDEX_CS ) {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( $values[$index] === $item ) {
-						return strval( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			} else {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return strval( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			}
@@ -574,7 +574,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstappRender( Parser $parser, PPFrame $frame, array $params ) {
 		$list = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -601,7 +601,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstprepRender( Parser $parser, PPFrame $frame, array $params ) {
 		$value = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
@@ -628,7 +628,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstjoinRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList1 = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -747,8 +747,8 @@ final class ListFunctions {
 	 */
 	private static function applyIntroAndOutro( $intro, $content, $outro, $countToken, $count ) {
 		if ( $countToken !== null && $countToken !== '' ) {
-			$intro = str_replace( $countToken, strval( $count ), $intro );
-			$outro = str_replace( $countToken, strval( $count ), $outro );
+			$intro = str_replace( $countToken, (string)$count, $intro );
+			$outro = str_replace( $countToken, (string)$count, $outro );
 		}
 		return $intro . $content . $outro;
 	}
@@ -798,7 +798,7 @@ final class ListFunctions {
 	 * @param string $values The list of values to include, not yet exploded.
 	 * @param string $valueSep The delimiter separating the values to include.
 	 * @param bool $valueCS true to match in a case-sensitive manner, false to match in a case-insensitive manner
-	 * @return array The function output along with relevant parser options.
+	 * @return array The array stripped of any values with non-unique keys.
 	 */
 	private static function filterListByInclusion( array $inValues, $values, $valueSep, $valueCS ) {
 		if ( $valueSep !== '' ) {
@@ -834,7 +834,7 @@ final class ListFunctions {
 	 * @param string $values The list of values to exclude, not yet exploded.
 	 * @param string $valueSep The delimiter separating the values to exclude.
 	 * @param bool $valueCS true to match in a case-sensitive manner, false to match in a case-insensitive manner
-	 * @return array The function output along with relevant parser options.
+	 * @return array The array stripped of any values with non-unique keys.
 	 */
 	private static function filterListByExclusion( array $inValues, $values, $valueSep, $valueCS ) {
 		if ( $valueSep !== '' ) {
@@ -874,7 +874,7 @@ final class ListFunctions {
 	 * @param string $token The token(s) in the pattern that represents where the list value should go.
 	 * @param string $tokenSep The separator between tokens if used.
 	 * @param string $pattern The pattern of text containing token that list values are inserted into at that token.
-	 * @return array The function output along with relevant parser options.
+	 * @return array The array stripped of any values with non-unique keys.
 	 */
 	private static function filterFromListByPattern(
 		Parser $parser,
@@ -957,7 +957,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function listfilterRender( Parser $parser, PPFrame $frame, array $params ) {
 		$params = ParserPower::arrangeParams( $frame, $params );
@@ -1018,7 +1018,7 @@ final class ListFunctions {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$count = strval( count( $outValues ) );
+		$count = count( $outValues );
 		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
@@ -1030,7 +1030,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstfltrRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[2] ?? '' );
@@ -1065,7 +1065,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstrmRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[1] ?? '' );
@@ -1098,7 +1098,7 @@ final class ListFunctions {
 	 *
 	 * @param array $values The array of values to reduce to unique values.
 	 * @param bool $valueCS true to determine uniqueness case-sensitively, false to determine it case-insensitively
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	private static function reduceToUniqueValues( array $values, $valueCS ) {
 		if ( $valueCS ) {
@@ -1114,7 +1114,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstcntuniqRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -1131,7 +1131,7 @@ final class ListFunctions {
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $inList ) );
 		$values = self::reduceToUniqueValues( $values, $csOption );
-		return strval( count( $values ) );
+		return (string)count( $values );
 	}
 
 	/**
@@ -1241,7 +1241,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function listuniqueRender( Parser $parser, PPFrame $frame, array $params ) {
 		$params = ParserPower::arrangeParams( $frame, $params );
@@ -1290,7 +1290,7 @@ final class ListFunctions {
 		} else {
 			$outValues = self::reduceToUniqueValues( $inValues, $uniqueCS );
 		}
-		$count = strval( count( $outValues ) );
+		$count = count( $outValues );
 		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
@@ -1301,7 +1301,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstuniqRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -1534,7 +1534,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function listsortRender( Parser $parser, PPFrame $frame, array $params ) {
 		$params = ParserPower::arrangeParams( $frame, $params );
@@ -1601,7 +1601,7 @@ final class ListFunctions {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$count = strval( count( $values ) );
+		$count = count( $values );
 		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $values ), $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
@@ -1612,7 +1612,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstsrtRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -1653,7 +1653,7 @@ final class ListFunctions {
 	 * @param string $intro Content to include before outputted list values, only if at least one item is output.
 	 * @param string $outro Content to include after outputted list values, only if at least one item is output.
 	 * @param string $default Content to output if no list values are.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	private static function applyPatternToList(
 		Parser $parser,
@@ -1739,8 +1739,8 @@ final class ListFunctions {
 		}
 
 		if ( $countToken !== null && $countToken !== '' ) {
-			$intro = str_replace( $countToken, strval( count( $outValues ) ), $intro );
-			$outro = str_replace( $countToken, strval( count( $outValues ) ), $outro );
+			$intro = str_replace( $countToken, (string)count( $outValues ), $intro );
+			$outro = str_replace( $countToken, (string)count( $outValues ), $outro );
 		}
 		return ParserPower::evaluateUnescaped( $parser, $frame, $intro . implode( $outSep, $outValues ) . $outro );
 	}
@@ -1762,7 +1762,7 @@ final class ListFunctions {
 	 * @param string $intro Content to include before outputted list values, only if at least one item is output.
 	 * @param string $outro Content to include after outputted list values, only if at least one item is output.
 	 * @param string $default Content to output if no list values are.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	private static function applyTemplateToList(
 		Parser $parser,
@@ -1812,7 +1812,7 @@ final class ListFunctions {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$count = strval( count( $outValues ) );
+		$count = count( $outValues );
 		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
@@ -1824,7 +1824,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function listmapRender( Parser $parser, PPFrame $frame, array $params ) {
 		$params = ParserPower::arrangeParams( $frame, $params );
@@ -1901,7 +1901,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstmapRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -1947,7 +1947,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function lstmaptempRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -2105,7 +2105,7 @@ final class ListFunctions {
 	 * @param array $mergeParams Parameter values for the merging process, with open spots for the values.
 	 * @param int $valueIndex1 The index in $matchParams and $mergeParams where the first value is to go.
 	 * @param int $valueIndex2 The index in $matchParams and $mergeParams where the second value is to go.
-	 * @return array The function output along with relevant parser options.
+	 * @return array An array with the output values.
 	 */
 	private static function iterativeListMerge(
 		Parser $parser,
@@ -2172,7 +2172,7 @@ final class ListFunctions {
 	 * @param string $intro Content to include before outputted list values, if at least one item is output.
 	 * @param string $outro Content to include after outputted list values, if at least one item is output.
 	 * @param string $default Content to output if no list values are.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	private static function mergeListByPattern(
 		Parser $parser,
@@ -2234,7 +2234,7 @@ final class ListFunctions {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$count = strval( count( $outValues ) );
+		$count = count( $outValues );
 		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
@@ -2256,7 +2256,7 @@ final class ListFunctions {
 	 * @param string $intro Content to include before outputted list values, if at least one item is output.
 	 * @param string $outro Content to include after outputted list values, if at least one item is output.
 	 * @param string $default Content to output if no list values are.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	private static function mergeListByTemplate(
 		Parser $parser,
@@ -2303,7 +2303,7 @@ final class ListFunctions {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$count = strval( count( $outValues ) );
+		$count = count( $outValues );
 		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
@@ -2315,7 +2315,7 @@ final class ListFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function listmergeRender( Parser $parser, PPFrame $frame, array $params ) {
 		$params = ParserPower::arrangeParams( $frame, $params );

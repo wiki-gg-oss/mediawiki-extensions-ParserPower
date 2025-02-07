@@ -22,7 +22,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function trimRender( Parser $parser, PPFrame $frame, array $params ) {
 		return ParserPower::expand( $frame, $params[0] ?? '' );
@@ -35,7 +35,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function uescRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
@@ -51,7 +51,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function uescnowikiRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
@@ -66,7 +66,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function trimuescRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
@@ -83,7 +83,7 @@ final class SimpleFunctions {
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function linkpageRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
 		$text = $parser->replaceVariables( $text, $frame );
@@ -100,7 +100,7 @@ final class SimpleFunctions {
 	 * name of the page they link to.
 	 *
 	 * @param array $matches The parameters and values together, not yet exploded or trimmed.
-	 * @return string The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	private static function linkpageReplace( $matches ) {
 		$parts = explode( '|', $matches[1], 2 );
@@ -116,7 +116,7 @@ final class SimpleFunctions {
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function linktextRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
 		$text = $parser->replaceVariables( $text, $frame );
@@ -132,7 +132,7 @@ final class SimpleFunctions {
 	 * This function replaces the links found by linktextRender and replaces them with their appropriate link text.
 	 *
 	 * @param array $matches The parameters and values together, not yet exploded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function linktextReplace( $matches ) {
 		$parts = explode( '|', $matches[1], 2 );
@@ -150,7 +150,7 @@ final class SimpleFunctions {
 	 * @param array $attribs Attributes values of the tag function. Ignored.
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function escRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
 		return [ ParserPower::escape( $text ), 'markerType' => 'none' ];
@@ -162,7 +162,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function ueifRender( Parser $parser, PPFrame $frame, array $params ) {
 		$condition = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -182,7 +182,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function orRender( Parser $parser, PPFrame $frame, array $params ) {
 		foreach ( $params as $param ) {
@@ -202,7 +202,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function ueorRender( Parser $parser, PPFrame $frame, array $params ) {
 		foreach ( $params as $param ) {
@@ -223,7 +223,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function ueifeqRender( Parser $parser, PPFrame $frame, array $params ) {
 		$leftValue = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
@@ -244,7 +244,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function tokenRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inValue = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -265,7 +265,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function tokenifRender( Parser $parser, PPFrame $frame, array $params ) {
 		$inValue = ParserPower::expand( $frame, $params[0] ?? '' );
@@ -291,7 +291,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function ueswitchRender( Parser $parser, PPFrame $frame, array $params ) {
 		$switchKey = isset( $params[0] ) ? ParserPower::expand( $frame, array_shift( $params ), ParserPower::UNESCAPE ) : '';
@@ -349,7 +349,7 @@ final class SimpleFunctions {
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return array The function output along with relevant parser options.
+	 * @return string The function output.
 	 */
 	public function followRender( Parser $parser, PPFrame $frame, array $params ) {
 		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
