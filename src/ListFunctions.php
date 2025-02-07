@@ -903,7 +903,7 @@ final class ListFunctions {
 						$pattern
 					);
 					$result = ParserPower::unescape( $result );
-					$result = $parser->replaceVariables( $result, $frame );
+					$result = ParserPower::evaluateUnescaped( $parser, $frame, $result, ParserPower::WITH_ARGS );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
@@ -916,7 +916,7 @@ final class ListFunctions {
 				if ( $value !== '' ) {
 					$result = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
 					$result = ParserPower::unescape( $result );
-					$result = $parser->replaceVariables( $result, $frame );
+					$result = ParserPower::evaluateUnescaped( $parser, $frame, $result, ParserPower::WITH_ARGS );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
@@ -1175,7 +1175,7 @@ final class ListFunctions {
 						$pattern
 					);
 					$key = ParserPower::unescape( $key );
-					$key = $parser->replaceVariables( $key, $frame );
+					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
@@ -1189,7 +1189,7 @@ final class ListFunctions {
 				if ( $value !== '' ) {
 					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
 					$key = ParserPower::unescape( $key );
-					$key = $parser->replaceVariables( $key, $frame );
+					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
@@ -1399,7 +1399,7 @@ final class ListFunctions {
 						$pattern
 					);
 					$key = ParserPower::unescape( $key );
-					$key = $parser->replaceVariables( $key, $frame );
+					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
 				}
@@ -1410,7 +1410,7 @@ final class ListFunctions {
 				if ( $value !== '' ) {
 					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
 					$key = ParserPower::unescape( $key );
-					$key = $parser->replaceVariables( $key, $frame );
+					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
 				}
@@ -2129,12 +2129,14 @@ final class ListFunctions {
 				while ( count( $otherValues ) > 0 ) {
 					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = array_shift( $otherValues );
 					$doMerge = call_user_func_array( $applyFunction, $matchParams );
-					$doMerge = $parser->replaceVariables( ParserPower::unescape( $doMerge ), $frame );
+					$doMerge = ParserPower::unescape( $doMerge );
+					$doMerge = ParserPower::evaluateUnescaped( $parser, $frame, $doMerge, ParserPower::WITH_ARGS );
 					$doMerge = self::decodeBool( $doMerge );
 
 					if ( $doMerge ) {
 						$value1 = call_user_func_array( $applyFunction, $mergeParams );
-						$value1 = $parser->replaceVariables( ParserPower::unescape( $value1 ), $frame );
+						$value1 = ParserPower::unescape( $value1 );
+						$value1 = ParserPower::evaluateUnescaped( $parser, $frame, $value1, ParserPower::WITH_ARGS );
 						$matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $value1;
 					} else {
 						$inValues[] = $value2;

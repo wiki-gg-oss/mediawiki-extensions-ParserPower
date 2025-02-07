@@ -10,13 +10,17 @@ use MediaWiki\Parser\Preprocessor;
 
 class ParserPower {
 	/**
-	 * Flag for not expanding variables.
+	 * expand() flag for not expanding variables.
 	 */
 	public const NO_VARS = 1;
 	/**
-	 * Flag for unescaping after expanding.
+	 * expand() flag for unescaping after expanding.
 	 */
 	public const UNESCAPE = 2;
+	/**
+	 * evaluateUnescaped() flag for evaluating argument syntax in the wikitext.
+	 */
+	public const WITH_ARGS = 1;
 
 	/**
 	 * Sequences to escape, with the replacement character (after a basckslash).
@@ -126,16 +130,19 @@ class ParserPower {
 	 * @param Parser $parser
 	 * @param PPFrame $frame
 	 * @param string $text
+	 * @param int $flags
 	 * @return string
 	 */
-	public static function evaluateUnescaped( Parser $parser, PPFrame $frame, $text ) {
+	public static function evaluateUnescaped( Parser $parser, PPFrame $frame, $text, $flags = 0 ) {
 		if ( $text === '' ) {
 			return '';
 		}
 
 		if ( $frame->isTemplate() ) {
 			$dom = $parser->preprocessToDom( $text, Preprocessor::DOM_FOR_INCLUSION );
-			$frame = $frame->newChild();
+			if ( $flags & ~self::WITH_ARGS ) {
+				$frame = $frame->newChild();
+			}
 		} else {
 			$dom = $parser->preprocessToDom( $text );
 		}
