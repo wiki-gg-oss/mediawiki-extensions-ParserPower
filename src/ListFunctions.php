@@ -902,8 +902,7 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
-					$result = $parser->preprocessToDom( $result, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$result = ParserPower::expand( $frame, $result, ParserPower::UNESCAPE );
+					$result = ParserPower::unescape( $result );
 					$result = $parser->replaceVariables( $result, $frame );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
@@ -916,8 +915,7 @@ final class ListFunctions {
 			foreach ( $inValues as $value ) {
 				if ( $value !== '' ) {
 					$result = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$result = $parser->preprocessToDom( $result, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$result = ParserPower::expand( $frame, $result, ParserPower::UNESCAPE );
+					$result = ParserPower::unescape( $result );
 					$result = $parser->replaceVariables( $result, $frame );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
@@ -1176,8 +1174,7 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
-					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
+					$key = ParserPower::unescape( $key );
 					$key = $parser->replaceVariables( $key, $frame );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
@@ -1191,8 +1188,7 @@ final class ListFunctions {
 			foreach ( $inValues as $value ) {
 				if ( $value !== '' ) {
 					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
+					$key = ParserPower::unescape( $key );
 					$key = $parser->replaceVariables( $key, $frame );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
@@ -1402,8 +1398,7 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
-					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
+					$key = ParserPower::unescape( $key );
 					$key = $parser->replaceVariables( $key, $frame );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
@@ -1414,8 +1409,7 @@ final class ListFunctions {
 			foreach ( $values as $value ) {
 				if ( $value !== '' ) {
 					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$key = $parser->preprocessToDom( $key, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$key = ParserPower::expand( $frame, $key, ParserPower::UNESCAPE );
+					$key = ParserPower::unescape( $key );
 					$key = $parser->replaceVariables( $key, $frame );
 					$pairedValues[] = [ $key, $value ];
 					++$index;
@@ -1712,8 +1706,7 @@ final class ListFunctions {
 						$tokenCount,
 						$pattern
 					);
-					$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
+					$outValue = ParserPower::unescape( $outValue );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 						++$index;
@@ -1724,8 +1717,7 @@ final class ListFunctions {
 			foreach ( $inValues as $inValue ) {
 				if ( $inValue !== '' ) {
 					$outValue = self::applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern );
-					$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-					$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
+					$outValue = ParserPower::unescape( $outValue );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 						++$index;
