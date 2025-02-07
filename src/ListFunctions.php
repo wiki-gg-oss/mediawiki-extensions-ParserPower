@@ -2037,7 +2037,7 @@ final class ListFunctions {
 			return;
 		}
 
-		$outValue = ParserPower::expand( $frame, $pattern, ParserPower::NO_VARS );
+		$outValue = $pattern;
 		if ( $fieldSep === '' ) {
 			if ( $inValue1 !== '' ) {
 				$outValue = str_replace( $tokens1[0], $inValue1, $outValue );
@@ -2061,8 +2061,7 @@ final class ListFunctions {
 				}
 			}
 		}
-		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return ParserPower::expand( $frame, $outValue );
+		return $outValue;
 	}
 
 	/**
