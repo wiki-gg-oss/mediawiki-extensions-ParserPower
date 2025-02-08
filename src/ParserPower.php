@@ -6,6 +6,7 @@ namespace MediaWiki\Extension\ParserPower;
 
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
+use MediaWiki\Parser\PPNode;
 
 class ParserPower {
 	/**
@@ -60,7 +61,7 @@ class ParserPower {
 	 * @param array $unexpandedParams The parameters and values together, not yet exploded or trimmed.
 	 * @return array The parameter values associated with the appropriate named or numbered keys
 	 */
-	public static function arrangeParams( PPFrame $frame, array $unexpandedParams ) {
+	public static function arrangeParams( PPFrame $frame, array $unexpandedParams ): array {
 		$params = [];
 
 		if ( isset( $unexpandedParams[0] ) && is_string( $unexpandedParams[0] ) ) {
@@ -75,9 +76,9 @@ class ParserPower {
 		foreach ( $unexpandedParams as $unexpandedParam ) {
 			$bits = $unexpandedParam->splitArg();
 			if ( $bits['index'] === '' ) {
-				$params[ParserPower::expand( $frame, $bits['name'] )] = ParserPower::expand( $frame, $bits['value'] );
+				$params[self::expand( $frame, $bits['name'] )] = self::expand( $frame, $bits['value'] );
 			} else {
-				$params[] = ParserPower::expand( $frame, $bits['value'] );
+				$params[] = self::expand( $frame, $bits['value'] );
 			}
 		}
 
@@ -90,7 +91,7 @@ class ParserPower {
 	 * @param string $value The value to check.
 	 * @return bool true for a value that is not null or an empty string.
 	 */
-	public static function isEmpty( $value ) {
+	public static function isEmpty( string $value ): bool {
 		return $value === null || $value === '';
 	}
 
@@ -102,7 +103,7 @@ class ParserPower {
 	 * @param int $flags
 	 * @return string
 	 */
-	public static function expand( PPFrame $frame, $input, $flags = 0 ) {
+	public static function expand( PPFrame $frame, PPNode|string $input, int $flags = 0 ): string {
 		if ( $flags & self::NO_VARS ) {
 			$expanded = $frame->expand( $input, PPFrame::NO_ARGS | PPFrame::NO_TEMPLATES );
 		} else {
@@ -125,7 +126,7 @@ class ParserPower {
 	 * @param string $input The string to escape.
 	 * @return string The string with all escape sequences replaced.
 	 */
-	public static function unescape( $input ) {
+	public static function unescape( string $input ): string {
 		$output = '';
 		$offset = 0;
 		$length = strlen( $input );
@@ -165,7 +166,7 @@ class ParserPower {
 	 * @param string $input The string to escape.
 	 * @return string The escaped string.
 	 */
-	public static function escape( $input ) {
+	public static function escape( string $input ): string {
 		$output = '';
 		$offset = 0;
 		$length = strlen( $input );
@@ -222,7 +223,13 @@ class ParserPower {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPattern( Parser $parser, PPFrame $frame, $inValue, $token, $pattern ) {
+	public static function applyPattern(
+		Parser $parser,
+		PPFrame $frame,
+		string $inValue,
+		string $token,
+		string $pattern
+	): string {
 		return self::applyPatternWithIndex( $parser, $frame, $inValue, '', 0, $token, $pattern );
 	}
 
@@ -242,15 +249,15 @@ class ParserPower {
 	public static function applyPatternWithIndex(
 		Parser $parser,
 		PPFrame $frame,
-		$inValue,
-		$indexToken,
-		$index,
-		$token,
-		$pattern
-	) {
+		string $inValue,
+		string $indexToken,
+		int $index,
+		string $token,
+		string $pattern
+	): string {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
-			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
+			$outValue = $pattern;
 			if ( $indexToken !== null && $indexToken !== '' ) {
 				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
 			}
@@ -279,12 +286,12 @@ class ParserPower {
 	public static function applyFieldPattern(
 		Parser $parser,
 		PPFrame $frame,
-		$inValue,
-		$fieldSep,
+		string $inValue,
+		string $fieldSep,
 		array $tokens,
-		$tokenCount,
-		$pattern
-	) {
+		int $tokenCount,
+		string $pattern
+	): string {
 		return self::applyFieldPatternWithIndex(
 			$parser,
 			$frame,
@@ -306,7 +313,7 @@ class ParserPower {
 	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue The value to change into one or more template parameters
 	 * @param string $fieldSep The delimiter separating the fields in the value.
-	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
+	 * @param string $indexToken The token to replace with the index, or null/empty value to skip index replacement.
 	 * @param int $index The numeric index of this value.
 	 * @param array $tokens The list of tokens to replace.
 	 * @param int $tokenCount The number of tokens.
@@ -316,17 +323,17 @@ class ParserPower {
 	public static function applyFieldPatternWithIndex(
 		Parser $parser,
 		PPFrame $frame,
-		$inValue,
-		$fieldSep,
-		$indexToken,
-		$index,
+		string $inValue,
+		string $fieldSep,
+		string $indexToken,
+		int $index,
 		array $tokens,
-		$tokenCount,
-		$pattern
-	) {
+		int $tokenCount,
+		string $pattern
+	): string {
 		$inValue = trim( $inValue );
 		if ( trim( $pattern ) !== '' ) {
-			$outValue = self::expand( $frame, $pattern, self::NO_VARS );
+			$outValue = $pattern;
 			if ( $indexToken !== null && $indexToken !== '' ) {
 				$outValue = str_replace( $indexToken, strval( $index ), $outValue );
 			}
