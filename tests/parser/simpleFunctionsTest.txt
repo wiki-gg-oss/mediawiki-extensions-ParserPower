@@ -94,6 +94,17 @@ Target
 !! end
 
 !! test
+{{#linkpage}}
+!! wikitext
+"{{#linkpage:}}"
+"{{#linkpage: with [[some|X]] [[text#around|X]] and [external.gg url]\0 }}"
+!! html
+<p>""
+"with some text#around and [external.gg url]\0"
+</p>
+!! end
+
+!! test
 <linkpage>
 !! wikitext
 "<linkpage/>"
@@ -101,6 +112,17 @@ Target
 !! html/php
 <p>""
 "with some text#around and [external.gg url]"
+</p>
+!! end
+
+!! test
+{{#linktext}}
+!! wikitext
+"{{#linktext:}}"
+"{{#linktext: with [[X|some]] [[X#Y|text]] and [external.gg url]\0 }}"
+!! html
+<p>""
+"with some text and [external.gg url]\0"
 </p>
 !! end
 
