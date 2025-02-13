@@ -2140,7 +2140,7 @@ final class ListFunctions {
 	 *
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
-	 * @param array $inValues The input values, should be already exploded and fully preprocessed.
+	 * @param array $values The input values, should be already exploded and fully preprocessed.
 	 * @param string $applyFunction Valid name of the function to call for both match and merge processes.
 	 * @param array $matchParams Parameter values for the matching process, with open spots for the values.
 	 * @param array $mergeParams Parameter values for the merging process, with open spots for the values.
@@ -2151,7 +2151,7 @@ final class ListFunctions {
 	private static function iterativeListMerge(
 		Parser $parser,
 		PPFrame $frame,
-		array $inValues,
+		array $values,
 		$applyFunction,
 		array $matchParams,
 		array $mergeParams,
@@ -2159,16 +2159,16 @@ final class ListFunctions {
 		$valueIndex2
 	) {
 		do {
-			$outValues = [];
-			$preCount = count( $inValues );
+			$preCount = $count = count( $values );
 
-			while ( count( $inValues ) > 0 ) {
-				$value1 = $matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = array_shift( $inValues );
-				$otherValues = $inValues;
-				$inValues = [];
+			for ( $i1 = 0; $i1 < $count; ++$i1 ) {
+				$value1 = $matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $values[$i1];
+				$shift = 0;
 
-				while ( count( $otherValues ) > 0 ) {
-					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = array_shift( $otherValues );
+				for ( $i2 = $i1 + 1; $i2 < $count; ++$i2 ) {
+					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = $values[$i2];
+					unset( $values[$i2] );
+
 					$doMerge = call_user_func_array( $applyFunction, $matchParams );
 					$doMerge = $parser->replaceVariables( ParserPower::unescape( trim( $doMerge ) ), $frame );
 					$doMerge = self::decodeBool( $doMerge );
@@ -2177,18 +2177,18 @@ final class ListFunctions {
 						$value1 = call_user_func_array( $applyFunction, $mergeParams );
 						$value1 = $parser->replaceVariables( ParserPower::unescape( trim( $value1 ) ), $frame );
 						$matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $value1;
+						$shift += 1;
 					} else {
-						$inValues[] = $value2;
+						$values[$i2 - $shift] = $value2;
 					}
 				}
 
-				$outValues[] = $value1;
+				$values[$i1] = $value1;
+				$count -= $shift;
 			}
-			$postCount = count( $outValues );
-			$inValues = $outValues;
-		} while ( $postCount < $preCount && $postCount > 1 );
+		} while ( $count < $preCount && $count > 1 );
 
-		return $outValues;
+		return $values;
 	}
 
 	/**
