@@ -77,6 +77,17 @@ final class SimpleFunctions {
 	}
 
 	/**
+	 * @param Parser $parser The parser object. Ignored.
+	 * @param PPFrame $frame The parser frame object.
+	 * @param array $params The parameters and values together, not yet expanded or trimmed.
+	 * @return array The function output along with relevant parser options.
+	 */
+	public function linkpageRender( Parser $parser, PPFrame $frame, array $params ) {
+		$text = ParserPower::expand( $frame, $params[0] ?? '' );
+		return preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linkpageReplace' ], $text );
+	}
+
+	/**
 	 * This function performs the delinking operation for the linktext parser function.
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the name of the page they would have linked to.
@@ -87,7 +98,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public function linkpageRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
+	public function linkpageTagRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text ) {
@@ -110,6 +121,17 @@ final class SimpleFunctions {
 	}
 
 	/**
+	 * @param Parser $parser The parser object. Ignored.
+	 * @param PPFrame $frame The parser frame object.
+	 * @param array $params The parameters and values together, not yet expanded or trimmed.
+	 * @return array The function output along with relevant parser options.
+	 */
+	public function linktextRender( Parser $parser, PPFrame $frame, array $params ) {
+		$text = ParserPower::expand( $frame, $params[0] ?? '' );
+		return preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linktextReplace' ], $text );
+	}
+
+	/**
 	 * This function performs the delinking operation for the linktext parser function.
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the text that any links would return.
@@ -120,7 +142,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public function linktextRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
+	public function linktextTagRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text !== '' ) {
@@ -154,7 +176,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public function escRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
+	public function escTagRender( $text, array $attribs, Parser $parser, PPFrame $frame ) {
 		$text = ParserPower::escape( $text );
 
 		$text = $parser->replaceVariables( $text, $frame );
