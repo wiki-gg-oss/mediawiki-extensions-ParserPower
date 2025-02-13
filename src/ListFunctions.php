@@ -2158,6 +2158,8 @@ final class ListFunctions {
 		$valueIndex1,
 		$valueIndex2
 	) {
+		$checkedPairs = [];
+
 		do {
 			$preCount = $count = count( $values );
 
@@ -2169,9 +2171,14 @@ final class ListFunctions {
 					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = $values[$i2];
 					unset( $values[$i2] );
 
-					$doMerge = call_user_func_array( $applyFunction, $matchParams );
-					$doMerge = $parser->replaceVariables( ParserPower::unescape( trim( $doMerge ) ), $frame );
-					$doMerge = self::decodeBool( $doMerge );
+					if ( isset( $checkedPairs[$value1][$value2] ) ) {
+						$doMerge = $checkedPairs[$value1][$value2];
+					} else {
+						$doMerge = call_user_func_array( $applyFunction, $matchParams );
+						$doMerge = $parser->replaceVariables( ParserPower::unescape( trim( $doMerge ) ), $frame );
+						$doMerge = self::decodeBool( $doMerge );
+						$checkedPairs[$value1][$value2] = $doMerge;
+					}
 
 					if ( $doMerge ) {
 						$value1 = call_user_func_array( $applyFunction, $mergeParams );
