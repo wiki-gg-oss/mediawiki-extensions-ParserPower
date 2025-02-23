@@ -33,14 +33,15 @@ final class FunctionRegistrationHooks implements
 
 		$parser->setFunctionHook( 'trim', [ $this->simpleFunctions, 'trimRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'uesc', [ $this->simpleFunctions, 'uescRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'uescnowiki', [ $this->simpleFunctions, 'uescnowikiRender' ],
-			Parser::SFH_OBJECT_ARGS );
+		$parser->setFunctionHook( 'uescnowiki', [ $this->simpleFunctions, 'uescnowikiRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'trimuesc', [ $this->simpleFunctions, 'trimuescRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setHook( 'linkpage', [ $this->simpleFunctions, 'linkpageRender' ] );
-		$parser->setHook( 'linktext', [ $this->simpleFunctions, 'linktextRender' ] );
-		$parser->setHook( 'esc', [ $this->simpleFunctions, 'escRender' ] );
+		$parser->setFunctionHook( 'linkpage', [ $this->simpleFunctions, 'linkpageRender' ], Parser::SFH_OBJECT_ARGS );
+		$parser->setFunctionHook( 'linktext', [ $this->simpleFunctions, 'linktextRender' ], Parser::SFH_OBJECT_ARGS );
+		$parser->setHook( 'linkpage', [ $this->simpleFunctions, 'linkpageTagRender' ] );
+		$parser->setHook( 'linktext', [ $this->simpleFunctions, 'linktextTagRender' ] );
+		$parser->setHook( 'esc', [ $this->simpleFunctions, 'escTagRender' ] );
 		for ( $index = 1; $index < 10; $index++ ) {
-			$parser->setHook( 'esc' . $index, [ $this->simpleFunctions, 'escRender' ] );
+			$parser->setHook( 'esc' . $index, [ $this->simpleFunctions, 'escTagRender' ] );
 		}
 		$parser->setFunctionHook( 'ueif', [ $this->simpleFunctions, 'ueifRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'or', [ $this->simpleFunctions, 'orRender' ], Parser::SFH_OBJECT_ARGS );
