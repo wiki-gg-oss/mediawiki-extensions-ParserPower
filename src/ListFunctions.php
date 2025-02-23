@@ -613,7 +613,7 @@ final class ListFunctions {
 		if ( $inList1 === '' ) {
 			$values1 = [];
 		} else {
-			$inSep1 = ParserPower::expand( $frame, $params[1] ?? '', ParserPower::UNESCAPE );
+			$inSep1 = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
 			$inSep1 = $parser->getStripState()->unstripNoWiki( $inSep1 );
 			$values1 = self::arrayTrimUnescape( self::explodeList( $inSep1, $inList1 ) );
 		}
@@ -621,7 +621,7 @@ final class ListFunctions {
 		if ( $inList2 === '' ) {
 			$values2 = [];
 		} else {
-			$inSep2 = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
+			$inSep2 = ParserPower::expand( $frame, $params[3] ?? ',', ParserPower::UNESCAPE );
 			$inSep2 = $parser->getStripState()->unstripNoWiki( $inSep2 );
 			$values2 = self::arrayTrimUnescape( self::explodeList( $inSep2, $inList2 ) );
 		}
@@ -1942,8 +1942,8 @@ final class ListFunctions {
 		}
 
 		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$token = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::NO_VARS | ParserPower::UNESCAPE );
-		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x', ParserPower::NO_VARS );
+		$token = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::UNESCAPE );
+		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x' );
 		$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params[5] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
@@ -1996,22 +1996,44 @@ final class ListFunctions {
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
-		return self::applyTemplateToList(
-			$parser,
-			$frame,
-			$inList,
-			$template,
-			$inSep,
-			'',
-			$outSep,
-			$sortMode,
-			$sortOptions,
-			0,
-			'',
-			'',
-			'',
-			''
-		);
+		if ( $template === '' ) {
+			return self::applyPatternToList(
+				$parser,
+				$frame,
+				$inList,
+				$inSep,
+				'',
+				'',
+				'',
+				'',
+				'',
+				$outSep,
+				$sortMode,
+				$sortOptions,
+				0,
+				'',
+				'',
+				'',
+				''
+			);
+		} else {
+			return self::applyTemplateToList(
+				$parser,
+				$frame,
+				$inList,
+				$template,
+				$inSep,
+				'',
+				$outSep,
+				$sortMode,
+				$sortOptions,
+				0,
+				'',
+				'',
+				'',
+				''
+			);
+		}
 	}
 
 	/**
@@ -2111,7 +2133,7 @@ final class ListFunctions {
 	 *
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
-	 * @param array $inValues The input values, should be already exploded and fully preprocessed.
+	 * @param array $values The input values, should be already exploded and fully preprocessed.
 	 * @param callable $applyFunction Valid name of the function to call for both match and merge processes.
 	 * @param array $matchParams Parameter values for the matching process, with open spots for the values.
 	 * @param array $mergeParams Parameter values for the merging process, with open spots for the values.
@@ -2122,44 +2144,51 @@ final class ListFunctions {
 	private static function iterativeListMerge(
 		Parser $parser,
 		PPFrame $frame,
-		array $inValues,
+		array $values,
 		callable $applyFunction,
 		array $matchParams,
 		array $mergeParams,
 		int $valueIndex1,
 		int $valueIndex2
 	): array {
+		$checkedPairs = [];
+
 		do {
-			$outValues = [];
-			$preCount = count( $inValues );
+			$preCount = $count = count( $values );
 
-			while ( count( $inValues ) > 0 ) {
-				$value1 = $matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = array_shift( $inValues );
-				$otherValues = $inValues;
-				$inValues = [];
+			for ( $i1 = 0; $i1 < $count; ++$i1 ) {
+				$value1 = $matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $values[$i1];
+				$shift = 0;
 
-				while ( count( $otherValues ) > 0 ) {
-					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = array_shift( $otherValues );
-					$doMerge = call_user_func_array( $applyFunction, $matchParams );
-					$doMerge = $parser->replaceVariables( ParserPower::unescape( trim( $doMerge ) ), $frame );
-					$doMerge = self::decodeBool( $doMerge );
+				for ( $i2 = $i1 + 1; $i2 < $count; ++$i2 ) {
+					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = $values[$i2];
+					unset( $values[$i2] );
+
+					if ( isset( $checkedPairs[$value1][$value2] ) ) {
+						$doMerge = $checkedPairs[$value1][$value2];
+					} else {
+						$doMerge = call_user_func_array( $applyFunction, $matchParams );
+						$doMerge = $parser->replaceVariables( ParserPower::unescape( trim( $doMerge ) ), $frame );
+						$doMerge = self::decodeBool( $doMerge );
+						$checkedPairs[$value1][$value2] = $doMerge;
+					}
 
 					if ( $doMerge ) {
 						$value1 = call_user_func_array( $applyFunction, $mergeParams );
 						$value1 = $parser->replaceVariables( ParserPower::unescape( trim( $value1 ) ), $frame );
 						$matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $value1;
+						$shift += 1;
 					} else {
-						$inValues[] = $value2;
+						$values[$i2 - $shift] = $value2;
 					}
 				}
 
-				$outValues[] = $value1;
+				$values[$i1] = $value1;
+				$count -= $shift;
 			}
-			$postCount = count( $outValues );
-			$inValues = $outValues;
-		} while ( $postCount < $preCount && $postCount > 1 );
+		} while ( $count < $preCount && $count > 1 );
 
-		return $outValues;
+		return $values;
 	}
 
 	/**
@@ -2308,6 +2337,10 @@ final class ListFunctions {
 			2,
 			3
 		);
+
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+			$outValues = self::sortList( $outValues, $sortOptions );
+		}
 
 		if ( count( $outValues ) === 0 ) {
 			return [ $default, 'noparse' => false ];

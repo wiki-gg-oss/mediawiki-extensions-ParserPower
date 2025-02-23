@@ -77,6 +77,17 @@ final class SimpleFunctions {
 	}
 
 	/**
+	 * @param Parser $parser The parser object. Ignored.
+	 * @param PPFrame $frame The parser frame object.
+	 * @param array $params The parameters and values together, not yet expanded or trimmed.
+	 * @return string The function output along with relevant parser options.
+	 */
+	public function linkpageRender( Parser $parser, PPFrame $frame, array $params ): string {
+		$text = ParserPower::expand( $frame, $params[0] ?? '' );
+		return preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linkpageReplace' ], $text );
+	}
+
+	/**
 	 * This function performs the delinking operation for the linktext parser function.
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the name of the page they would have linked to.
@@ -87,7 +98,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public function linkpageRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
+	public function linkpageTagRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
 		if ( $text === null ) {
 			return [ '', 'markerType' => 'none' ];
 		}
@@ -114,6 +125,17 @@ final class SimpleFunctions {
 	}
 
 	/**
+	 * @param Parser $parser The parser object. Ignored.
+	 * @param PPFrame $frame The parser frame object.
+	 * @param array $params The parameters and values together, not yet expanded or trimmed.
+	 * @return array The function output along with relevant parser options.
+	 */
+	public function linktextRender( Parser $parser, PPFrame $frame, array $params ): string {
+		$text = ParserPower::expand( $frame, $params[0] ?? '' );
+		return preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'linktextReplace' ], $text );
+	}
+
+	/**
 	 * This function performs the delinking operation for the linktext parser function.
 	 * This removes internal links from, the given wikicode, replacing them with
 	 * the text that any links would return.
@@ -124,7 +146,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public function linktextRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
+	public function linktextTagRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
 		if ( $text === null ) {
 			return [ '', 'markerType' => 'none' ];
 		}
@@ -162,7 +184,7 @@ final class SimpleFunctions {
 	 * @param PPFrame $frame The parser frame object.
 	 * @return array The function output along with relevant parser options.
 	 */
-	public function escRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
+	public function escTagRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
 		$text = ParserPower::escape( $text );
 
 		$text = $parser->replaceVariables( $text, $frame );
