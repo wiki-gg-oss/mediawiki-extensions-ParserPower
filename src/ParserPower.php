@@ -6,6 +6,7 @@ namespace MediaWiki\Extension\ParserPower;
 
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
+use MediaWiki\Parser\PPNode;
 use MediaWiki\Parser\Preprocessor;
 
 class ParserPower {
@@ -107,7 +108,7 @@ class ParserPower {
 	 * @param int $flags
 	 * @return string
 	 */
-	public static function expand( PPFrame $frame, $input, int $flags = 0 ): string {
+	public static function expand( PPFrame $frame, PPNode|string $input, int $flags = 0 ): string {
 		if ( $flags & self::NO_VARS ) {
 			$expanded = $frame->expand( $input, PPFrame::NO_ARGS | PPFrame::NO_TEMPLATES );
 		} else {
@@ -267,7 +268,13 @@ class ParserPower {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPatternWithIndex( string $inValue, string $indexToken, int $index, string $token, string $pattern ): string {
+	public static function applyPatternWithIndex(
+		string $inValue,
+		string $indexToken,
+		int $index,
+		string $token,
+		string $pattern
+	): string {
 		if ( $pattern === '' ) {
 			return $inValue;
 		}
@@ -293,7 +300,13 @@ class ParserPower {
 	 * @param string $pattern Pattern containing tokens to be replaced by field values.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyFieldPattern( string $inValue, string $fieldSep, array $tokens, int $tokenCount, string $pattern ): string {
+	public static function applyFieldPattern(
+		string $inValue,
+		string $fieldSep,
+		array $tokens,
+		int $tokenCount,
+		string $pattern
+	): string {
 		return self::applyFieldPatternWithIndex( $inValue, $fieldSep, '', 0, $tokens, $tokenCount, $pattern );
 	}
 

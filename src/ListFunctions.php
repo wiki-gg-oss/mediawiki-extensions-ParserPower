@@ -263,8 +263,8 @@ final class ListFunctions {
 	 * Note that values that are only empty after the unescape are preserved.
 	 *
 	 * @param array $inValues The array to trim, unescape, and remove empty values from.
-	 * @param int $inOffset
-	 * @param ?int $inLength
+	 * @param int $offset
+	 * @param ?int $length
 	 * @return array A new array with trimmed values, character escapes replaced, and empty values pre unescape removed.
 	 */
 	private static function arrayTrimUnescape( array $inValues, int $offset = 0, ?int $length = null ): array {
@@ -275,8 +275,17 @@ final class ListFunctions {
 		$trimmedValues = [];
 		foreach ( $inValues as $inValue ) {
 			$trimmedValue = trim( $inValue );
-			if ( !ParserPower::isEmpty( $trimmedValue ) ) {
+			if ( $trimmedValue !== '' ) {
 				$trimmedValues[] = $trimmedValue;
+			}
+		}
+
+		// If a negative $offset is bigger than $trimmedValues,
+		// we need to reduce the number of values array_slice will retrieve.
+		if ( $offset < 0 && $length !== null ) {
+			$outOfBounds = $offset + count( $trimmedValues );
+			if ( $outOfBounds < 0 ) {
+				$length = $length + $outOfBounds;
 			}
 		}
 
@@ -294,19 +303,16 @@ final class ListFunctions {
 	 * This function gets the specified element from the array after filtering out any empty values before it so that
 	 * the empty values are skipped in index counting. The returned element is unescaped.
 	 *
-	 * @param int $inIndex The 1-based index of the array element to get, or a negative value to start from the end.
+	 * @param int $index The 1-based index of the array element to get, or a negative value to start from the end.
 	 * @param array $inValues The array to get the element from.
 	 * @return string The array element, trimmed and with character escapes replaced, or empty string if not found.
 	 */
 	private static function arrayElementTrimUnescape( int $index, array $inValues ): string {
-		if ( $index > 0 ) {
-			$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
-		} elseif ( $index < 0 ) {
-			$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
-		} else {
-			$outValues = [];
+		if ( $index === 0 ) {
+			return '';
 		}
 
+		$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
 		return $outValues[0] ?? '';
 	}
 
@@ -637,7 +643,13 @@ final class ListFunctions {
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	private static function applyPatternWithIndex( string $inValue, string $indexToken, int $index, string $token, string $pattern ): string {
+	private static function applyPatternWithIndex(
+		string $inValue,
+		string $indexToken,
+		int $index,
+		string $token,
+		string $pattern
+	): string {
 		return ParserPower::applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern );
 	}
 
@@ -651,7 +663,13 @@ final class ListFunctions {
 	 * @param string $pattern Pattern containing tokens to be replaced by field values.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	private static function applyFieldPattern( string $inValue, string $fieldSep, array $tokens, int $tokenCount, string $pattern ): string {
+	private static function applyFieldPattern(
+		string $inValue,
+		string $fieldSep,
+		array $tokens,
+		int $tokenCount,
+		string $pattern
+	): string {
 		return ParserPower::applyFieldPattern( $inValue, $fieldSep, $tokens, $tokenCount, $pattern );
 	}
 
@@ -699,7 +717,13 @@ final class ListFunctions {
 	 * @param int $count The count to replace the token with.
 	 * @return string The content wrapped by the intro and outro.
 	 */
-	private static function applyIntroAndOutro( string $intro, string $content, string $outro, string $countToken, int $count ): string {
+	private static function applyIntroAndOutro(
+		string $intro,
+		string $content,
+		string $outro,
+		string $countToken,
+		int $count
+	): string {
 		if ( $countToken !== null && $countToken !== '' ) {
 			$intro = str_replace( $countToken, (string)$count, $intro );
 			$outro = str_replace( $countToken, (string)$count, $outro );
@@ -716,13 +740,15 @@ final class ListFunctions {
 	 * @param string $inValue The value to change into one or more template parameters.
 	 * @param string $template The template to pass the parameters to.
 	 * @param string $fieldSep The delimiter separating the parameter values.
-	 * @return string|void The result of the template.
+	 * @return string The result of the template.
 	 */
-	private static function applyTemplate( Parser $parser, PPFrame $frame, string $inValue, string $template, string $fieldSep ) {
-		if ( $inValue === '' ) {
-			return;
-		}
-
+	private static function applyTemplate(
+		Parser $parser,
+		PPFrame $frame,
+		string $inValue,
+		string $template,
+		string $fieldSep
+	): string {
 		if ( $fieldSep === '' ) {
 			$outValue = $frame->virtualBracketedImplode( '{{', '|', '}}', $template, '1=' . $inValue );
 		} else {
@@ -1976,31 +2002,24 @@ final class ListFunctions {
 	 * with those field values. This is for special cases when two sets of replacements are
 	 * necessary for a given pattern.
 	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue1 The first value to (potentially) split and replace tokens with
 	 * @param string $inValue2 The second value to (potentially) split and replace tokens with
 	 * @param string $fieldSep The delimiter separating the fields in the value.
 	 * @param array $tokens1 The list of tokens to replace when performing the replacement for $inValue1.
 	 * @param array $tokens2 The list of tokens to replace when performing the replacement for $inValue2.
 	 * @param string $pattern Pattern containing tokens to be replaced by field (or unsplit) values.
-	 * @return string|void The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyTwoSetFieldPattern(
-		Parser $parser,
-		PPFrame $frame,
 		string $inValue1,
 		string $inValue2,
 		string $fieldSep,
 		array $tokens1,
 		array $tokens2,
 		string $pattern
-	) {
-		$tokenCount1 = count( $tokens1 );
-		$tokenCount2 = count( $tokens2 );
-
+	): string {
 		if ( $inValue1 === '' || $inValue2 === '' ) {
-			return;
+			return '';
 		}
 
 		$outValue = $pattern;
@@ -2012,6 +2031,9 @@ final class ListFunctions {
 				$outValue = str_replace( $tokens2[0], $inValue2, $outValue );
 			}
 		} else {
+			$tokenCount1 = count( $tokens1 );
+			$tokenCount2 = count( $tokens2 );
+
 			if ( $inValue1 !== '' ) {
 				$fields = explode( $fieldSep, $inValue1, $tokenCount1 );
 				$fieldCount = count( $fields );
@@ -2186,8 +2208,8 @@ final class ListFunctions {
 			$tokens2 = [ $token2 ];
 		}
 
-		$matchParams = [ $parser, $frame, '', '', $fieldSep, $tokens1, $tokens2, $matchPattern ];
-		$mergeParams = [ $parser, $frame, '', '', $fieldSep, $tokens1, $tokens2, $mergePattern ];
+		$matchParams = [ '', '', $fieldSep, $tokens1, $tokens2, $matchPattern ];
+		$mergeParams = [ '', '', $fieldSep, $tokens1, $tokens2, $mergePattern ];
 		$outValues = self::iterativeListMerge(
 			$parser,
 			$frame,
@@ -2195,8 +2217,8 @@ final class ListFunctions {
 			[ __CLASS__, 'applyTwoSetFieldPattern' ],
 			$matchParams,
 			$mergeParams,
-			2,
-			3
+			0,
+			1
 		);
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
@@ -2259,8 +2281,8 @@ final class ListFunctions {
 			$inValues = self::sortList( $inValues, $sortOptions );
 		}
 
-		$matchParams = [ $parser, $frame, null, null, $matchTemplate, $fieldSep ];
-		$mergeParams = [ $parser, $frame, null, null, $mergeTemplate, $fieldSep ];
+		$matchParams = [ $parser, $frame, '', '', $matchTemplate, $fieldSep ];
+		$mergeParams = [ $parser, $frame, '', '', $mergeTemplate, $fieldSep ];
 		$outValues = self::iterativeListMerge(
 			$parser,
 			$frame,
