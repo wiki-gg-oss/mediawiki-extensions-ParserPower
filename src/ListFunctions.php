@@ -240,8 +240,8 @@ final class ListFunctions {
 	 * Note that values that are only empty after the unescape are preserved.
 	 *
 	 * @param array $inValues The array to trim, unescape, and remove empty values from.
-	 * @param int $inOffset
-	 * @param ?int $inLength
+	 * @param int $offset
+	 * @param ?int $length
 	 * @return array A new array with trimmed values, character escapes replaced, and empty values pre unescape removed.
 	 */
 	private static function arrayTrimUnescape( array $inValues, int $offset = 0, ?int $length = null ): array {
@@ -252,8 +252,17 @@ final class ListFunctions {
 		$trimmedValues = [];
 		foreach ( $inValues as $inValue ) {
 			$trimmedValue = trim( $inValue );
-			if ( !ParserPower::isEmpty( $trimmedValue ) ) {
+			if ( $trimmedValue !== '' ) {
 				$trimmedValues[] = $trimmedValue;
+			}
+		}
+
+		// If a negative $offset is bigger than $trimmedValues,
+		// we need to reduce the number of values array_slice will retrieve.
+		if ( $offset < 0 && $length !== null ) {
+			$outOfBounds = $offset + count( $trimmedValues );
+			if ( $outOfBounds < 0 ) {
+				$length = $length + $outOfBounds;
 			}
 		}
 
@@ -271,19 +280,16 @@ final class ListFunctions {
 	 * This function gets the specified element from the array after filtering out any empty values before it so that
 	 * the empty values are skipped in index counting. The returned element is unescaped.
 	 *
-	 * @param int $inIndex The 1-based index of the array element to get, or a negative value to start from the end.
+	 * @param int $index The 1-based index of the array element to get, or a negative value to start from the end.
 	 * @param array $inValues The array to get the element from.
 	 * @return string The array element, trimmed and with character escapes replaced, or empty string if not found.
 	 */
 	private static function arrayElementTrimUnescape( int $index, array $inValues ): string {
-		if ( $index > 0 ) {
-			$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
-		} elseif ( $index < 0 ) {
-			$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
-		} else {
-			$outValues = [];
+		if ( $index === 0 ) {
+			return '';
 		}
 
+		$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
 		return $outValues[0] ?? '';
 	}
 
@@ -602,7 +608,13 @@ final class ListFunctions {
 	 * @param int $count The count to replace the token with.
 	 * @return string The content wrapped by the intro and outro.
 	 */
-	private static function applyIntroAndOutro( string $intro, string $content, string $outro, string $countToken, int $count ): string {
+	private static function applyIntroAndOutro(
+		string $intro,
+		string $content,
+		string $outro,
+		string $countToken,
+		int $count
+	): string {
 		if ( $countToken !== null && $countToken !== '' ) {
 			$intro = str_replace( $countToken, (string)$count, $intro );
 			$outro = str_replace( $countToken, (string)$count, $outro );
@@ -1789,7 +1801,7 @@ final class ListFunctions {
 	 * @param array $tokens1 The list of tokens to replace when performing the replacement for $inValue1.
 	 * @param array $tokens2 The list of tokens to replace when performing the replacement for $inValue2.
 	 * @param string $pattern Pattern containing tokens to be replaced by field (or unsplit) values.
-	 * @return string|void The result of the token replacement within the pattern.
+	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyTwoSetFieldPattern(
 		Parser $parser,
@@ -1800,13 +1812,13 @@ final class ListFunctions {
 		array $tokens1,
 		array $tokens2,
 		string $pattern
-	) {
+	): string {
 		$tokenCount1 = count( $tokens1 );
 		$tokenCount2 = count( $tokens2 );
 		$operation = new PatternOperation( $parser, $frame, $pattern, [ ...$tokens1, ...$tokens2 ] );
 
 		if ( $inValue1 === '' || $inValue2 === '' ) {
-			return;
+			return '';
 		}
 
 		if ( $fieldSep === '' ) {
@@ -2053,8 +2065,8 @@ final class ListFunctions {
 			$inValues = $sorter->sort( $inValues );
 		}
 
-		$matchParams = [ $parser, $frame, null, null, $matchTemplate, $fieldSep ];
-		$mergeParams = [ $parser, $frame, null, null, $mergeTemplate, $fieldSep ];
+		$matchParams = [ $parser, $frame, '', '', $matchTemplate, $fieldSep ];
+		$mergeParams = [ $parser, $frame, '', '', $mergeTemplate, $fieldSep ];
 		$outValues = self::iterativeListMerge(
 			$parser,
 			$frame,
