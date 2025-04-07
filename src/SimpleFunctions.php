@@ -97,6 +97,10 @@ final class SimpleFunctions {
 	 * @return array The function output.
 	 */
 	public function linkpageTagRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
+		if ( $text === null ) {
+			return [ '', 'markerType' => 'none' ];
+		}
+
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text !== '' ) {
@@ -141,6 +145,10 @@ final class SimpleFunctions {
 	 * @return array The function output.
 	 */
 	public function linktextTagRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
+		if ( $text === null ) {
+			return [ '', 'markerType' => 'none' ];
+		}
+
 		$text = $parser->replaceVariables( $text, $frame );
 
 		if ( $text !== '' ) {

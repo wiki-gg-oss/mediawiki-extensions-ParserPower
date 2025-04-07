@@ -6,6 +6,7 @@ namespace MediaWiki\Extension\ParserPower;
 
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
+use MediaWiki\Parser\PPNode;
 use MediaWiki\Parser\Preprocessor;
 
 class ParserPower {
@@ -107,7 +108,7 @@ class ParserPower {
 	 * @param int $flags
 	 * @return string
 	 */
-	public static function expand( PPFrame $frame, $input, int $flags = 0 ): string {
+	public static function expand( PPFrame $frame, PPNode|string $input, int $flags = 0 ): string {
 		if ( $flags & self::NO_VARS ) {
 			$expanded = $frame->expand( $input, PPFrame::NO_ARGS | PPFrame::NO_TEMPLATES );
 		} else {
