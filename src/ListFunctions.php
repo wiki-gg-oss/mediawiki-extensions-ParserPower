@@ -762,50 +762,59 @@ final class ListFunctions {
 		}
 
 		$keepValues = $params->get( 'keep' );
-		$keepSep = $params->get( 'keepsep' );
-		$keepCS = $params->get( 'keepcs' );
-		$keepCS = self::decodeBool( $keepCS );
-		$removeValues = $params->get( 'remove' );
-		$removeSep = $params->get( 'removesep' );
-		$removeCS = $params->get( 'removecs' );
-		$removeCS = self::decodeBool( $removeCS );
-		$template = $params->get( 'template' );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
-		$pattern = $params->get( 'pattern' );
 
 		if ( $keepValues !== '' ) {
+			$keepSep = $params->get( 'keepsep' );
 			if ( $keepSep !== '' ) {
 				$keepValues = self::explodeList( $keepSep, $keepValues );
 			} else {
 				$keepValues = [ ParserPower::unescape( $keepValues ) ];
 			}
 
+			$keepCS = $params->get( 'keepcs' );
+			$keepCS = self::decodeBool( $keepCS );
+
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
-		} elseif ( $removeValues !== '' ) {
-			if ( $removeSep !== '' ) {
-				$removeValues = self::explodeList( $removeSep, $removeValues );
-			} else {
-				$removeValues = [ ParserPower::unescape( $removeValues ) ];
-			}
-
-			$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
-		} elseif ( $template !== '' ) {
-			$operation = new TemplateOperation( $parser, $frame, $template );
 		} else {
-			if ( $fieldSep !== '' ) {
-				$tokens = self::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
-			}
+			$removeValues = $params->get( 'remove' );
 
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+			if ( $removeValues !== '' ) {
+				$removeSep = $params->get( 'removesep' );
+				if ( $removeSep !== '' ) {
+					$removeValues = self::explodeList( $removeSep, $removeValues );
+				} else {
+					$removeValues = [ ParserPower::unescape( $removeValues ) ];
+				}
+
+				$removeCS = $params->get( 'removecs' );
+				$removeCS = self::decodeBool( $removeCS );
+
+				$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
+			} else {
+				$template = $params->get( 'template' );
+				$fieldSep = $params->get( 'fieldsep' );
+
+				if ( $template !== '' ) {
+					$operation = new TemplateOperation( $parser, $frame, $template );
+				} else {
+					$indexToken = $params->get( 'indextoken' );
+					$token = $params->get( 'token' );
+					$tokenSep = $params->get( 'tokensep' );
+					$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
+					$pattern = $params->get( 'pattern' );
+
+					if ( $fieldSep !== '' ) {
+						$tokens = self::explodeToken( $tokenSep, $token );
+					} else {
+						$tokens = [ $token ];
+					}
+
+					$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+				}
+			}
 		}
 
-		$outValues = self::filterList( $operation, $inValues, $fieldSep );
+		$outValues = self::filterList( $operation, $inValues, $fieldSep ?? '' );
 
 		$count = count( $outValues );
 		if ( $count === 0 ) {
@@ -1016,29 +1025,36 @@ final class ListFunctions {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
-		$uniqueCS = $params->get( 'uniquecs' );
-		$uniqueCS = self::decodeBool( $uniqueCS );
 		$template = $params->get( 'template' );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
-
-		if ( $fieldSep !== '' ) {
-			$tokens = self::explodeToken( $tokenSep, $token );
-		} else {
-			$tokens = [ $token ];
-		}
 
 		if ( $template !== '' ) {
+			$fieldSep = $params->get( 'fieldsep' );
+
 			$operation = new TemplateOperation( $parser, $frame, $template );
 			$outValues = self::reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
-		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$outValues = self::reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
 		} else {
-			$outValues = self::reduceToUniqueValues( $inValues, $uniqueCS );
+			$indexToken = $params->get( 'indextoken' );
+			$token = $params->get( 'token' );
+			$pattern = $params->get( 'pattern' );
+
+			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+				$fieldSep = $params->get( 'fieldsep' );
+				$tokenSep = $params->get( 'tokensep' );
+
+				if ( $fieldSep !== '' ) {
+					$tokens = self::explodeToken( $tokenSep, $token );
+				} else {
+					$tokens = [ $token ];
+				}
+
+				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+				$outValues = self::reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
+			} else {
+				$uniqueCS = $params->get( 'uniquecs' );
+				$uniqueCS = self::decodeBool( $uniqueCS );
+
+				$outValues = self::reduceToUniqueValues( $inValues, $uniqueCS );
+			}
 		}
 
 		$count = count( $outValues );
@@ -1175,11 +1191,6 @@ final class ListFunctions {
 		}
 
 		$template = $params->get( 'template' );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
 		$sortOptions = $params->get( 'sortoptions' );
 		$subsort = $params->get( 'subsort' );
 		$subsort = self::decodeBool( $subsort );
@@ -1198,6 +1209,8 @@ final class ListFunctions {
 		}
 
 		if ( $template !== '' ) {
+			$fieldSep = $params->get( 'fieldsep' );
+
 			$sortOptions = self::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
 			$sorter = new ListSorter( $sortOptions, $subsortOptions );
 			$operation = new TemplateOperation( $parser, $frame, $template );
@@ -1205,24 +1218,33 @@ final class ListFunctions {
 			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
 			$sorter->sortPairs( $pairedValues );
 			$values = self::discardSortKeys( $pairedValues );
-		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
-			if ( $fieldSep !== '' ) {
-				$tokens = self::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
-			}
-
-			$sortOptions = self::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
-			$sorter = new ListSorter( $sortOptions, $subsortOptions );
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-
-			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
-			$sorter->sortPairs( $pairedValues );
-			$values = self::discardSortKeys( $pairedValues );
 		} else {
-			$sortOptions = self::decodeSortOptions( $sortOptions );
-			$sorter = new ListSorter( $sortOptions );
-			$values = $sorter->sort( $values );
+			$indexToken = $params->get( 'indextoken' );
+			$token = $params->get( 'token' );
+			$pattern = $params->get( 'pattern' );
+
+			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+				$fieldSep = $params->get( 'fieldsep' );
+				$tokenSep = $params->get( 'tokensep' );
+
+				if ( $fieldSep !== '' ) {
+					$tokens = self::explodeToken( $tokenSep, $token );
+				} else {
+					$tokens = [ $token ];
+				}
+
+				$sortOptions = self::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+				$sorter = new ListSorter( $sortOptions, $subsortOptions );
+				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+
+				$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
+				$sorter->sortPairs( $pairedValues );
+				$values = self::discardSortKeys( $pairedValues );
+			} else {
+				$sortOptions = self::decodeSortOptions( $sortOptions );
+				$sorter = new ListSorter( $sortOptions );
+				$values = $sorter->sort( $values );
+			}
 		}
 
 		$count = count( $values );
@@ -1339,10 +1361,6 @@ final class ListFunctions {
 
 		$template = $params->get( 'template' );
 		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
 		$sortMode = $params->get( 'sortmode' );
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = $params->get( 'sortoptions' );
@@ -1368,6 +1386,11 @@ final class ListFunctions {
 				$outValues = $sorter->sort( $outValues );
 			}
 		} else {
+			$indexToken = $params->get( 'indextoken' );
+			$token = $params->get( 'token' );
+			$tokenSep = $params->get( 'tokensep' );
+			$pattern = $params->get( 'pattern' );
+
 			if ( ( $indexToken !== '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_PRE ) {
 				$inValues = $sorter->sort( $inValues );
 			}
@@ -1637,11 +1660,6 @@ final class ListFunctions {
 		$matchTemplate = $params->get( 'matchtemplate' );
 		$mergeTemplate = $params->get( 'mergetemplate' );
 		$fieldSep = $params->get( 'fieldsep' );
-		$token1 = $params->get( 'token1' );
-		$token2 = $params->get( 'token2' );
-		$tokenSep = $params->get( 'tokensep' );
-		$matchPattern = $params->get( 'matchpattern' );
-		$mergePattern = $params->get( 'mergepattern' );
 		$sortMode = $params->get( 'sortmode' );
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = $params->get( 'sortoptions' );
@@ -1657,15 +1675,20 @@ final class ListFunctions {
 			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
 		} else {
+			$tokenSep = $params->get( 'tokensep' );
+
 			if ( $fieldSep !== '' ) {
-				$tokens1 = self::explodeToken( $tokenSep, $token1 );
-				$tokens2 = self::explodeToken( $tokenSep, $token2 );
+				$tokens1 = self::explodeToken( $tokenSep, $params->get( 'token1' ) );
+				$tokens2 = self::explodeToken( $tokenSep, $params->get( 'token2' ) );
 			} else {
-				$tokens1 = [ $token1 ];
-				$tokens2 = [ $token2 ];
+				$tokens1 = [ $params->get( 'token1' ) ];
+				$tokens2 = [ $params->get( 'token2' ) ];
 			}
 			$tokens = [ ...$tokens1, ...$tokens2 ];
 			$fieldOffset = count( $tokens1 );
+
+			$matchPattern = $params->get( 'matchpattern' );
+			$mergePattern = $params->get( 'mergepattern' );
 
 			$matchOperation = new PatternOperation( $parser, $frame, $matchPattern, $tokens );
 			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, $tokens );
