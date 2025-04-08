@@ -45,13 +45,14 @@ final class LstSubFunction implements ParserFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( count( $inValues ) === 0 ) {
+		$inCount = count( $inValues );
+		if ( $inCount === 0 ) {
 			return '';
 		}
 
 		$offset = $params->get( 3 );
 		$offset = is_numeric( $offset ) ? intval( $offset ) : 0;
-		$length = $params->get( 4 );
+		$length = $offset < $inCount ? $params->get( 4 ) : '';
 		$length = is_numeric( $length ) ? intval( $length ) : null;
 		$outValues = ListUtils::slice( $inValues, $offset, $length );
 
