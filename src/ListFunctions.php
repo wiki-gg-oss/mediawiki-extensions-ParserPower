@@ -1510,59 +1510,6 @@ final class ListFunctions {
 	}
 
 	/**
-	 * Sorts a list by keys
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $values The input list.
-	 * @param string $template The template to use.
-	 * @param string $fieldSep The delimiter separating values in the input list.
-	 * @param string $indexToken Replace the current 1-based index of the element. Null/empty to skip.
-	 * @param string $token The token in the pattern that represents where the list value should go.
-	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
-	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
-	 * @param int $sortOptions Options for the key sort as handled by #listsort.
-	 * @param bool $subsort Whether to perform a value sort where sort keys are equal.
-	 * @param int $subsortOptions Options for the value sort as handled by #listsort.
-	 * @return array An array where each value has been paired with a sort key in a two-element array.
-	 */
-	private static function sortListByKeys(
-		Parser $parser,
-		PPFrame $frame,
-		array $values,
-		$template,
-		$fieldSep,
-		$indexToken,
-		$token,
-		$tokens,
-		$pattern,
-		$sortOptions,
-		$subsort,
-		$subsortOptions
-	) {
-		if ( $template !== '' ) {
-			$pairedValues = self::generateSortKeysByTemplate( $parser, $frame, $values, $template, $fieldSep );
-		} else {
-			$pairedValues = self::generateSortKeysByPattern(
-				$parser,
-				$frame,
-				$values,
-				$fieldSep,
-				$indexToken,
-				$token,
-				$tokens,
-				$pattern
-			);
-		}
-
-		$comparer = new SortKeyValueComparer( $sortOptions, $subsort, $subsortOptions );
-
-		usort( $pairedValues, [ $comparer, 'compare' ] );
-
-		return self::discardSortKeys( $pairedValues );
-	}
-
-	/**
 	 * This function directs the sort operation for the listsort function.
 	 *
 	 * @param Parser $parser The parser object.
@@ -1612,22 +1559,29 @@ final class ListFunctions {
 			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
 		}
 
-		if ( $template !== '' || ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) ) {
+		if ( $template !== '' ) {
 			$sortOptions = self::decodeSortOptions( $sortOptions, self::SORT_NUMERIC );
-			$values = self::sortListByKeys(
+
+			$pairedValues = self::generateSortKeysByTemplate( $parser, $frame, $values, $template, $fieldSep );
+
+			usort( $pairedValues, [ new SortKeyValueComparer( $sortOptions, $subsort, $subsortOptions ), 'compare' ] );
+			$values = self::discardSortKeys( $pairedValues );
+		} else if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+			$sortOptions = self::decodeSortOptions( $sortOptions, self::SORT_NUMERIC );
+
+			$pairedValues = self::generateSortKeysByPattern(
 				$parser,
 				$frame,
 				$values,
-				$template,
 				$fieldSep,
 				$indexToken,
 				$token,
 				$tokens ?? null,
-				$pattern,
-				$sortOptions,
-				$subsort,
-				$subsortOptions
+				$pattern
 			);
+
+			usort( $pairedValues, [ new SortKeyValueComparer( $sortOptions, $subsort, $subsortOptions ), 'compare' ] );
+			$values = self::discardSortKeys( $pairedValues );
 		} else {
 			$sortOptions = self::decodeSortOptions( $sortOptions );
 			$values = self::sortList( $values, $sortOptions );
