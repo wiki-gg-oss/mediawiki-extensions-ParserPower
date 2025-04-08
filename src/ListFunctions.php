@@ -1627,44 +1627,15 @@ final class ListFunctions {
 	/**
 	 * This function performs the pattern changing operation for the listmap function.
 	 *
-	 * @param Parser $parser The parser object.
-	 * @param string $inList The input list.
-	 * @param string $inSep The delimiter seoarating values in the input list.
+	 * @param array $inValues The input list.
 	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
 	 * @param string $indexToken Replace the current 1-based index of the element. Null/empty to skip.
 	 * @param string $token The token(s) in the pattern that represents where the list value should go.
 	 * @param string $tokenSep The separator between tokens if used.
 	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
-	 * @param int $sortMode What sort mode to use, if any.
-	 * @param int $sortOptions Options for the sort as handled by #listsort.
-	 * @param int $duplicates When to strip duplicate values, if at all.
 	 * @return string The function output.
 	 */
-	private static function applyPatternToList(
-		Parser $parser,
-		$inList,
-		$inSep,
-		$fieldSep,
-		$indexToken,
-		$token,
-		$tokenSep,
-		$pattern,
-		$sortMode,
-		$sortOptions,
-		$duplicates
-	) {
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-
-		$inValues = self::explodeList( $inSep, $inList );
-
-		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
-			$inValues = array_unique( $inValues );
-		}
-
-		if ( ( $indexToken !== '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_PRE ) {
-			$inValues = self::sortList( $inValues, $sortOptions );
-		}
-
+	private static function applyPatternToList( $inValues, $fieldSep, $indexToken, $token, $tokenSep, $pattern ) {
 		$outValues = [];
 		$index = 1;
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
@@ -1700,15 +1671,6 @@ final class ListFunctions {
 				}
 			}
 		}
-
-		if ( $duplicates & self::DUPLICATES_POSTSTRIP ) {
-			$outValues = array_unique( $outValues );
-		}
-
-		if ( ( $indexToken === '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_POST ) {
-			$outValues = self::sortList( $outValues, $sortOptions );
-		}
-
 		return $outValues;
 	}
 
@@ -1717,50 +1679,16 @@ final class ListFunctions {
 	 *
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
-	 * @param string $inList The input list.
+	 * @param array $inValues The input list.
 	 * @param string $template The template to use.
-	 * @param string $inSep The delimiter seoarating values in the input list.
 	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
-	 * @param int $sortMode What sort mode to use, if any.
-	 * @param int $sortOptions Options for the sort as handled by #listsort.
-	 * @param int $duplicates When to strip duplicate values, if at all.
 	 * @return string The function output.
 	 */
-	private static function applyTemplateToList(
-		Parser $parser,
-		PPFrame $frame,
-		$inList,
-		$template,
-		$inSep,
-		$fieldSep,
-		$sortMode,
-		$sortOptions,
-		$duplicates
-	) {
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-
-		$inValues = self::explodeList( $inSep, $inList );
-		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
-			$inValues = array_unique( $inValues );
-		}
-
-		if ( $sortMode & self::SORTMODE_PRE ) {
-			$inValues = self::sortList( $inValues, $sortOptions );
-		}
-
+	private static function applyTemplateToList( Parser $parser, PPFrame $frame, $inValues, $template, $fieldSep ) {
 		$outValues = [];
 		foreach ( $inValues as $inValue ) {
 			$outValues[] = self::applyTemplate( $parser, $frame, $inValue, $template, $fieldSep );
 		}
-
-		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
-			$outValues = self::sortList( $outValues, $sortOptions );
-		}
-
-		if ( $duplicates & self::DUPLICATES_POSTSTRIP ) {
-			$outValues = array_unique( $outValues );
-		}
-
 		return $outValues;
 	}
 
@@ -1797,32 +1725,38 @@ final class ListFunctions {
 		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
 		$duplicates = self::decodeDuplicates( $duplicates );
 
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+
+		$inValues = self::explodeList( $inSep, $inList );
+
+		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
+			$inValues = array_unique( $inValues );
+		}
+
 		if ( $template !== '' ) {
-			$outValues = self::applyTemplateToList(
-				$parser,
-				$frame,
-				$inList,
-				$template,
-				$inSep,
-				$fieldSep,
-				$sortMode,
-				$sortOptions,
-				$duplicates
-			);
+			if ( $sortMode & self::SORTMODE_PRE ) {
+				$inValues = self::sortList( $inValues, $sortOptions );
+			}
+
+			$outValues = self::applyTemplateToList( $parser, $frame, $inValues, $template, $fieldSep );
+
+			if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+				$outValues = self::sortList( $outValues, $sortOptions );
+			}
 		} else {
-			$outValues = self::applyPatternToList(
-				$parser,
-				$inList,
-				$inSep,
-				$fieldSep,
-				$indexToken,
-				$token,
-				$tokenSep,
-				$pattern,
-				$sortMode,
-				$sortOptions,
-				$duplicates
-			);
+			if ( ( $indexToken !== '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_PRE ) {
+				$inValues = self::sortList( $inValues, $sortOptions );
+			}
+
+			$outValues = self::applyPatternToList( $inValues, $fieldSep, $indexToken, $token, $tokenSep, $pattern );
+
+			if ( ( $indexToken === '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_POST ) {
+				$outValues = self::sortList( $outValues, $sortOptions );
+			}
+		}
+
+		if ( $duplicates & self::DUPLICATES_POSTSTRIP ) {
+			$outValues = array_unique( $outValues );
 		}
 
 		$count = count( $outValues );
@@ -1869,19 +1803,19 @@ final class ListFunctions {
 		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
-		$outValues = self::applyPatternToList(
-			$parser,
-			$inList,
-			$inSep,
-			'',
-			'',
-			$token,
-			'',
-			$pattern,
-			$sortMode,
-			$sortOptions,
-			0
-		);
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+	
+		$inValues = self::explodeList( $inSep, $inList );
+
+		if ( $sortMode & self::SORTMODE_PRE ) {
+			$inValues = self::sortList( $inValues, $sortOptions );
+		}
+
+		$outValues = self::applyPatternToList( $inValues, '', '', $token, '', $pattern );
+
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+			$outValues = self::sortList( $outValues, $sortOptions );
+		}
 
 		if ( count( $outValues ) < 2 ) {
 			$outList = $outValues[0] ?? '';
@@ -1915,32 +1849,22 @@ final class ListFunctions {
 		$sortOptions = ParserPower::expand( $frame, $params[5] ?? '' );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+
+		$inValues = self::explodeList( $inSep, $inList );
+
+		if ( $sortMode & self::SORTMODE_PRE ) {
+			$inValues = self::sortList( $inValues, $sortOptions );
+		}
+
 		if ( $template === '' ) {
-			$outValues = self::applyPatternToList(
-				$parser,
-				$inList,
-				$inSep,
-				'',
-				'',
-				'',
-				'',
-				'',
-				$sortMode,
-				$sortOptions,
-				0
-			);
+			$outValues = self::applyPatternToList( $inValues, '', '', '', '', '' );
 		} else {
-			$outValues = self::applyTemplateToList(
-				$parser,
-				$frame,
-				$inList,
-				$template,
-				$inSep,
-				'',
-				$sortMode,
-				$sortOptions,
-				0
-			);
+			$outValues = self::applyTemplateToList( $parser, $frame, $inValues, $template, '' );
+		}
+
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
 		if ( count( $outValues ) < 2 ) {
@@ -1958,8 +1882,6 @@ final class ListFunctions {
 	 * with those field values. This is for special cases when two sets of replacements are
 	 * necessary for a given pattern.
 	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inValue1 The first value to (potentially) split and replace tokens with
 	 * @param string $inValue2 The second value to (potentially) split and replace tokens with
 	 * @param string $fieldSep The delimiter separating the fields in the value.
@@ -1969,8 +1891,6 @@ final class ListFunctions {
 	 * @return string The result of the token replacement within the pattern.
 	 */
 	private static function applyTwoSetFieldPattern(
-		Parser $parser,
-		PPFrame $frame,
 		$inValue1,
 		$inValue2,
 		$fieldSep,
@@ -2120,32 +2040,19 @@ final class ListFunctions {
 	 * @param string $tokenSep The separator between tokens if used.
 	 * @param string $matchPattern The pattern that determines if items match.
 	 * @param string $mergePattern The pattern that list values are inserted into at that token.
-	 * @param int $sortMode What sort mode to use, if any.
-	 * @param int $sortOptions Options for the sort as handled by #listsort.
 	 * @return string The function output.
 	 */
 	private static function mergeListByPattern(
 		Parser $parser,
 		PPFrame $frame,
-		$inList,
-		$inSep,
+		$inValues,
 		$fieldSep,
 		$token1,
 		$token2,
 		$tokenSep,
 		$matchPattern,
-		$mergePattern,
-		$sortMode,
-		$sortOptions
+		$mergePattern
 	) {
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-
-		$inValues = self::explodeList( $inSep, $inList );
-
-		if ( $sortMode & self::SORTMODE_PRE ) {
-			$inValues = self::sortList( $inValues, $sortOptions );
-		}
-
 		if ( $tokenSep !== '' ) {
 			$tokens1 = array_map( 'trim', explode( $tokenSep, $token1 ) );
 			$tokens2 = array_map( 'trim', explode( $tokenSep, $token2 ) );
@@ -2154,8 +2061,8 @@ final class ListFunctions {
 			$tokens2 = [ $token2 ];
 		}
 
-		$matchParams = [ $parser, $frame, '', '', $fieldSep, $tokens1, $tokens2, $matchPattern ];
-		$mergeParams = [ $parser, $frame, '', '', $fieldSep, $tokens1, $tokens2, $mergePattern ];
+		$matchParams = [ '', '', $fieldSep, $tokens1, $tokens2, $matchPattern ];
+		$mergeParams = [ '', '', $fieldSep, $tokens1, $tokens2, $mergePattern ];
 		$outValues = self::iterativeListMerge(
 			$parser,
 			$frame,
@@ -2163,13 +2070,9 @@ final class ListFunctions {
 			[ __CLASS__, 'applyTwoSetFieldPattern' ],
 			$matchParams,
 			$mergeParams,
-			2,
-			3
+			0,
+			1
 		);
-
-		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
-			$outValues = self::sortList( $outValues, $sortOptions );
-		}
 
 		return $outValues;
 	}
@@ -2184,29 +2087,16 @@ final class ListFunctions {
 	 * @param string $mergeTemplate The template to use for the merging operation.
 	 * @param string $inSep The delimiter seoarating values in the input list.
 	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
-	 * @param int $sortMode What sort mode to use, if any.
-	 * @param int $sortOptions Options for the sort as handled by #listsort.
 	 * @return string The function output.
 	 */
 	private static function mergeListByTemplate(
 		Parser $parser,
 		PPFrame $frame,
-		$inList,
+		$inValues,
 		$matchTemplate,
 		$mergeTemplate,
-		$inSep,
-		$fieldSep,
-		$sortMode,
-		$sortOptions
+		$fieldSep
 	) {
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-
-		$inValues = self::explodeList( $inSep, $inList );
-
-		if ( $sortMode & self::SORTMODE_PRE ) {
-			$inValues = self::sortList( $inValues, $sortOptions );
-		}
-
 		$matchParams = [ $parser, $frame, null, null, $matchTemplate, $fieldSep ];
 		$mergeParams = [ $parser, $frame, null, null, $mergeTemplate, $fieldSep ];
 		$outValues = self::iterativeListMerge(
@@ -2219,10 +2109,6 @@ final class ListFunctions {
 			2,
 			3
 		);
-
-		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
-			$outValues = self::sortList( $outValues, $sortOptions );
-		}
 
 		return $outValues;
 	}
@@ -2240,6 +2126,7 @@ final class ListFunctions {
 		$params = ParserPower::arrangeParams( $frame, $params );
 
 		$inList = ParserPower::expand( $frame, $params["list"] ?? '' );
+
 		if ( $inList === '' ) {
 			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
@@ -2259,33 +2146,32 @@ final class ListFunctions {
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+
+		$inValues = self::explodeList( $inSep, $inList );
+
+		if ( $sortMode & self::SORTMODE_PRE ) {
+			$inValues = self::sortList( $inValues, $sortOptions );
+		}
+
 		if ( $matchTemplate !== '' && $mergeTemplate !== '' ) {
-			$outValues = self::mergeListByTemplate(
-				$parser,
-				$frame,
-				$inList,
-				$matchTemplate,
-				$mergeTemplate,
-				$inSep,
-				$fieldSep,
-				$sortMode,
-				$sortOptions
-			);
+			$outValues = self::mergeListByTemplate( $parser, $frame, $inValues, $matchTemplate, $mergeTemplate, $fieldSep );
 		} else {
 			$outValues = self::mergeListByPattern(
 				$parser,
 				$frame,
-				$inList,
-				$inSep,
+				$inValues,
 				$fieldSep,
 				$token1,
 				$token2,
 				$tokenSep,
 				$matchPattern,
-				$mergePattern,
-				$sortMode,
-				$sortOptions
+				$mergePattern
 			);
+		}
+
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
 		$count = count( $outValues );
