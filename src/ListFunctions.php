@@ -456,12 +456,17 @@ final class ListFunctions {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = self::explodeList( $inSep, $inList );
 
-		if ( count( $inValues ) === 0 ) {
+		$inCount = count( $inValues );
+		if ( $inCount === 0 ) {
 			return '';
 		}
 
 		$offset = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
 		$offset = is_numeric( $offset ) ? intval( $offset ) : 0;
+
+		if ( $offset >= $inCount ) {
+			return '';
+		}
 
 		$length = ParserPower::expand( $frame, $params[4] ?? '', ParserPower::UNESCAPE );
 		$length = is_numeric( $length ) ? intval( $length ) : null;
