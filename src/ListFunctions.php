@@ -1637,7 +1637,6 @@ final class ListFunctions {
 	 * This function performs the pattern changing operation for the listmap function.
 	 *
 	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
 	 * @param string $inList The input list.
 	 * @param string $inSep The delimiter seoarating values in the input list.
 	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
@@ -1645,19 +1644,13 @@ final class ListFunctions {
 	 * @param string $token The token(s) in the pattern that represents where the list value should go.
 	 * @param string $tokenSep The separator between tokens if used.
 	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
-	 * @param string $outSep The delimiter that should separate values in the output list.
 	 * @param int $sortMode What sort mode to use, if any.
 	 * @param int $sortOptions Options for the sort as handled by #listsort.
 	 * @param int $duplicates When to strip duplicate values, if at all.
-	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
-	 * @param string $intro Content to include before outputted list values, only if at least one item is output.
-	 * @param string $outro Content to include after outputted list values, only if at least one item is output.
-	 * @param string $default Content to output if no list values are.
 	 * @return string The function output.
 	 */
 	private static function applyPatternToList(
 		Parser $parser,
-		PPFrame $frame,
 		$inList,
 		$inSep,
 		$fieldSep,
@@ -1665,14 +1658,9 @@ final class ListFunctions {
 		$token,
 		$tokenSep,
 		$pattern,
-		$outSep,
 		$sortMode,
 		$sortOptions,
-		$duplicates,
-		$countToken,
-		$intro,
-		$outro,
-		$default
+		$duplicates
 	) {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
@@ -1730,15 +1718,7 @@ final class ListFunctions {
 			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
-		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		if ( $countToken !== null && $countToken !== '' ) {
-			$intro = str_replace( $countToken, (string)count( $outValues ), $intro );
-			$outro = str_replace( $countToken, (string)count( $outValues ), $outro );
-		}
-		return ParserPower::evaluateUnescaped( $parser, $frame, $intro . implode( $outSep, $outValues ) . $outro );
+		return $outValues;
 	}
 
 	/**
@@ -1750,14 +1730,9 @@ final class ListFunctions {
 	 * @param string $template The template to use.
 	 * @param string $inSep The delimiter seoarating values in the input list.
 	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
-	 * @param string $outSep The delimiter that should separate values in the output list.
 	 * @param int $sortMode What sort mode to use, if any.
 	 * @param int $sortOptions Options for the sort as handled by #listsort.
 	 * @param int $duplicates When to strip duplicate values, if at all.
-	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
-	 * @param string $intro Content to include before outputted list values, only if at least one item is output.
-	 * @param string $outro Content to include after outputted list values, only if at least one item is output.
-	 * @param string $default Content to output if no list values are.
 	 * @return string The function output.
 	 */
 	private static function applyTemplateToList(
@@ -1767,14 +1742,9 @@ final class ListFunctions {
 		$template,
 		$inSep,
 		$fieldSep,
-		$outSep,
 		$sortMode,
 		$sortOptions,
-		$duplicates,
-		$countToken,
-		$intro,
-		$outro,
-		$default
+		$duplicates
 	) {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
@@ -1800,13 +1770,7 @@ final class ListFunctions {
 			$outValues = array_unique( $outValues );
 		}
 
-		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		$count = count( $outValues );
-		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+		return $outValues;
 	}
 
 	/**
@@ -1848,26 +1812,20 @@ final class ListFunctions {
 		$duplicates = self::decodeDuplicates( $duplicates );
 
 		if ( $template !== '' ) {
-			return self::applyTemplateToList(
+			$outValues = self::applyTemplateToList(
 				$parser,
 				$frame,
 				$inList,
 				$template,
 				$inSep,
 				$fieldSep,
-				$outSep,
 				$sortMode,
 				$sortOptions,
-				$duplicates,
-				$countToken,
-				$intro,
-				$outro,
-				$default
+				$duplicates
 			);
 		} else {
-			return self::applyPatternToList(
+			$outValues = self::applyPatternToList(
 				$parser,
-				$frame,
 				$inList,
 				$inSep,
 				$fieldSep,
@@ -1875,16 +1833,19 @@ final class ListFunctions {
 				$token,
 				$tokenSep,
 				$pattern,
-				$outSep,
 				$sortMode,
 				$sortOptions,
-				$duplicates,
-				$countToken,
-				$intro,
-				$outro,
-				$default
+				$duplicates
 			);
 		}
+
+		$count = count( $outValues );
+		if ( $count === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
+		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 
 	/**
@@ -1912,9 +1873,8 @@ final class ListFunctions {
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
-		return self::applyPatternToList(
+		$outValues = self::applyPatternToList(
 			$parser,
-			$frame,
 			$inList,
 			$inSep,
 			'',
@@ -1922,15 +1882,16 @@ final class ListFunctions {
 			$token,
 			'',
 			$pattern,
-			$outSep,
 			$sortMode,
 			$sortOptions,
-			0,
-			'',
-			'',
-			'',
-			''
+			0
 		);
+
+		if ( count( $outValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $outValues ) );
 	}
 
 	/**
@@ -1958,9 +1919,8 @@ final class ListFunctions {
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		if ( $template === '' ) {
-			return self::applyPatternToList(
+			$outValues = self::applyPatternToList(
 				$parser,
-				$frame,
 				$inList,
 				$inSep,
 				'',
@@ -1968,33 +1928,29 @@ final class ListFunctions {
 				'',
 				'',
 				'',
-				$outSep,
 				$sortMode,
 				$sortOptions,
-				0,
-				'',
-				'',
-				'',
-				''
+				0
 			);
 		} else {
-			return self::applyTemplateToList(
+			$outValues = self::applyTemplateToList(
 				$parser,
 				$frame,
 				$inList,
 				$template,
 				$inSep,
 				'',
-				$outSep,
 				$sortMode,
 				$sortOptions,
-				0,
-				'',
-				'',
-				'',
-				''
+				0
 			);
 		}
+
+		if ( count( $outValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $outValues ) );
 	}
 
 	/**
@@ -2164,13 +2120,8 @@ final class ListFunctions {
 	 * @param string $tokenSep The separator between tokens if used.
 	 * @param string $matchPattern The pattern that determines if items match.
 	 * @param string $mergePattern The pattern that list values are inserted into at that token.
-	 * @param string $outSep The delimiter that should separate values in the output list.
 	 * @param int $sortMode What sort mode to use, if any.
 	 * @param int $sortOptions Options for the sort as handled by #listsort.
-	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
-	 * @param string $intro Content to include before outputted list values, if at least one item is output.
-	 * @param string $outro Content to include after outputted list values, if at least one item is output.
-	 * @param string $default Content to output if no list values are.
 	 * @return string The function output.
 	 */
 	private static function mergeListByPattern(
@@ -2184,13 +2135,8 @@ final class ListFunctions {
 		$tokenSep,
 		$matchPattern,
 		$mergePattern,
-		$outSep,
 		$sortMode,
-		$sortOptions,
-		$countToken,
-		$intro,
-		$outro,
-		$default
+		$sortOptions
 	) {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
@@ -2225,13 +2171,7 @@ final class ListFunctions {
 			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
-		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		$count = count( $outValues );
-		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+		return $outValues;
 	}
 
 	/**
@@ -2244,13 +2184,8 @@ final class ListFunctions {
 	 * @param string $mergeTemplate The template to use for the merging operation.
 	 * @param string $inSep The delimiter seoarating values in the input list.
 	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
-	 * @param string $outSep The delimiter that should separate values in the output list.
 	 * @param int $sortMode What sort mode to use, if any.
 	 * @param int $sortOptions Options for the sort as handled by #listsort.
-	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
-	 * @param string $intro Content to include before outputted list values, if at least one item is output.
-	 * @param string $outro Content to include after outputted list values, if at least one item is output.
-	 * @param string $default Content to output if no list values are.
 	 * @return string The function output.
 	 */
 	private static function mergeListByTemplate(
@@ -2261,13 +2196,8 @@ final class ListFunctions {
 		$mergeTemplate,
 		$inSep,
 		$fieldSep,
-		$outSep,
 		$sortMode,
-		$sortOptions,
-		$countToken,
-		$intro,
-		$outro,
-		$default
+		$sortOptions
 	) {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
@@ -2294,13 +2224,7 @@ final class ListFunctions {
 			$outValues = self::sortList( $outValues, $sortOptions );
 		}
 
-		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		$count = count( $outValues );
-		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+		return $outValues;
 	}
 
 	/**
@@ -2342,7 +2266,7 @@ final class ListFunctions {
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		if ( $matchTemplate !== '' && $mergeTemplate !== '' ) {
-			return self::mergeListByTemplate(
+			$outValues = self::mergeListByTemplate(
 				$parser,
 				$frame,
 				$inList,
@@ -2350,16 +2274,11 @@ final class ListFunctions {
 				$mergeTemplate,
 				$inSep,
 				$fieldSep,
-				$outSep,
 				$sortMode,
-				$sortOptions,
-				$countToken,
-				$intro,
-				$outro,
-				$default
+				$sortOptions
 			);
 		} else {
-			return self::mergeListByPattern(
+			$outValues = self::mergeListByPattern(
 				$parser,
 				$frame,
 				$inList,
@@ -2370,14 +2289,17 @@ final class ListFunctions {
 				$tokenSep,
 				$matchPattern,
 				$mergePattern,
-				$outSep,
 				$sortMode,
-				$sortOptions,
-				$countToken,
-				$intro,
-				$outro,
-				$default
+				$sortOptions
 			);
 		}
+
+		$count = count( $outValues );
+		if ( $count === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
+		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
