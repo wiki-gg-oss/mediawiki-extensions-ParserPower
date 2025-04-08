@@ -722,6 +722,10 @@ final class ListFunctions {
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
 		$keepValues = $params->get( 'keep' );
 		$keepSep = $params->get( 'keepsep' );
 		$keepCS = $params->get( 'keepcs' );
@@ -740,13 +744,8 @@ final class ListFunctions {
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
 
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
 		$keepCS = self::decodeBool( $keepCS );
 		$removeCS = self::decodeBool( $removeCS );
-
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
 
@@ -953,6 +952,10 @@ final class ListFunctions {
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
 		$uniqueCS = $params->get( 'uniquecs' );
 		$template = $params->get( 'template' );
 		$inSep = $params->get( 'insep' );
@@ -965,10 +968,6 @@ final class ListFunctions {
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
 
 		$uniqueCS = self::decodeBool( $uniqueCS );
 
@@ -1090,6 +1089,10 @@ final class ListFunctions {
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
 		$template = $params->get( 'template' );
 		$inSep = $params->get( 'insep' );
 		$fieldSep = $params->get( 'fieldsep' );
@@ -1105,10 +1108,6 @@ final class ListFunctions {
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
@@ -1234,6 +1233,10 @@ final class ListFunctions {
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
 		$template = $params->get( 'template' );
 		$inSep = $params->get( 'insep' );
 		$fieldSep = $params->get( 'fieldsep' );
@@ -1248,10 +1251,6 @@ final class ListFunctions {
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortMode = self::decodeSortMode( $sortMode );
@@ -1501,6 +1500,10 @@ final class ListFunctions {
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
 		$matchTemplate = $params->get( 'matchtemplate' );
 		$mergeTemplate = $params->get( 'mergetemplate' );
 		$inSep = $params->get( 'insep' );
@@ -1516,10 +1519,6 @@ final class ListFunctions {
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortMode = self::decodeSortMode( $sortMode );
