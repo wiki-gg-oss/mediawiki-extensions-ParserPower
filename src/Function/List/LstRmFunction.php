@@ -44,7 +44,6 @@ final class LstRmFunction extends ListFilterFunction {
 		$value = $params->get( 0 );
 		$inSep = $params->get( 2 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 3 );
 		$csOption = ListUtils::decodeCSOption( $params->get( 4 ) );
 
 		$inValues = ListUtils::explode( $inSep, $inList );
@@ -52,10 +51,9 @@ final class LstRmFunction extends ListFilterFunction {
 		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
 		$outValues = $this->filterList( $operation, $inValues );
 
-		if ( count( $outValues ) > 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $outValues, $outSep ) );
-		} else {
-			return '';
-		}
+		$outSep = count( $outValues ) > 1 ? $params->get( 3 ) : '';
+		$outList = ListUtils::implode( $outValues, $outSep );
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

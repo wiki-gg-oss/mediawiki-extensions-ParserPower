@@ -46,7 +46,6 @@ final class LstMapTempFunction extends ListMapFunction {
 		$template = $params->get( 1 );
 		$inSep = $params->get( 2 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 3 );
 		$sortMode = ListUtils::decodeSortMode( $params->get( 4 ) );
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 5 ) );
 
@@ -65,10 +64,9 @@ final class LstMapTempFunction extends ListMapFunction {
 			$outValues = $sorter->sort( $outValues );
 		}
 
-		if ( count( $outValues ) === 0 ) {
-			return '';
-		}
+		$outSep = count( $outValues ) > 1 ? $params->get( 3 ) : '';
+		$outList = ListUtils::implode( $outValues, $outSep );
 
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $outValues, $outSep ) );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

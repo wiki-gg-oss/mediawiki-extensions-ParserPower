@@ -41,11 +41,14 @@ final class LstUniqFunction extends ListUniqueFunction {
 
 		$inSep = $params->get( 1 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 2 );
 		$csOption = ListUtils::decodeCSOption( $params->get( 3 ) );
 
 		$values = ListUtils::explode( $inSep, $inList );
 		$values = $this->reduceToUniqueValues( $values, $csOption );
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $values, $outSep ) );
+
+		$outSep = count( $values ) > 1 ? $params->get( 2 ) : '';
+		$outList = ListUtils::implode( $values, $outSep );
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

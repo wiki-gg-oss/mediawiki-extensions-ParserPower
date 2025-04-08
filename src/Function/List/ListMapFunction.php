@@ -77,8 +77,6 @@ class ListMapFunction implements ParserFunction {
 		$token = $params->get( 'token' );
 		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
-		$outConj = $params->get( 'outconj', [ 'default' => $outSep ] );
 		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
 		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
@@ -139,6 +137,8 @@ class ListMapFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
+		$outSep = $count > 2 ? $params->get( 'outsep' ) : '';
+		$outConj = $count > 1 ? $params->get( $params->isDefined( 'outconj' ) ? 'outconj' : 'outsep' ) : '';
 		if ( $outConj !== $outSep ) {
 			$outConj = ' ' . trim( $outConj ) . ' ';
 		}

@@ -78,7 +78,6 @@ class ListFilterFunction implements ParserFunction {
 		$tokenSep = $params->get( 'tokensep' );
 		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
 		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
@@ -120,6 +119,7 @@ class ListFilterFunction implements ParserFunction {
 		}
 
 		$count = count( $outValues );
+		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 
