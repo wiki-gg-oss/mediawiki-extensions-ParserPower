@@ -372,7 +372,6 @@ final class ListFunctions {
 		}
 
 		$sep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
 		return (string)count( self::arrayTrimUnescape( self::explodeList( $sep, $list ) ) );
@@ -424,14 +423,10 @@ final class ListFunctions {
 		}
 
 		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$inIndex = ParserPower::expand( $frame, $params[2] ?? '', ParserPower::UNESCAPE );
-
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
-		$index = 1;
-		if ( is_numeric( $inIndex ) ) {
-			$index = intval( $inIndex );
-		}
+		$index = ParserPower::expand( $frame, $params[2] ?? '', ParserPower::UNESCAPE );
+		$index = is_numeric( $index ) ? intval( $index ) : 1;
 
 		$value = self::arrayElementTrimUnescape( $index, self::explodeList( $inSep, $inList ) );
 
@@ -454,20 +449,13 @@ final class ListFunctions {
 		}
 
 		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$inOffset = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
-		$inLength = ParserPower::expand( $frame, $params[4] ?? '', ParserPower::UNESCAPE );
-
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
-		$offset = 0;
-		if ( is_numeric( $inOffset ) ) {
-			$offset = intval( $inOffset );
-		}
+		$offset = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
+		$offset = is_numeric( $offset ) ? intval( $offset ) : 0;
 
-		$length = null;
-		if ( is_numeric( $inLength ) ) {
-			$length = intval( $inLength );
-		}
+		$length = ParserPower::expand( $frame, $params[4] ?? '', ParserPower::UNESCAPE );
+		$length = is_numeric( $length ) ? intval( $length ) : null;
 
 		$values = self::arrayTrimSliceUnescape( $offset, $length, self::explodeList( $inSep, $inList ) );
 
@@ -497,10 +485,11 @@ final class ListFunctions {
 		}
 
 		$item = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-		$sep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[3] ?? '' );
 
+		$sep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
+
+		$csOption = ParserPower::expand( $frame, $params[3] ?? '' );
 		$csOption = self::decodeCSOption( $csOption );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
@@ -536,14 +525,15 @@ final class ListFunctions {
 		}
 
 		$item = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-		$sep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
-		$inOptions = ParserPower::expand( $frame, $params[3] ?? '' );
 
+		$sep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-		$options = self::decodeIndexOptions( $inOptions );
+
+		$options = ParserPower::expand( $frame, $params[3] ?? '' );
+		$options = self::decodeIndexOptions( $options );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
-		$count = ( is_array( $values ) || $values instanceof Countable ) ? count( $values ) : 0;
+		$count = count( $values );
 		if ( $options & self::INDEX_DESC ) {
 			if ( $options & self::INDEX_CS ) {
 				for ( $index = $count - 1; $index > -1; --$index ) {
@@ -593,7 +583,6 @@ final class ListFunctions {
 		}
 
 		$sep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
@@ -620,7 +609,6 @@ final class ListFunctions {
 		}
 
 		$sep = ParserPower::expand( $frame, $params[1] ?? '', ParserPower::UNESCAPE );
-
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
@@ -986,22 +974,20 @@ final class ListFunctions {
 		$keepValues = ParserPower::expand( $frame, $params["keep"] ?? '' );
 		$keepSep = ParserPower::expand( $frame, $params["keepsep"] ?? ',' );
 		$keepCS = ParserPower::expand( $frame, $params["keepcs"] ?? '' );
+		$keepCS = self::decodeBool( $keepCS );
 		$removeValues = ParserPower::expand( $frame, $params["remove"] ?? '' );
 		$removeSep = ParserPower::expand( $frame, $params["removesep"] ?? ',' );
 		$removeCS = ParserPower::expand( $frame, $params["removecs"] ?? '' );
+		$removeCS = self::decodeBool( $removeCS );
 		$template = ParserPower::expand( $frame, $params["template"] ?? '' );
 		$inSep = ParserPower::expand( $frame, $params["insep"] ?? ',', ParserPower::UNESCAPE );
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$fieldSep = ParserPower::expand( $frame, $params["fieldsep"] ?? '', ParserPower::UNESCAPE );
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
-		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
-
-		$keepCS = self::decodeBool( $keepCS );
-		$removeCS = self::decodeBool( $removeCS );
-
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
+		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
@@ -1061,11 +1047,13 @@ final class ListFunctions {
 		}
 
 		$values = ParserPower::expand( $frame, $params[0] ?? '' );
-		$valueSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$inSep = ParserPower::expand( $frame, $params[3] ?? ',', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[5] ?? '' );
 
+		$valueSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
+
+		$inSep = ParserPower::expand( $frame, $params[3] ?? ',', ParserPower::UNESCAPE );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+
+		$csOption = ParserPower::expand( $frame, $params[5] ?? '' );
 		$csOption = self::decodeCSOption( $csOption );
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
@@ -1098,10 +1086,11 @@ final class ListFunctions {
 		}
 
 		$value = ParserPower::expand( $frame, $params[0] ?? '' );
-		$inSep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[4] ?? '' );
 
+		$inSep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+
+		$csOption = ParserPower::expand( $frame, $params[4] ?? '' );
 		$csOption = self::decodeCSOption( $csOption );
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
@@ -1149,9 +1138,9 @@ final class ListFunctions {
 		}
 
 		$sep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[2] ?? '' );
-
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
+
+		$csOption = ParserPower::expand( $frame, $params[2] ?? '' );
 		$csOption = self::decodeCSOption( $csOption );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $sep, $inList ) );
@@ -1279,6 +1268,7 @@ final class ListFunctions {
 		}
 
 		$uniqueCS = ParserPower::expand( $frame, $params["uniquecs"] ?? '' );
+		$uniqueCS = self::decodeBool( $uniqueCS );
 		$template = ParserPower::expand( $frame, $params["template"] ?? '' );
 		$inSep = ParserPower::expand( $frame, $params["insep"] ?? ',', ParserPower::UNESCAPE );
 		$fieldSep = ParserPower::expand( $frame, $params["fieldsep"] ?? '', ParserPower::UNESCAPE );
@@ -1286,8 +1276,6 @@ final class ListFunctions {
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
 		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '' );
-
-		$uniqueCS = self::decodeBool( $uniqueCS );
 
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
@@ -1344,9 +1332,9 @@ final class ListFunctions {
 		}
 
 		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[3] ?? '' );
-
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+
+		$csOption = ParserPower::expand( $frame, $params[3] ?? '' );
 		$csOption = self::decodeCSOption( $csOption );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
@@ -1588,6 +1576,7 @@ final class ListFunctions {
 
 		$template = ParserPower::expand( $frame, $params["template"] ?? '' );
 		$inSep = ParserPower::expand( $frame, $params["insep"] ?? ',', ParserPower::UNESCAPE );
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$fieldSep = ParserPower::expand( $frame, $params["fieldsep"] ?? '', ParserPower::UNESCAPE );
 		$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::UNESCAPE );
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::UNESCAPE );
@@ -1595,12 +1584,10 @@ final class ListFunctions {
 		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
 		$subsort = ParserPower::expand( $frame, $params["subsort"] ?? '' );
-		$subsortOptions = ParserPower::expand( $frame, $params["subsortoptions"] ?? '' );
-		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
-
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$subsort = self::decodeBool( $subsort );
+		$subsortOptions = ParserPower::expand( $frame, $params["subsortoptions"] ?? '' );
 		$subsortOptions = self::decodeSortOptions( $subsortOptions );
+		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
 		$duplicates = self::decodeDuplicates( $duplicates );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
@@ -1670,9 +1657,9 @@ final class ListFunctions {
 		}
 
 		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$sortOptions = ParserPower::expand( $frame, $params[3] ?? '' );
-
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+
+		$sortOptions = ParserPower::expand( $frame, $params[3] ?? '' );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
@@ -1855,11 +1842,10 @@ final class ListFunctions {
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
 		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '' );
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
-		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
-		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
-
 		$sortMode = self::decodeSortMode( $sortMode );
+		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
+		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
 		$duplicates = self::decodeDuplicates( $duplicates );
 
 		if ( $template !== '' ) {
@@ -1930,9 +1916,8 @@ final class ListFunctions {
 		$token = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::UNESCAPE );
 		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x' );
 		$sortMode = ParserPower::expand( $frame, $params[5] ?? '' );
-		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
-
 		$sortMode = self::decodeSortMode( $sortMode );
+		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		$outValues = self::applyPatternToList(
@@ -1977,9 +1962,8 @@ final class ListFunctions {
 		$template = ParserPower::expand( $frame, $params[1] ?? '' );
 		$inSep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params[4] ?? '' );
-		$sortOptions = ParserPower::expand( $frame, $params[5] ?? '' );
-
 		$sortMode = self::decodeSortMode( $sortMode );
+		$sortOptions = ParserPower::expand( $frame, $params[5] ?? '' );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		if ( $template === '' ) {
@@ -2322,9 +2306,8 @@ final class ListFunctions {
 		$matchPattern = ParserPower::expand( $frame, $params["matchpattern"] ?? '' );
 		$mergePattern = ParserPower::expand( $frame, $params["mergepattern"] ?? '' );
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
-		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
-
 		$sortMode = self::decodeSortMode( $sortMode );
+		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		if ( $matchTemplate !== '' && $mergeTemplate !== '' ) {
