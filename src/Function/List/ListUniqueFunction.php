@@ -91,7 +91,6 @@ class ListUniqueFunction implements ParserFunction {
 		$token = $params->get( 'token' );
 		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
@@ -115,6 +114,7 @@ class ListUniqueFunction implements ParserFunction {
 		}
 
 		$count = count( $outValues );
+		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

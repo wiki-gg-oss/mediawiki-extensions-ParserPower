@@ -87,7 +87,6 @@ class ListSortFunction implements ParserFunction {
 		$token = $params->get( 'token' );
 		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
 		$sortOptions = $params->get( 'sortoptions' );
 		$subsort = ListUtils::decodeBool( $params->get( 'subsort' ) );
 		$subsortOptions = ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) );
@@ -138,6 +137,7 @@ class ListSortFunction implements ParserFunction {
 		}
 
 		$count = count( $values );
+		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $values, $outSep );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

@@ -43,7 +43,6 @@ final class LstSubFunction implements ParserFunction {
 
 		$inSep = $params->get( 1 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 2 );
 		$offset = $params->get( 3 );
 		$offset = is_numeric( $offset ) ? intval( $offset ) : 0;
 		$length = $params->get( 4 );
@@ -51,10 +50,9 @@ final class LstSubFunction implements ParserFunction {
 
 		$values = ListUtils::slice( ListUtils::explode( $inSep, $inList ), $offset, $length );
 
-		if ( count( $values ) > 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $values, $outSep ) );
-		} else {
-			return '';
-		}
+		$outSep = count( $values ) > 1 ? $params->get( 2 ) : '';
+		$outList = ListUtils::implode( $values, $outSep );
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

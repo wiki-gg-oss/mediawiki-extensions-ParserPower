@@ -62,7 +62,6 @@ final class LstMapFunction extends ListMapFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$token = $params->get( 2 );
 		$pattern = $params->get( 3 );
-		$outSep = $params->get( 4 );
 		$sortMode = ListUtils::decodeSortMode( $params->get( 5 ) );
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 6 ) );
 
@@ -81,10 +80,9 @@ final class LstMapFunction extends ListMapFunction {
 			$outValues = $sorter->sort( $outValues );
 		}
 
-		if ( count( $outValues ) === 0 ) {
-			return '';
-		}
+		$outSep = count( $outValues ) > 1 ? $params->get( 4 ) : '';
+		$outList = ListUtils::implode( $outValues, $outSep );
 
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $outValues, $outSep ) );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

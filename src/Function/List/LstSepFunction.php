@@ -40,9 +40,11 @@ final class LstSepFunction implements ParserFunction {
 
 		$inSep = $params->get( 1 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 2 );
-
 		$values = ListUtils::explode( $inSep, $inList );
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $values, $outSep ) );
+
+		$outSep = count( $values ) > 1 ? $params->get( 2 ) : '';
+		$outList = ListUtils::implode( $values, $outSep );
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

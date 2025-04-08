@@ -171,12 +171,14 @@ class ListMergeFunction implements ParserFunction {
 			$outValues = $sorter->sort( $outValues );
 		}
 
-		if ( count( $outValues ) === 0 ) {
+		$count = count( $outValues );
+		if ( $count === 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$count = count( $outValues );
-		$outList = ListUtils::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
+		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
+		$outList = ListUtils::implode( $outValues, $outSep );
+		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

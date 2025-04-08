@@ -57,9 +57,11 @@ final class LstJoinFunction implements ParserFunction {
 			$values2 = ListUtils::explode( $inSep2, $inList2 );
 		}
 
-		$outSep = $params->get( 4 );
-
 		$values = array_merge( $values1, $values2 );
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $values, $outSep ) );
+
+		$outSep = count( $values ) > 1 ? $params->get( 4 ) : '';
+		$outList = ListUtils::implode( $values, $outSep );
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
