@@ -120,10 +120,16 @@ class ListMergeFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
-		$matchTemplate = $params->get( 'matchtemplate' );
-		$mergeTemplate = $params->get( 'mergetemplate' );
 		$inSep = $params->get( 'insep' );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $inValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		}
+
+		$matchTemplate = $params->get( 'matchtemplate' );
+		$mergeTemplate = $params->get( 'mergetemplate' );
 		$fieldSep = $params->get( 'fieldsep' );
 		$token1 = $params->get( 'token1' );
 		$token2 = $params->get( 'token2' );
@@ -135,8 +141,6 @@ class ListMergeFunction implements ParserFunction {
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
 
 		$sorter = new ListSorter( $sortOptions );
-
-		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );

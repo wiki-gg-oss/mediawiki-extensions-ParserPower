@@ -78,9 +78,15 @@ class ListSortFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
-		$template = $params->get( 'template' );
 		$inSep = $params->get( 'insep' );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$values = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $values ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		}
+
+		$template = $params->get( 'template' );
 		$fieldSep = $params->get( 'fieldsep' );
 		$indexToken = $params->get( 'indextoken' );
 		$token = $params->get( 'token' );
@@ -95,7 +101,6 @@ class ListSortFunction implements ParserFunction {
 			$subsortOptions = null;
 		}
 
-		$values = ListUtils::explode( $inSep, $inList );
 		if ( $duplicates & ListUtils::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
 		}

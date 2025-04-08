@@ -42,11 +42,14 @@ final class LstSrtFunction extends ListSortFunction {
 
 		$inSep = $params->get( 1 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$values = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $values ) === 0 ) {
+			return '';
+		}
 
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 3 ) );
 		$sorter = new ListSorter( $sortOptions );
-
-		$values = ListUtils::explode( $inSep, $inList );
 		$values = $sorter->sort( $values );
 
 		$outSep = count( $values ) > 1 ? $params->get( 2 ) : '';

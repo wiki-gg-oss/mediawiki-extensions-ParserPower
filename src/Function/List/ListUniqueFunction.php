@@ -82,16 +82,20 @@ class ListUniqueFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
+		$inSep = $params->get( 'insep' );
+		$inValues = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $inValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		}
+
 		$uniqueCS = ListUtils::decodeBool( $params->get( 'uniquecs' ) );
 		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep' );
 		$fieldSep = $params->get( 'fieldsep' );
 		$indexToken = $params->get( 'indextoken' );
 		$token = $params->get( 'token' );
 		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
-
-		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $fieldSep !== '' ) {
 			$tokens = ListUtils::explodeToken( $tokenSep, $token );

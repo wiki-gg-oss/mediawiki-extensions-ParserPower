@@ -60,14 +60,18 @@ final class LstMapFunction extends ListMapFunction {
 
 		$inSep = $params->get( 1 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $inValues ) === 0 ) {
+			return '';
+		}
+
 		$token = $params->get( 2 );
 		$pattern = $params->get( 3 );
 		$sortMode = ListUtils::decodeSortMode( $params->get( 5 ) );
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 6 ) );
 
 		$sorter = new ListSorter( $sortOptions );
-
-		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );

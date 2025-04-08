@@ -62,6 +62,14 @@ class ListFilterFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
+		$inSep = $params->get( 'insep' );
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $inValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		}
+
 		$keepValues = $params->get( 'keep' );
 		$keepSep = $params->get( 'keepsep' );
 		$keepCS = ListUtils::decodeBool( $params->get( 'keepcs' ) );
@@ -69,16 +77,12 @@ class ListFilterFunction implements ParserFunction {
 		$removeSep = $params->get( 'removesep' );
 		$removeCS = ListUtils::decodeBool( $params->get( 'removecs' ) );
 		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep' );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$fieldSep = $params->get( 'fieldsep' );
 		$indexToken = $params->get( 'indextoken' );
 		$token = $params->get( 'token' );
 		$tokenSep = $params->get( 'tokensep' );
 		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
 		$pattern = $params->get( 'pattern' );
-
-		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $keepValues !== '' ) {
 			if ( $keepSep !== '' ) {

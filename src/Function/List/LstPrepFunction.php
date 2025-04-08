@@ -42,11 +42,12 @@ final class LstPrepFunction implements ParserFunction {
 
 		$sep = $params->get( 1 );
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-
 		$values = ListUtils::explode( $sep, $list );
+
 		if ( $value !== '' ) {
 			array_unshift( $values, $value );
 		}
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $values, $sep ) );
 	}
 }
