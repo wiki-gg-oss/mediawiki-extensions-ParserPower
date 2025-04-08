@@ -87,11 +87,6 @@ class ListSortFunction implements ParserFunction {
 		}
 
 		$template = $params->get( 'template' );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
 		$sortOptions = $params->get( 'sortoptions' );
 		$subsort = ListUtils::decodeBool( $params->get( 'subsort' ) );
 		$subsortOptions = ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) );
@@ -106,6 +101,7 @@ class ListSortFunction implements ParserFunction {
 		}
 
 		if ( $template !== '' ) {
+			$fieldSep = $params->get( 'fieldsep' );
 			$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
 			$sorter = new ListSorter( $sortOptions, $subsortOptions );
 			$operation = new TemplateOperation( $parser, $frame, $template );
@@ -113,24 +109,33 @@ class ListSortFunction implements ParserFunction {
 			$pairedValues = $this->generateSortKeys( $operation, $values, $fieldSep );
 			$sorter->sortPairs( $pairedValues );
 			$values = $this->discardSortKeys( $pairedValues );
-		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
-			if ( $fieldSep !== '' ) {
-				$tokens = ListUtils::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
-			}
-
-			$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
-			$sorter = new ListSorter( $sortOptions, $subsortOptions );
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-
-			$pairedValues = $this->generateSortKeys( $operation, $values, $fieldSep );
-			$sorter->sortPairs( $pairedValues );
-			$values = $this->discardSortKeys( $pairedValues );
 		} else {
-			$sortOptions = ListUtils::decodeSortOptions( $sortOptions );
-			$sorter = new ListSorter( $sortOptions );
-			$values = $sorter->sort( $values );
+			$indexToken = $params->get( 'indextoken' );
+			$token = $params->get( 'token' );
+			$pattern = $params->get( 'pattern' );
+
+			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+				$fieldSep = $params->get( 'fieldsep' );
+				$tokenSep = $params->get( 'tokensep' );
+
+				if ( $fieldSep !== '' ) {
+					$tokens = ListUtils::explodeToken( $tokenSep, $token );
+				} else {
+					$tokens = [ $token ];
+				}
+
+				$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+				$sorter = new ListSorter( $sortOptions, $subsortOptions );
+				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+
+				$pairedValues = $this->generateSortKeys( $operation, $values, $fieldSep );
+				$sorter->sortPairs( $pairedValues );
+				$values = $this->discardSortKeys( $pairedValues );
+			} else {
+				$sortOptions = ListUtils::decodeSortOptions( $sortOptions );
+				$sorter = new ListSorter( $sortOptions );
+				$values = $sorter->sort( $values );
+			}
 		}
 
 		if ( count( $values ) === 0 ) {

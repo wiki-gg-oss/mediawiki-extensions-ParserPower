@@ -89,28 +89,33 @@ class ListUniqueFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
-		$uniqueCS = ListUtils::decodeBool( $params->get( 'uniquecs' ) );
 		$template = $params->get( 'template' );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
-
-		if ( $fieldSep !== '' ) {
-			$tokens = ListUtils::explodeToken( $tokenSep, $token );
-		} else {
-			$tokens = [ $token ];
-		}
 
 		if ( $template !== '' ) {
+			$fieldSep = $params->get( 'fieldsep' );
 			$operation = new TemplateOperation( $parser, $frame, $template );
 			$outValues = $this->reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
-		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$outValues = $this->reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
 		} else {
-			$outValues = $this->reduceToUniqueValues( $inValues, $uniqueCS );
+			$indexToken = $params->get( 'indextoken' );
+			$token = $params->get( 'token' );
+			$pattern = $params->get( 'pattern' );
+
+			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+				$fieldSep = $params->get( 'fieldsep' );
+				$tokenSep = $params->get( 'tokensep' );
+
+				if ( $fieldSep !== '' ) {
+					$tokens = ListUtils::explodeToken( $tokenSep, $token );
+				} else {
+					$tokens = [ $token ];
+				}
+
+				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+				$outValues = $this->reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
+			} else {
+				$uniqueCS = ListUtils::decodeBool( $params->get( 'uniquecs' ) );
+				$outValues = $this->reduceToUniqueValues( $inValues, $uniqueCS );
+			}
 		}
 
 		$count = count( $outValues );

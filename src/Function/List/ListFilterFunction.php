@@ -71,48 +71,55 @@ class ListFilterFunction implements ParserFunction {
 		}
 
 		$keepValues = $params->get( 'keep' );
-		$keepSep = $params->get( 'keepsep' );
-		$keepCS = ListUtils::decodeBool( $params->get( 'keepcs' ) );
-		$removeValues = $params->get( 'remove' );
-		$removeSep = $params->get( 'removesep' );
-		$removeCS = ListUtils::decodeBool( $params->get( 'removecs' ) );
-		$template = $params->get( 'template' );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
-		$pattern = $params->get( 'pattern' );
 
 		if ( $keepValues !== '' ) {
+			$keepSep = $params->get( 'keepsep' );
 			if ( $keepSep !== '' ) {
 				$keepValues = ListUtils::explode( $keepSep, $keepValues );
 			} else {
 				$keepValues = [ ParserPower::unescape( $keepValues ) ];
 			}
 
+			$keepCS = ListUtils::decodeBool( $params->get( 'keepcs' ) );
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
-		} elseif ( $removeValues !== '' ) {
-			if ( $removeSep !== '' ) {
-				$removeValues = ListUtils::explode( $removeSep, $removeValues );
-			} else {
-				$removeValues = [ ParserPower::unescape( $removeValues ) ];
-			}
-
-			$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
-		} elseif ( $template !== '' ) {
-			$operation = new TemplateOperation( $parser, $frame, $template );
 		} else {
-			if ( $fieldSep !== '' ) {
-				$tokens = ListUtils::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
-			}
+			$removeValues = $params->get( 'remove' );
 
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+			if ( $removeValues !== '' ) {
+				$removeSep = $params->get( 'removesep' );
+				if ( $removeSep !== '' ) {
+					$removeValues = ListUtils::explode( $removeSep, $removeValues );
+				} else {
+					$removeValues = [ ParserPower::unescape( $removeValues ) ];
+				}
+
+				$removeCS = ListUtils::decodeBool( $params->get( 'removecs' ) );
+				$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
+			} else {
+				$template = $params->get( 'template' );
+				$fieldSep = $params->get( 'fieldsep' );
+
+				if ( $template !== '' ) {
+					$operation = new TemplateOperation( $parser, $frame, $template );
+				} else {
+					$indexToken = $params->get( 'indextoken' );
+					$token = $params->get( 'token' );
+					$tokenSep = $params->get( 'tokensep' );
+					$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
+					$pattern = $params->get( 'pattern' );
+
+					if ( $fieldSep !== '' ) {
+						$tokens = ListUtils::explodeToken( $tokenSep, $token );
+					} else {
+						$tokens = [ $token ];
+					}
+
+					$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+				}
+			}
 		}
 
-		$outValues = $this->filterList( $operation, $inValues, $fieldSep );
+		$outValues = $this->filterList( $operation, $inValues, $fieldSep ?? '' );
 
 		if ( count( $outValues ) === 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
