@@ -63,10 +63,9 @@ class ListMapFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$template = $params->get( 'template' );
@@ -131,7 +130,7 @@ class ListMapFunction implements ParserFunction {
 
 		$count = count( $outValues );
 		if ( $count === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$outSep = $count > 2 ? $params->get( 'outsep' ) : '';

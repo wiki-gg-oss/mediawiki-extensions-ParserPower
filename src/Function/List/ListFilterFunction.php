@@ -57,10 +57,9 @@ class ListFilterFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$keepValues = $params->get( 'keep' );
@@ -112,7 +111,7 @@ class ListFilterFunction implements ParserFunction {
 		$outValues = $this->filterList( $operation, $inValues, $fieldSep );
 
 		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$count = count( $outValues );

@@ -73,10 +73,9 @@ class ListSortFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$template = $params->get( 'template' );
@@ -130,7 +129,7 @@ class ListSortFunction implements ParserFunction {
 		}
 
 		if ( count( $values ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$count = count( $values );
