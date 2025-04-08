@@ -79,6 +79,10 @@ class ListUniqueFunction implements ParserFunction {
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
 		$uniqueCS = ListUtils::decodeBool( $params->get( 'uniquecs' ) );
 		$template = $params->get( 'template' );
 		$inSep = $params->get( 'insep' );
@@ -91,10 +95,6 @@ class ListUniqueFunction implements ParserFunction {
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
 
 		$inValues = ListUtils::explode( $inSep, $inList );
 

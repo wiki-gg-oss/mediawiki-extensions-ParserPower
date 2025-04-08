@@ -117,6 +117,10 @@ class ListMergeFunction implements ParserFunction {
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
 		$matchTemplate = $params->get( 'matchtemplate' );
 		$mergeTemplate = $params->get( 'mergetemplate' );
 		$inSep = $params->get( 'insep' );
@@ -133,10 +137,6 @@ class ListMergeFunction implements ParserFunction {
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
 
 		$sorter = new ListSorter( $sortOptions );
 
