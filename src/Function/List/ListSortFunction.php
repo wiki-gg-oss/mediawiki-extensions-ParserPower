@@ -91,9 +91,6 @@ class ListSortFunction implements ParserFunction {
 		$subsort = ListUtils::decodeBool( $params->get( 'subsort' ) );
 		$subsortOptions = ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) );
 		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
 
 		if ( !$subsort ) {
 			$subsortOptions = null;
@@ -139,7 +136,12 @@ class ListSortFunction implements ParserFunction {
 		$count = count( $values );
 		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $values, $outSep );
+
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
