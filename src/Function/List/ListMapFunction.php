@@ -78,10 +78,6 @@ class ListMapFunction implements ParserFunction {
 
 		$template = $params->get( 'template' );
 		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
 		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
 		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
@@ -104,6 +100,11 @@ class ListMapFunction implements ParserFunction {
 				$outValues = $sorter->sort( $outValues );
 			}
 		} else {
+			$indexToken = $params->get( 'indextoken' );
+			$token = $params->get( 'token' );
+			$tokenSep = $params->get( 'tokensep' );
+			$pattern = $params->get( 'pattern' );
+
 			if (
 				( $indexToken !== '' && $sortMode & ListUtils::SORTMODE_COMPAT ) ||
 				$sortMode & ListUtils::SORTMODE_PRE
