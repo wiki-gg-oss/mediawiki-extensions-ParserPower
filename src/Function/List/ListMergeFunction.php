@@ -134,9 +134,6 @@ class ListMergeFunction implements ParserFunction {
 		$outSep = $params->get( 'outsep' );
 		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
 
 		$sorter = new ListSorter( $sortOptions );
 
@@ -178,7 +175,12 @@ class ListMergeFunction implements ParserFunction {
 
 		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
+
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
