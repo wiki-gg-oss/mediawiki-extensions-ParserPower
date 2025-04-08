@@ -42,13 +42,17 @@ final class LstFltrFunction extends ListFilterFunction {
 			return '';
 		}
 
-		$values = $params->get( 0 );
-		$valueSep = $params->get( 1 );
 		$inSep = $params->get( 3 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$csOption = ListUtils::decodeCSOption( $params->get( 5 ) );
-
 		$inValues = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $inValues ) === 0 ) {
+			return '';
+		}
+
+		$values = $params->get( 0 );
+		$valueSep = $params->get( 1 );
+		$csOption = ListUtils::decodeCSOption( $params->get( 5 ) );
 
 		if ( $valueSep !== '' ) {
 			$values = ListUtils::explode( $valueSep, $values );

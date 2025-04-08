@@ -68,9 +68,15 @@ class ListMapFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
-		$template = $params->get( 'template' );
 		$inSep = $params->get( 'insep' );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $inValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		}
+
+		$template = $params->get( 'template' );
 		$fieldSep = $params->get( 'fieldsep' );
 		$indexToken = $params->get( 'indextoken' );
 		$token = $params->get( 'token' );
@@ -81,8 +87,6 @@ class ListMapFunction implements ParserFunction {
 		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
 
 		$sorter = new ListSorter( $sortOptions );
-
-		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $duplicates & ListUtils::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );

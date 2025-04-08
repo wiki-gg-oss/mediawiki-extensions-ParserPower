@@ -41,9 +41,13 @@ final class LstUniqFunction extends ListUniqueFunction {
 
 		$inSep = $params->get( 1 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$csOption = ListUtils::decodeCSOption( $params->get( 3 ) );
-
 		$values = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $values ) === 0 ) {
+			return '';
+		}
+
+		$csOption = ListUtils::decodeCSOption( $params->get( 3 ) );
 		$values = $this->reduceToUniqueValues( $values, $csOption );
 
 		$outSep = count( $values ) > 1 ? $params->get( 2 ) : '';

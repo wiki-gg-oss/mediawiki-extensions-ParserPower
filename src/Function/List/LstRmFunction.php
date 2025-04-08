@@ -41,13 +41,16 @@ final class LstRmFunction extends ListFilterFunction {
 			return '';
 		}
 
-		$value = $params->get( 0 );
 		$inSep = $params->get( 2 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$csOption = ListUtils::decodeCSOption( $params->get( 4 ) );
-
 		$inValues = ListUtils::explode( $inSep, $inList );
 
+		if ( count( $inValues ) === 0 ) {
+			return '';
+		}
+
+		$value = $params->get( 0 );
+		$csOption = ListUtils::decodeCSOption( $params->get( 4 ) );
 		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
 		$outValues = $this->filterList( $operation, $inValues );
 

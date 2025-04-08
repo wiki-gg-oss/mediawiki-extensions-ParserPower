@@ -43,15 +43,19 @@ final class LstMapTempFunction extends ListMapFunction {
 			return '';
 		}
 
-		$template = $params->get( 1 );
 		$inSep = $params->get( 2 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $inValues ) === 0 ) {
+			return '';
+		}
+
+		$template = $params->get( 1 );
 		$sortMode = ListUtils::decodeSortMode( $params->get( 4 ) );
 		$sortOptions = ListUtils::decodeSortOptions( $params->get( 5 ) );
 
 		$sorter = new ListSorter( $sortOptions );
-
-		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
