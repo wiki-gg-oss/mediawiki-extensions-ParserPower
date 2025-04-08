@@ -996,9 +996,6 @@ final class ListFunctions {
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
 		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '', ParserPower::NO_VARS );
-		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
-		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
-		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 
 		$keepCS = self::decodeBool( $keepCS );
 		$removeCS = self::decodeBool( $removeCS );
@@ -1039,7 +1036,11 @@ final class ListFunctions {
 			$outList = implode( $outSep, $outValues );
 		}
 
+		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
+		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
+		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 		$outList = self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 
@@ -1284,9 +1285,6 @@ final class ListFunctions {
 		$token = ParserPower::expand( $frame, $params["token"] ?? '', ParserPower::UNESCAPE );
 		$tokenSep = ParserPower::expand( $frame, $params["tokensep"] ?? ',', ParserPower::UNESCAPE );
 		$pattern = ParserPower::expand( $frame, $params["pattern"] ?? '' );
-		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
-		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
-		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 
 		$uniqueCS = self::decodeBool( $uniqueCS );
 
@@ -1321,7 +1319,11 @@ final class ListFunctions {
 			$outList = implode( $outSep, $outValues );
 		}
 
+		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
+		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
+		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 		$outList = self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 
@@ -1594,9 +1596,6 @@ final class ListFunctions {
 		$subsort = ParserPower::expand( $frame, $params["subsort"] ?? '' );
 		$subsortOptions = ParserPower::expand( $frame, $params["subsortoptions"] ?? '' );
 		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
-		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
-		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
-		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$subsort = self::decodeBool( $subsort );
@@ -1645,7 +1644,11 @@ final class ListFunctions {
 			$outList = implode( $outSep, $values );
 		}
 
+		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
+		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
+		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 		$outList = self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 
@@ -1852,9 +1855,6 @@ final class ListFunctions {
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
 		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
-		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
-		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
-		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
@@ -1900,7 +1900,11 @@ final class ListFunctions {
 			$outList = implode( $outSep, $outValues );
 		}
 
+		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
+		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
+		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 		$outList = self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 
@@ -2327,9 +2331,6 @@ final class ListFunctions {
 		$mergePattern = ParserPower::expand( $frame, $params["mergepattern"] ?? '' );
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
-		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
-		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
-		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
@@ -2375,7 +2376,11 @@ final class ListFunctions {
 			$outList = implode( $outSep, $outValues );
 		}
 
+		$countToken = ParserPower::expand( $frame, $params["counttoken"] ?? '', ParserPower::UNESCAPE );
+		$intro = ParserPower::expand( $frame, $params["intro"] ?? '', ParserPower::UNESCAPE );
+		$outro = ParserPower::expand( $frame, $params["outro"] ?? '', ParserPower::UNESCAPE );
 		$outList = self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
