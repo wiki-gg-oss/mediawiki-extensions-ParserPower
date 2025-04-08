@@ -734,10 +734,9 @@ final class ListFunctions {
 		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$keepValues = $params->get( 'keep' );
@@ -793,7 +792,7 @@ final class ListFunctions {
 
 		$count = count( $outValues );
 		if ( $count === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		if ( $count === 1 ) {
@@ -973,10 +972,9 @@ final class ListFunctions {
 		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$uniqueCS = $params->get( 'uniquecs' );
@@ -1124,10 +1122,9 @@ final class ListFunctions {
 		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$template = $params->get( 'template' );
@@ -1188,7 +1185,7 @@ final class ListFunctions {
 
 		$count = count( $values );
 		if ( $count === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		if ( $count === 1 ) {
@@ -1281,10 +1278,9 @@ final class ListFunctions {
 		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$template = $params->get( 'template' );
@@ -1346,7 +1342,7 @@ final class ListFunctions {
 		}
 
 		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$count = count( $outValues );
@@ -1568,10 +1564,9 @@ final class ListFunctions {
 		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$matchTemplate = $params->get( 'matchtemplate' );
@@ -1624,7 +1619,7 @@ final class ListFunctions {
 		}
 
 		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$count = count( $outValues );
