@@ -977,9 +977,9 @@ final class ListFunctions {
 		$params = ParserPower::arrangeParams( $frame, $params );
 
 		$inList = ParserPower::expand( $frame, $params["list"] ?? '' );
-		$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 
 		if ( $inList === '' ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
@@ -1026,6 +1026,7 @@ final class ListFunctions {
 
 		$count = count( $outValues );
 		if ( $count === 0 ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
@@ -1271,9 +1272,9 @@ final class ListFunctions {
 		$params = ParserPower::arrangeParams( $frame, $params );
 
 		$inList = ParserPower::expand( $frame, $params["list"] ?? '' );
-		$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 
 		if ( $inList === '' ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
@@ -1579,9 +1580,9 @@ final class ListFunctions {
 		$params = ParserPower::arrangeParams( $frame, $params );
 
 		$inList = ParserPower::expand( $frame, $params["list"] ?? '' );
-		$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 
 		if ( $inList === '' ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
@@ -1634,6 +1635,7 @@ final class ListFunctions {
 
 		$count = count( $values );
 		if ( $count === 0 ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
@@ -1839,9 +1841,9 @@ final class ListFunctions {
 		$params = ParserPower::arrangeParams( $frame, $params );
 
 		$inList = ParserPower::expand( $frame, $params["list"] ?? '' );
-		$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 
 		if ( $inList === '' ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
@@ -1890,6 +1892,7 @@ final class ListFunctions {
 
 		$count = count( $outValues );
 		if ( $count === 0 ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
@@ -1946,13 +1949,8 @@ final class ListFunctions {
 			0
 		);
 
-		$count = count( $outValues );
-		if ( $count === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		if ( $count === 1 ) {
-			$outList = $outValues[0];
+		if ( count( $outValues ) < 2 ) {
+			$outList = $outValues[0] ?? '';
 		} else {
 			$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
 			$outList = implode( $outSep, $outValues );
@@ -2012,13 +2010,8 @@ final class ListFunctions {
 			);
 		}
 
-		$count = count( $outValues );
-		if ( $count === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		if ( $count === 1 ) {
-			$outList = $outValues[0];
+		if ( count( $outValues ) < 2 ) {
+			$outList = $outValues[0] ?? '';
 		} else {
 			$outSep = ParserPower::expand( $frame, $params[3] ?? ',\_', ParserPower::UNESCAPE );
 			$outList = implode( $outSep, $outValues );
@@ -2314,9 +2307,8 @@ final class ListFunctions {
 		$params = ParserPower::arrangeParams( $frame, $params );
 
 		$inList = ParserPower::expand( $frame, $params["list"] ?? '' );
-		$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
-
 		if ( $inList === '' ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
@@ -2366,6 +2358,7 @@ final class ListFunctions {
 
 		$count = count( $outValues );
 		if ( $count === 0 ) {
+			$default = ParserPower::expand( $frame, $params["default"] ?? '', ParserPower::UNESCAPE );
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
