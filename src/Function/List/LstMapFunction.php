@@ -68,9 +68,9 @@ final class LstMapFunction extends ListMapFunction {
 
 		$token = $params->get( 2 );
 		$pattern = $params->get( 3 );
-		$sortMode = ListUtils::decodeSortMode( $params->get( 5 ) );
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 6 ) );
 
+		$sortMode = ListUtils::decodeSortMode( $params->get( 5 ) );
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 6 ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {

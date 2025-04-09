@@ -131,9 +131,9 @@ class ListMergeFunction implements ParserFunction {
 		$matchTemplate = $params->get( 'matchtemplate' );
 		$mergeTemplate = $params->get( 'mergetemplate' );
 		$fieldSep = $params->get( 'fieldsep' );
-		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
 
+		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {

@@ -78,11 +78,12 @@ class ListMapFunction implements ParserFunction {
 
 		$template = $params->get( 'template' );
 		$fieldSep = $params->get( 'fieldsep' );
-		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
-		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
 
+		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
+
+		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
 
 		if ( $duplicates & ListUtils::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
