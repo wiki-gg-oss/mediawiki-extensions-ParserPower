@@ -52,9 +52,9 @@ final class LstMapTempFunction extends ListMapFunction {
 		}
 
 		$template = $params->get( 1 );
-		$sortMode = ListUtils::decodeSortMode( $params->get( 4 ) );
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 5 ) );
 
+		$sortMode = ListUtils::decodeSortMode( $params->get( 4 ) );
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 5 ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
