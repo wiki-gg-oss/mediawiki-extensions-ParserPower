@@ -1773,10 +1773,15 @@ final class ListFunctions {
 
 		$template = ParserPower::expand( $frame, $params["template"] ?? '' );
 		$fieldSep = ParserPower::expand( $frame, $params["fieldsep"] ?? '', ParserPower::UNESCAPE );
+
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
 		$sortMode = self::decodeSortMode( $sortMode );
-		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
-		$sortOptions = self::decodeSortOptions( $sortOptions );
+
+		if ( $sortMode !== self::SORTMODE_NONE ) {
+			$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
+			$sortOptions = self::decodeSortOptions( $sortOptions );
+		}
+
 		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
 		$duplicates = self::decodeDuplicates( $duplicates );
 
@@ -1862,10 +1867,14 @@ final class ListFunctions {
 
 		$token = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::UNESCAPE );
 		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x' );
+
 		$sortMode = ParserPower::expand( $frame, $params[5] ?? '' );
 		$sortMode = self::decodeSortMode( $sortMode );
-		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
-		$sortOptions = self::decodeSortOptions( $sortOptions );
+
+		if ( $sortMode !== self::SORTMODE_NONE ) {
+			$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
+			$sortOptions = self::decodeSortOptions( $sortOptions );
+		}
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = self::sortList( $inValues, $sortOptions );
@@ -1912,10 +1921,14 @@ final class ListFunctions {
 		}
 
 		$template = ParserPower::expand( $frame, $params[1] ?? '' );
+
 		$sortMode = ParserPower::expand( $frame, $params[4] ?? '' );
 		$sortMode = self::decodeSortMode( $sortMode );
-		$sortOptions = ParserPower::expand( $frame, $params[5] ?? '' );
-		$sortOptions = self::decodeSortOptions( $sortOptions );
+
+		if ( $sortMode !== self::SORTMODE_NONE ) {
+			$sortOptions = ParserPower::expand( $frame, $params[5] ?? '' );
+			$sortOptions = self::decodeSortOptions( $sortOptions );
+		}
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = self::sortList( $inValues, $sortOptions );
@@ -2208,10 +2221,14 @@ final class ListFunctions {
 		$matchTemplate = ParserPower::expand( $frame, $params["matchtemplate"] ?? '' );
 		$mergeTemplate = ParserPower::expand( $frame, $params["mergetemplate"] ?? '' );
 		$fieldSep = ParserPower::expand( $frame, $params["fieldsep"] ?? '', ParserPower::UNESCAPE );
+
 		$sortMode = ParserPower::expand( $frame, $params["sortmode"] ?? '' );
 		$sortMode = self::decodeSortMode( $sortMode );
-		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
-		$sortOptions = self::decodeSortOptions( $sortOptions );
+
+		if ( $sortMode !== self::SORTMODE_NONE ) {
+			$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
+			$sortOptions = self::decodeSortOptions( $sortOptions );
+		}
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = self::sortList( $inValues, $sortOptions );
