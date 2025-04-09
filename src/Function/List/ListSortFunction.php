@@ -89,12 +89,8 @@ class ListSortFunction implements ParserFunction {
 		$template = $params->get( 'template' );
 		$sortOptions = $params->get( 'sortoptions' );
 		$subsort = ListUtils::decodeBool( $params->get( 'subsort' ) );
-		$subsortOptions = ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) );
+		$subsortOptions = $subsort ? ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) ) : null;
 		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
-
-		if ( !$subsort ) {
-			$subsortOptions = null;
-		}
 
 		if ( $duplicates & ListUtils::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
