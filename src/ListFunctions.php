@@ -1556,10 +1556,16 @@ final class ListFunctions {
 		$template = ParserPower::expand( $frame, $params["template"] ?? '' );
 
 		$sortOptions = ParserPower::expand( $frame, $params["sortoptions"] ?? '' );
+
 		$subsort = ParserPower::expand( $frame, $params["subsort"] ?? '' );
 		$subsort = self::decodeBool( $subsort );
-		$subsortOptions = ParserPower::expand( $frame, $params["subsortoptions"] ?? '' );
-		$subsortOptions = self::decodeSortOptions( $subsortOptions );
+		if ( $subsort ) {
+			$subsortOptions = ParserPower::expand( $frame, $params["subsortoptions"] ?? '' );
+			$subsortOptions = self::decodeSortOptions( $subsortOptions );
+		} else {
+			$subsortOptions = null;
+		}
+
 		$duplicates = ParserPower::expand( $frame, $params["duplicates"] ?? '' );
 		$duplicates = self::decodeDuplicates( $duplicates );
 
@@ -1573,7 +1579,7 @@ final class ListFunctions {
 
 			$pairedValues = self::generateSortKeysByTemplate( $parser, $frame, $values, $template, $fieldSep );
 
-			usort( $pairedValues, [ new SortKeyValueComparer( $sortOptions, $subsort, $subsortOptions ), 'compare' ] );
+			usort( $pairedValues, [ new SortKeyValueComparer( $sortOptions, $subsortOptions ), 'compare' ] );
 			$values = self::discardSortKeys( $pairedValues );
 		} else {
 			$indexToken = ParserPower::expand( $frame, $params["indextoken"] ?? '', ParserPower::UNESCAPE );
@@ -1600,7 +1606,7 @@ final class ListFunctions {
 					$pattern
 				);
 
-				usort( $pairedValues, [ new SortKeyValueComparer( $sortOptions, $subsort, $subsortOptions ), 'compare' ] );
+				usort( $pairedValues, [ new SortKeyValueComparer( $sortOptions, $subsortOptions ), 'compare' ] );
 				$values = self::discardSortKeys( $pairedValues );
 			} else {
 				$sortOptions = self::decodeSortOptions( $sortOptions );
