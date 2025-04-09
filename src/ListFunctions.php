@@ -1191,18 +1191,18 @@ final class ListFunctions {
 		}
 
 		$template = $params->get( 'template' );
-		$sortOptions = $params->get( 'sortoptions' );
-		$subsort = $params->get( 'subsort' );
-		$subsort = self::decodeBool( $subsort );
-		$subsortOptions = $params->get( 'subsortoptions' );
-		$duplicates = $params->get( 'duplicates' );
-		$duplicates = self::decodeDuplicates( $duplicates );
 
+		$sortOptions = $params->get( 'sortoptions' );
+
+		$subsort = self::decodeBool( $params->get( 'subsort' ) );
 		if ( $subsort ) {
-			$subsortOptions = self::decodeSortOptions( $subsortOptions );
+			$subsortOptions = self::decodeSortOptions( $params->get( 'subsortoptions' ) );
 		} else {
 			$subsortOptions = null;
 		}
+
+		$duplicates = $params->get( 'duplicates' );
+		$duplicates = self::decodeDuplicates( $duplicates );
 
 		if ( $duplicates & self::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
