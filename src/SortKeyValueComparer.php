@@ -23,12 +23,11 @@ class SortKeyValueComparer {
 	 * Constructs a ParserPowerSortKeyComparer from the given options.
 	 *
 	 * @param int $sortKeyOptions The options for the key sort.
-	 * @param bool $valueSort true to perform a value sort for values with the same key.
-	 * @param int $valueOptions The options for the value sort.
+	 * @param ?int $valueOptions The options for the value sort.
 	 */
-	public function __construct( $sortKeyOptions, $valueSort, $valueOptions = 0 ) {
+	public function __construct( $sortKeyOptions, $valueOptions = null ) {
 		$this->mSortKeyCompare = $this->getComparer( $sortKeyOptions );
-		if ( $valueSort ) {
+		if ( $valueOptions !== null ) {
 			$this->mValueCompare = $this->getComparer( $valueOptions );
 		}
 	}
