@@ -5,6 +5,7 @@
 namespace MediaWiki\Extension\ParserPower;
 
 use Countable;
+use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Parser\Parser;
@@ -809,20 +810,13 @@ final class ListFunctions {
 			$includeValues = [ ParserPower::unescape( $values ) ];
 		}
 
-		$outValues = [];
+		$operation = new ListInclusionOperation( $includeValues, '', 'remove', $valueCS );
 
-		if ( $valueCS ) {
-			foreach ( $inValues as $inValue ) {
-				if ( in_array( $inValue, $includeValues ) === true ) {
-					$outValues[] = $inValue;
-				}
-			}
-		} else {
-			$includeValues = array_map( 'strtolower', $includeValues );
-			foreach ( $inValues as $inValue ) {
-				if ( in_array( strtolower( $inValue ), $includeValues ) === true ) {
-					$outValues[] = $inValue;
-				}
+		$outValues = [];
+		foreach ( $inValues as $inValue ) {
+			$result = $operation->apply( [ $inValue ] );
+			if ( strtolower( $result ) !== 'remove' ) {
+				$outValues[] = $inValue;
 			}
 		}
 
@@ -845,20 +839,13 @@ final class ListFunctions {
 			$excludeValues = [ ParserPower::unescape( $values ) ];
 		}
 
-		$outValues = [];
+		$operation = new ListInclusionOperation( $excludeValues, 'remove', '', $valueCS );
 
-		if ( $valueCS ) {
-			foreach ( $inValues as $inValue ) {
-				if ( in_array( $inValue, $excludeValues ) === false ) {
-					$outValues[] = $inValue;
-				}
-			}
-		} else {
-			$excludeValues = array_map( 'strtolower', $excludeValues );
-			foreach ( $inValues as $inValue ) {
-				if ( in_array( strtolower( $inValue ), $excludeValues ) === false ) {
-					$outValues[] = $inValue;
-				}
+		$outValues = [];
+		foreach ( $inValues as $inValue ) {
+			$result = $operation->apply( [ $inValue ] );
+			if ( strtolower( $result ) !== 'remove' ) {
+				$outValues[] = $inValue;
 			}
 		}
 
