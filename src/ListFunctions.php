@@ -1323,18 +1323,6 @@ final class ListFunctions {
 	}
 
 	/**
-	 * This function sorts an array according to the parameters supplied.
-	 *
-	 * @param array $values An array of values to sort.
-	 * @param int $options The sorting options parameter value as provided by the user.
-	 * @return array The values in an array of strings.
-	 */
-	private static function sortList( array $values, $options ) {
-		$sorter = new ListSorter( $options );
-		return $sorter->sort( $values );
-	}
-
-	/**
 	 * Generates the sort keys by replacing tokens in a pattern with the fields in the values. This returns an array
 	 * of the values where each element is an array with the sort key in element 0 and the value in element 1.
 	 *
@@ -1571,7 +1559,8 @@ final class ListFunctions {
 			);
 		} else {
 			$sortOptions = self::decodeSortOptions( $sortOptions );
-			$values = self::sortList( $values, $sortOptions );
+			$sorter = new ListSorter( $sortOptions );
+			$values = $sorter->sort( $values );
 		}
 
 		if ( count( $values ) === 0 ) {
@@ -1604,9 +1593,10 @@ final class ListFunctions {
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
+		$sorter = new ListSorter( $sortOptions );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
-		$values = self::sortList( $values, $sortOptions );
+		$values = $sorter->sort( $values );
 		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $values ) );
 	}
 
@@ -1657,6 +1647,8 @@ final class ListFunctions {
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
+		$sorter = new ListSorter( $sortOptions );
+
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
 		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
@@ -1664,7 +1656,7 @@ final class ListFunctions {
 		}
 
 		if ( ( $indexToken !== '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_PRE ) {
-			$inValues = self::sortList( $inValues, $sortOptions );
+			$inValues = $sorter->sort( $inValues );
 		}
 
 		$outValues = [];
@@ -1708,7 +1700,7 @@ final class ListFunctions {
 		}
 
 		if ( ( $indexToken === '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_POST ) {
-			$outValues = self::sortList( $outValues, $sortOptions );
+			$outValues = $sorter->sort( $outValues );
 		}
 
 		if ( count( $outValues ) === 0 ) {
@@ -1763,13 +1755,15 @@ final class ListFunctions {
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
+		$sorter = new ListSorter( $sortOptions );
+
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
 		}
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
-			$inValues = self::sortList( $inValues, $sortOptions );
+			$inValues = $sorter->sort( $inValues );
 		}
 
 		$outValues = [];
@@ -1778,7 +1772,7 @@ final class ListFunctions {
 		}
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
-			$outValues = self::sortList( $outValues, $sortOptions );
+			$outValues = $sorter->sort( $outValues );
 		}
 
 		if ( $duplicates & self::DUPLICATES_POSTSTRIP ) {
@@ -2183,10 +2177,12 @@ final class ListFunctions {
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
+		$sorter = new ListSorter( $sortOptions );
+
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
-			$inValues = self::sortList( $inValues, $sortOptions );
+			$inValues = $sorter->sort( $inValues );
 		}
 
 		if ( $tokenSep !== '' ) {
@@ -2211,7 +2207,7 @@ final class ListFunctions {
 		);
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
-			$outValues = self::sortList( $outValues, $sortOptions );
+			$outValues = $sorter->sort( $outValues );
 		}
 
 		if ( count( $outValues ) === 0 ) {
@@ -2264,10 +2260,12 @@ final class ListFunctions {
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
+		$sorter = new ListSorter( $sortOptions );
+
 		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
-			$inValues = self::sortList( $inValues, $sortOptions );
+			$inValues = $sorter->sort( $inValues );
 		}
 
 		$matchParams = [ $parser, $frame, null, null, $matchTemplate, $fieldSep ];
@@ -2284,7 +2282,7 @@ final class ListFunctions {
 		);
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
-			$outValues = self::sortList( $outValues, $sortOptions );
+			$outValues = $sorter->sort( $outValues );
 		}
 
 		if ( count( $outValues ) === 0 ) {
