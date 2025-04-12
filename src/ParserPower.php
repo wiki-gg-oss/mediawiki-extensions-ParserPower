@@ -247,92 +247,16 @@ class ParserPower {
 	/**
 	 * Replaces the indicated token in the pattern with the input value.
 	 *
-	 * @param string $inValue The value to change into one or more template parameters.
+	 * @param string $value The value to change into one or more template parameters.
 	 * @param string $token The token to replace.
 	 * @param string $pattern Pattern containing token to be replaced with the input value.
 	 * @return string The result of the token replacement within the pattern.
 	 */
-	public static function applyPattern( $inValue, $token, $pattern ) {
-		return self::applyPatternWithIndex( $inValue, '', 0, $token, $pattern );
-	}
-
-	/**
-	 * Replaces the indicated index token in the pattern with the given index and the token in the
-	 * pattern with the input value.
-	 *
-	 * @param string $inValue The value to change into one or more template parameters.
-	 * @param string $indexToken The token to replace with the index, or null/empty value to skip index replacement.
-	 * @param int $index The numeric index of this value.
-	 * @param string $token The token to replace.
-	 * @param string $pattern Pattern containing token to be replaced with the input value.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	public static function applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern ) {
+	public static function applyPattern( $value, $token, $pattern ) {
 		if ( $pattern === '' ) {
-			return $inValue;
+			return $value;
+		} else {
+			return str_replace( $token, $value, $pattern );
 		}
-
-		$outValue = $pattern;
-		if ( $indexToken !== null && $indexToken !== '' ) {
-			$outValue = str_replace( $indexToken, strval( $index ), $outValue );
-		}
-		if ( $token !== null && $token !== '' ) {
-			$outValue = str_replace( $token, $inValue, $outValue );
-		}
-
-		return $outValue;
-	}
-
-	/**
-	 * Breaks the input value into fields and then replaces the indicated tokens in the pattern with those field values.
-	 *
-	 * @param string $inValue The value to change into one or more template parameters
-	 * @param string $fieldSep The delimiter separating the fields in the value.
-	 * @param array $tokens The list of tokens to replace.
-	 * @param int $tokenCount The number of tokens.
-	 * @param string $pattern Pattern containing tokens to be replaced by field values.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	public static function applyFieldPattern( $inValue, $fieldSep, array $tokens, $tokenCount, $pattern ) {
-		return self::applyFieldPatternWithIndex( $inValue, $fieldSep, '', 0, $tokens, $tokenCount, $pattern );
-	}
-
-	/**
-	 * Replaces the index token with the given index, and then breaks the input value into fields and then replaces the
-	 * indicated tokens in the pattern with those field values.
-	 *
-	 * @param string $inValue The value to change into one or more template parameters
-	 * @param string $fieldSep The delimiter separating the fields in the value.
-	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
-	 * @param int $index The numeric index of this value.
-	 * @param array $tokens The list of tokens to replace.
-	 * @param int $tokenCount The number of tokens.
-	 * @param string $pattern Pattern containing tokens to be replaced by field values.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	public static function applyFieldPatternWithIndex(
-		$inValue,
-		$fieldSep,
-		$indexToken,
-		$index,
-		array $tokens,
-		$tokenCount,
-		$pattern
-	) {
-		if ( $pattern === '' ) {
-			return $inValue;
-		}
-
-		$outValue = $pattern;
-		if ( $indexToken !== null && $indexToken !== '' ) {
-			$outValue = str_replace( $indexToken, strval( $index ), $outValue );
-		}
-		$fields = explode( $fieldSep, $inValue, $tokenCount );
-		$fieldCount = count( $fields );
-		for ( $i = 0; $i < $tokenCount; $i++ ) {
-			$outValue = str_replace( $tokens[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
-		}
-
-		return $outValue;
 	}
 }
