@@ -37,9 +37,9 @@ class ListSorter {
 	 * @param ?int $subSortOptions Options for the sub-value sort, null to not sort sub-values.
 	 */
 	public function __construct( int $sortOptions, ?int $subSortOptions = null ) {
-		$this->valueCompare = $this->getComparer( $sortOptions );
+		$this->valueCompare = self::getComparer( $sortOptions );
 		if ( $subSortOptions !== null ) {
-			$this->subValueCompare = $this->getComparer( $subSortOptions );
+			$this->subValueCompare = self::getComparer( $subSortOptions );
 		}
 	}
 
@@ -83,12 +83,12 @@ class ListSorter {
 	}
 
 	/**
-	 * Get Comparer class
+	 * Get the comparison function associated to a given set of sort options.
 	 *
-	 * @param int $options
-	 * @return callable
+	 * @param int $options Options for a value or sub-value sort.
+	 * @return callable A comparison function.
 	 */
-	private function getComparer( int $options ): callable {
+	private static function getComparer( int $options ): callable {
 		if ( $options & self::NUMERIC ) {
 			if ( $options & self::DESCENDING ) {
 				return [ ComparisonUtils::class, 'numericrstrcmp' ];
