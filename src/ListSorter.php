@@ -4,7 +4,11 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
-class ListSorter {
+/**
+ * Sorting method for lists of values, optionally paired with sub-values.
+ */
+final class ListSorter {
+
 	/**
 	 * Flag for numeric sorting, instead of alphanumeric.
 	 */
@@ -46,7 +50,7 @@ class ListSorter {
 	/**
 	 * Sorts a list of values.
 	 *
-	 * @param array $values Values to sort.
+	 * @param array &$values Values to sort.
 	 * @return array The sorted list of values.
 	 */
 	public function sort( array &$values ): array {
@@ -57,7 +61,7 @@ class ListSorter {
 	/**
 	 * Sorts a list of pairs of values.
 	 *
-	 * @param array $pairs Value pairs to sort.
+	 * @param array &$pairs Value pairs to sort.
 	 * @return array The sorted list of value pairs.
 	 */
 	public function sortPairs( array &$pairs ): array {
