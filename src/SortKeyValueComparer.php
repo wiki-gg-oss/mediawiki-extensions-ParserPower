@@ -15,7 +15,7 @@ class SortKeyValueComparer {
 	/**
 	 * The function to use to compare values, if any.
 	 *
-	 * @var callable
+	 * @var ?callable
 	 */
 	private $mValueCompare = null;
 
@@ -23,12 +23,11 @@ class SortKeyValueComparer {
 	 * Constructs a ParserPowerSortKeyComparer from the given options.
 	 *
 	 * @param int $sortKeyOptions The options for the key sort.
-	 * @param bool $valueSort true to perform a value sort for values with the same key.
-	 * @param int $valueOptions The options for the value sort.
+	 * @param ?int $valueOptions The options for the value sort, null to not sort values.
 	 */
-	public function __construct( $sortKeyOptions, $valueSort, $valueOptions = 0 ) {
+	public function __construct( $sortKeyOptions, $valueOptions = null ) {
 		$this->mSortKeyCompare = $this->getComparer( $sortKeyOptions );
-		if ( $valueSort ) {
+		if ( $valueOptions !== null ) {
 			$this->mValueCompare = $this->getComparer( $valueOptions );
 		}
 	}
@@ -45,7 +44,7 @@ class SortKeyValueComparer {
 		$result = call_user_func( $this->mSortKeyCompare, $pair1[0], $pair2[0] );
 
 		if ( $result === 0 ) {
-			if ( $this->mValueCompare ) {
+			if ( $this->mValueCompare !== null ) {
 				return call_user_func( $this->mValueCompare, $pair1[1], $pair2[1] );
 			} else {
 				return 0;

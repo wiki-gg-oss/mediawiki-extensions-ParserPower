@@ -1488,8 +1488,7 @@ final class ListFunctions {
 	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
 	 * @param int $sortOptions Options for the key sort as handled by #listsort.
-	 * @param bool $subsort Whether to perform a value sort where sort keys are equal.
-	 * @param int $subsortOptions Options for the value sort as handled by #listsort.
+	 * @param ?int $subsortOptions Options for the value sort, null to not sort values.
 	 * @return array An array where each value has been paired with a sort key in a two-element array.
 	 */
 	private static function sortListByKeys(
@@ -1503,7 +1502,6 @@ final class ListFunctions {
 		$tokens,
 		$pattern,
 		$sortOptions,
-		$subsort,
 		$subsortOptions
 	) {
 		if ( $template !== '' ) {
@@ -1521,7 +1519,7 @@ final class ListFunctions {
 			);
 		}
 
-		$comparer = new SortKeyValueComparer( $sortOptions, $subsort, $subsortOptions );
+		$comparer = new SortKeyValueComparer( $sortOptions, $subsortOptions );
 
 		usort( $pairedValues, [ $comparer, 'compare' ] );
 
@@ -1563,8 +1561,14 @@ final class ListFunctions {
 		}
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+
 		$subsort = self::decodeBool( $subsort );
-		$subsortOptions = self::decodeSortOptions( $subsortOptions );
+		if ( $subsort ) {
+			$subsortOptions = self::decodeSortOptions( $subsortOptions );
+		} else {
+			$subsortOptions = null;
+		}
+
 		$duplicates = self::decodeDuplicates( $duplicates );
 
 		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
@@ -1589,7 +1593,6 @@ final class ListFunctions {
 				$tokens ?? null,
 				$pattern,
 				$sortOptions,
-				$subsort,
 				$subsortOptions
 			);
 		} else {
