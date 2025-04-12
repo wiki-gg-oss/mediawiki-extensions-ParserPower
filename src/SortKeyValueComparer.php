@@ -5,52 +5,46 @@
 namespace MediaWiki\Extension\ParserPower;
 
 class SortKeyValueComparer {
+
 	/**
-	 * The function to use to compare sort keys.
+	 * Function to use to compare values.
 	 *
 	 * @var callable
 	 */
-	private $mSortKeyCompare = [ ComparisonUtils::class, 'numericstrcmp' ];
+	private $valueCompare;
 
 	/**
-	 * The function to use to compare values, if any.
+	 * Function to use to compare sub-values, if any.
 	 *
 	 * @var ?callable
 	 */
-	private $mValueCompare = null;
+	private $subValueCompare = null;
 
 	/**
-	 * Constructs a ParserPowerSortKeyComparer from the given options.
-	 *
-	 * @param int $sortKeyOptions The options for the key sort.
-	 * @param ?int $valueOptions The options for the value sort, null to not sort values.
+	 * @param int $sortOptions Options for the value sort.
+	 * @param ?int $subSortOptions Options for the sub-value sort, null to not sort sub-values.
 	 */
-	public function __construct( $sortKeyOptions, $valueOptions = null ) {
-		$this->mSortKeyCompare = $this->getComparer( $sortKeyOptions );
-		if ( $valueOptions !== null ) {
-			$this->mValueCompare = $this->getComparer( $valueOptions );
+	public function __construct( int $sortOptions, ?int $subSortOptions = null ) {
+		$this->valueCompare = $this->getComparer( $sortOptions );
+		if ( $subSortOptions !== null ) {
+			$this->subValueCompare = $this->getComparer( $subSortOptions );
 		}
 	}
 
 	/**
-	 * Compares a sort key-value pair where each pair is in an array with the sort key in element 0 and the value in
-	 * element 1.
+	 * Compares two pairs of values, with the first one given priority.
 	 *
-	 * @param array $pair1 A sort-key value pair to compare to $pair2
-	 * @param array $pair2 A sort-key value pair to compare to $pair1
-	 * @return int Number > 0 if str1 is less than str2; Number < 0 if str1 is greater than str2; 0 if they are equal.
+	 * @param array $pair1 Value pair to compare to $pair2.
+	 * @param array $pair2 Value pair to compare to $pair1.
+	 * @return int Number > 0 if $pair1 is less than $pair2, Number < 0 if $pair1 is greater than $pair2, or 0 if they are equal.
 	 */
-	public function compare( array $pair1, array $pair2 ) {
-		$result = call_user_func( $this->mSortKeyCompare, $pair1[0], $pair2[0] );
+	public function compare( array $pair1, array $pair2 ): int {
+		$result = call_user_func( $this->valueCompare, $pair1[0], $pair2[0] );
 
-		if ( $result === 0 ) {
-			if ( $this->mValueCompare !== null ) {
-				return call_user_func( $this->mValueCompare, $pair1[1], $pair2[1] );
-			} else {
-				return 0;
-			}
-		} else {
+		if ( $result !== 0 || $this->subValueCompare === null ) {
 			return $result;
+		} else {
+			return call_user_func( $this->subValueCompare, $pair1[1], $pair2[1] );
 		}
 	}
 
@@ -58,9 +52,9 @@ class SortKeyValueComparer {
 	 * Get Comparer class
 	 *
 	 * @param int $options
-	 * @return void
+	 * @return callable
 	 */
-	private function getComparer( $options ) {
+	private function getComparer( int $options ): callable {
 		if ( $options & ListFunctions::SORT_NUMERIC ) {
 			if ( $options & ListFunctions::SORT_DESC ) {
 				return [ ComparisonUtils::class, 'numericrstrcmp' ];
