@@ -5,6 +5,7 @@
 namespace MediaWiki\Extension\ParserPower;
 
 use Countable;
+use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
@@ -865,37 +866,23 @@ final class ListFunctions {
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
 			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
 			$tokenCount = count( $tokens );
-			$index = 1;
-			foreach ( $inValues as $value ) {
+			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+			foreach ( $inValues as $i => $value ) {
 				if ( $value !== '' ) {
-					$result = self::applyFieldPatternWithIndex(
-						$value,
-						$fieldSep,
-						$indexToken,
-						$index,
-						$tokens,
-						$tokenCount,
-						$pattern
-					);
-					$result = ParserPower::unescape( $result );
-					$result = ParserPower::evaluateUnescaped( $parser, $frame, $result, ParserPower::WITH_ARGS );
+					$result = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $i + 1 );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
-					++$index;
 				}
 			}
 		} else {
-			$index = 1;
-			foreach ( $inValues as $value ) {
+			$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ], $indexToken );
+			foreach ( $inValues as $i => $value ) {
 				if ( $value !== '' ) {
-					$result = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$result = ParserPower::unescape( $result );
-					$result = ParserPower::evaluateUnescaped( $parser, $frame, $result, ParserPower::WITH_ARGS );
+					$result = $operation->apply( [ $value ], $i + 1 );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
-					++$index;
 				}
 			}
 		}
@@ -1137,39 +1124,25 @@ final class ListFunctions {
 		$outValues = [];
 		if ( ( isset( $tokens ) && is_array( $tokens ) ) ) {
 			$tokenCount = count( $tokens );
-			$index = 1;
-			foreach ( $inValues as $value ) {
+			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+			foreach ( $inValues as $i => $value ) {
 				if ( $value !== '' ) {
-					$key = self::applyFieldPatternWithIndex(
-						$value,
-						$fieldSep,
-						$indexToken,
-						$index,
-						$tokens,
-						$tokenCount,
-						$pattern
-					);
-					$key = ParserPower::unescape( $key );
-					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
+					$key = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $i + 1 );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
 					}
-					++$index;
 				}
 			}
 		} else {
-			$index = 1;
-			foreach ( $inValues as $value ) {
+			$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ], $indexToken );
+			foreach ( $inValues as $i => $value ) {
 				if ( $value !== '' ) {
-					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$key = ParserPower::unescape( $key );
-					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
+					$key = $operation->apply( [ $value ], $i + 1 );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
 					}
-					++$index;
 				}
 			}
 		}
@@ -1324,33 +1297,19 @@ final class ListFunctions {
 		$pairedValues = [];
 		if ( ( isset( $tokens ) && is_array( $tokens ) ) ) {
 			$tokenCount = count( $tokens );
-			$index = 1;
-			foreach ( $values as $value ) {
+			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+			foreach ( $values as $i => $value ) {
 				if ( $value !== '' ) {
-					$key = self::applyFieldPatternWithIndex(
-						$value,
-						$fieldSep,
-						$indexToken,
-						$index,
-						$tokens,
-						$tokenCount,
-						$pattern
-					);
-					$key = ParserPower::unescape( $key );
-					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
+					$key = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $i + 1 );
 					$pairedValues[] = [ $key, $value ];
-					++$index;
 				}
 			}
 		} else {
-			$index = 1;
-			foreach ( $values as $value ) {
+			$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ], $indexToken );
+			foreach ( $values as $i => $value ) {
 				if ( $value !== '' ) {
-					$key = self::applyPatternWithIndex( $value, $indexToken, $index, $token, $pattern );
-					$key = ParserPower::unescape( $key );
-					$key = ParserPower::evaluateUnescaped( $parser, $frame, $key, ParserPower::WITH_ARGS );
+					$key = $operation->apply( [ $value ], $i + 1 );
 					$pairedValues[] = [ $key, $value ];
-					++$index;
 				}
 			}
 		}
@@ -1632,36 +1591,25 @@ final class ListFunctions {
 		}
 
 		$outValues = [];
-		$index = 1;
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
 			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
 			$tokenCount = count( $tokens );
-			foreach ( $inValues as $inValue ) {
+			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+			foreach ( $inValues as $i => $inValue ) {
 				if ( $inValue !== '' ) {
-					$outValue = self::applyFieldPatternWithIndex(
-						$inValue,
-						$fieldSep,
-						$indexToken,
-						$index,
-						$tokens,
-						$tokenCount,
-						$pattern
-					);
-					$outValue = ParserPower::unescape( $outValue );
+					$outValue = $operation->apply( explode( $fieldSep, $inValue, $tokenCount ), $i + 1 );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
-						++$index;
 					}
 				}
 			}
 		} else {
-			foreach ( $inValues as $inValue ) {
+			$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ], $indexToken );
+			foreach ( $inValues as $i => $inValue ) {
 				if ( $inValue !== '' ) {
-					$outValue = self::applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern );
-					$outValue = ParserPower::unescape( $outValue );
+					$outValue = $operation->apply( [ $inValue ], $i + 1 );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
-						++$index;
 					}
 				}
 			}
@@ -1975,36 +1923,22 @@ final class ListFunctions {
 	) {
 		$tokenCount1 = count( $tokens1 );
 		$tokenCount2 = count( $tokens2 );
+		$operation = new PatternOperation( $parser, $frame, $pattern, [ ...$tokens1, ...$tokens2 ] );
 
 		if ( $inValue1 === '' || $inValue2 === '' ) {
 			return;
 		}
 
-		$outValue = $pattern;
 		if ( $fieldSep === '' ) {
-			if ( $inValue1 !== '' ) {
-				$outValue = str_replace( $tokens1[0], $inValue1, $outValue );
-			}
-			if ( $inValue2 !== '' ) {
-				$outValue = str_replace( $tokens2[0], $inValue2, $outValue );
-			}
+			$fields = [ $inValue1, $tokenCount1 => $inValue2 ];
 		} else {
-			if ( $inValue1 !== '' ) {
-				$fields = explode( $fieldSep, $inValue1, $tokenCount1 );
-				$fieldCount = count( $fields );
-				for ( $i = 0; $i < $tokenCount1; $i++ ) {
-					$outValue = str_replace( $tokens1[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
-				}
-			}
-			if ( $inValue2 !== '' ) {
-				$fields = explode( $fieldSep, $inValue2, $tokenCount2 );
-				$fieldCount = count( $fields );
-				for ( $i = 0; $i < $tokenCount2; $i++ ) {
-					$outValue = str_replace( $tokens2[$i], ( $i < $fieldCount ) ? $fields[$i] : '', $outValue );
-				}
+			$fields = explode( $fieldSep, $inValue1, $tokenCount1 );
+			foreach ( explode( $fieldSep, $inValue1, $tokenCount2 ) as $i => $field ) {
+				$fields[$tokenCount1 + $i] = $field;
 			}
 		}
-		return $outValue;
+
+		return $operation->apply( $fields );
 	}
 
 	/**
@@ -2077,16 +2011,12 @@ final class ListFunctions {
 						$doMerge = $checkedPairs[$value1][$value2];
 					} else {
 						$doMerge = call_user_func_array( $applyFunction, $matchParams );
-						$doMerge = ParserPower::unescape( $doMerge );
-						$doMerge = ParserPower::evaluateUnescaped( $parser, $frame, $doMerge, ParserPower::WITH_ARGS );
 						$doMerge = self::decodeBool( $doMerge );
 						$checkedPairs[$value1][$value2] = $doMerge;
 					}
 
 					if ( $doMerge ) {
 						$value1 = call_user_func_array( $applyFunction, $mergeParams );
-						$value1 = ParserPower::unescape( $value1 );
-						$value1 = ParserPower::evaluateUnescaped( $parser, $frame, $value1, ParserPower::WITH_ARGS );
 						$matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $value1;
 						$shift += 1;
 					} else {
