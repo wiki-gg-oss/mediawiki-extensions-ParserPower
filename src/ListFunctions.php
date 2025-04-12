@@ -664,80 +664,6 @@ final class ListFunctions {
 	}
 
 	/**
-	 * Replaces the indicated token in the pattern with the input value.
-	 *
-	 * @param string $inValue The value to change into one or more template parameters.
-	 * @param string $token The token to replace.
-	 * @param string $pattern Pattern containing token to be replaced with the input value.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	private static function applyPattern( $inValue, $token, $pattern ) {
-		return ParserPower::applyPattern( $inValue, $token, $pattern );
-	}
-
-	/**
-	 * Replaces the indicated index token in the pattern with the given index and the token
-	 * in the pattern with the input value.
-	 *
-	 * @param string $inValue The value to change into one or more template parameters.
-	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
-	 * @param int $index The numeric index of this value.
-	 * @param string $token The token to replace.
-	 * @param string $pattern Pattern containing token to be replaced with the input value.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	private static function applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern ) {
-		return ParserPower::applyPatternWithIndex( $inValue, $indexToken, $index, $token, $pattern );
-	}
-
-	/**
-	 * Breaks the input value into fields and then replaces the indicated tokens in the pattern with those field values.
-	 *
-	 * @param string $inValue The value to change into one or more template parameters
-	 * @param string $fieldSep The delimiter separating the fields in the value.
-	 * @param array $tokens The list of tokens to replace.
-	 * @param int $tokenCount The number of tokens.
-	 * @param string $pattern Pattern containing tokens to be replaced by field values.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	private static function applyFieldPattern( $inValue, $fieldSep, array $tokens, $tokenCount, $pattern ) {
-		return ParserPower::applyFieldPattern( $inValue, $fieldSep, $tokens, $tokenCount, $pattern );
-	}
-
-	/**
-	 * Replaces the index token with the given index, and then breaks the input value into fields and then replaces the
-	 * indicated tokens in the pattern with those field values.
-	 *
-	 * @param string $inValue The value to change into one or more template parameters
-	 * @param string $fieldSep The delimiter separating the fields in the value.
-	 * @param int $indexToken The token to replace with the index, or null/empty value to skip index replacement.
-	 * @param int $index The numeric index of this value.
-	 * @param array $tokens The list of tokens to replace.
-	 * @param int $tokenCount The number of tokens.
-	 * @param string $pattern Pattern containing tokens to be replaced by field values.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	private static function applyFieldPatternWithIndex(
-		$inValue,
-		$fieldSep,
-		$indexToken,
-		$index,
-		array $tokens,
-		$tokenCount,
-		$pattern
-	) {
-		return ParserPower::applyFieldPatternWithIndex(
-			$inValue,
-			$fieldSep,
-			$indexToken,
-			$index,
-			$tokens,
-			$tokenCount,
-			$pattern
-		);
-	}
-
-	/**
 	 * Wraps the given intro and outro around the given content after replacing a given count token
 	 * in the intro or outro with the given count.
 	 *
@@ -754,44 +680,6 @@ final class ListFunctions {
 			$outro = str_replace( $countToken, (string)$count, $outro );
 		}
 		return $intro . $content . $outro;
-	}
-
-	/**
-	 * Turns the input value into one or more template parameters, processes the templates with those parameters, and
-	 * returns the result.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param string $inValue The value to change into one or more template parameters.
-	 * @param string $template The template to pass the parameters to.
-	 * @param string $fieldSep The delimiter separating the parameter values.
-	 * @return string The result of the template.
-	 */
-	private static function applyTemplate( Parser $parser, PPFrame $frame, $inValue, $template, $fieldSep ) {
-		if ( $inValue === '' ) {
-			return;
-		}
-
-		if ( $fieldSep === '' ) {
-			$outValue = $frame->virtualBracketedImplode( '{{', '|', '}}', $template, '1=' . $inValue );
-		} else {
-			$inFields = explode( $fieldSep, $inValue );
-			$outFields = [];
-			$outFields[] = $template;
-			$count = ( is_array( $inFields ) || $inFields instanceof Countable ) ? count( $inFields ) : 0;
-			for ( $i = 0; $i < $count; $i++ ) {
-				$outFields[] = ( $i + 1 ) . '=' . $inFields[$i];
-			}
-			$outValue = $frame->virtualBracketedImplode( '{{', '|', '}}', $outFields );
-		}
-
-		if ( $outValue instanceof PPNode_Hash_Array ) {
-			$outValue = $outValue->value;
-		}
-		$outValue = implode( '', $outValue );
-
-		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
-		return ParserPower::expand( $frame, $outValue );
 	}
 
 	/**
