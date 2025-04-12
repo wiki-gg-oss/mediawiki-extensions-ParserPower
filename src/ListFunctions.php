@@ -10,7 +10,6 @@ use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Parser\PPNode_Hash_Array;
 
 final class ListFunctions {
 	/**

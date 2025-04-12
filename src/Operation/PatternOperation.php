@@ -18,7 +18,7 @@ final class PatternOperation implements WikitextOperation {
 	 * @param PPFrame $frame Parser frame object.
 	 * @param string $pattern Pattern to apply, as variable-free escaped wikitext.
 	 * @param array $tokens Tokens to replace with value fields in the pattern.
-	 * @param string $indexToken Token to replace with the 1-based value index, empty in not provided.
+	 * @param string $indexToken Token to replace with the 1-based value index, empty if not provided.
 	 */
 	public function __construct(
 		private readonly Parser $parser,
