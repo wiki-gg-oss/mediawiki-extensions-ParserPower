@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
-class SortKeyValueComparer {
+class ListSorter {
 
 	/**
 	 * Function to use to compare values.
@@ -32,13 +32,24 @@ class SortKeyValueComparer {
 	}
 
 	/**
+	 * Sorts a list of pairs of values.
+	 *
+	 * @param array $pairs Value pairs to sort.
+	 * @return array The sorted list of value pairs.
+	 */
+	public function sortPairs( array &$pairs ): array {
+		usort( $pairs, [ $this, 'comparePairs' ] );
+		return $pairs;
+	}
+
+	/**
 	 * Compares two pairs of values, with the first one given priority.
 	 *
 	 * @param array $pair1 Value pair to compare to $pair2.
 	 * @param array $pair2 Value pair to compare to $pair1.
 	 * @return int Number > 0 if $pair1 is less than $pair2, Number < 0 if $pair1 is greater than $pair2, or 0 if they are equal.
 	 */
-	public function compare( array $pair1, array $pair2 ): int {
+	private function comparePairs( array $pair1, array $pair2 ): int {
 		$result = call_user_func( $this->valueCompare, $pair1[0], $pair2[0] );
 
 		if ( $result !== 0 || $this->subValueCompare === null ) {

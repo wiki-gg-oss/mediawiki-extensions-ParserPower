@@ -1519,9 +1519,8 @@ final class ListFunctions {
 			);
 		}
 
-		$comparer = new SortKeyValueComparer( $sortOptions, $subsortOptions );
-
-		usort( $pairedValues, [ $comparer, 'compare' ] );
+		$sorter = new ListSorter( $sortOptions, $subsortOptions );
+		$sorter->sortPairs( $pairedValues );
 
 		return self::discardSortKeys( $pairedValues );
 	}
