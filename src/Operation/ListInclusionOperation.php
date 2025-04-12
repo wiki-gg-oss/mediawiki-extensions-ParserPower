@@ -4,10 +4,6 @@
 
 namespace MediaWiki\Extension\ParserPower\Operation;
 
-use MediaWiki\Extension\ParserPower\ParserPower;
-use MediaWiki\Parser\Parser;
-use MediaWiki\Parser\PPFrame;
-
 /**
  * List value operation that checks whether the list value is in a list.
  */
@@ -15,6 +11,8 @@ final class ListInclusionOperation implements WikitextOperation {
 
 	/**
 	 * Array with values to look for as keys.
+	 *
+	 * @var array
 	 */
 	private array $valueSet;
 

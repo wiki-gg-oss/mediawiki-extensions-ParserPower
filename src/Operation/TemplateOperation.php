@@ -9,7 +9,7 @@ use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
 /**
- * List value operation that transcludes a template, passing the list valuen fields as indexed arguments.
+ * List value operation that transcludes a template, passing the list value fields as indexed parameters.
  */
 final class TemplateOperation implements WikitextOperation {
 
