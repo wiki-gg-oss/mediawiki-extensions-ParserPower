@@ -6,6 +6,7 @@ namespace MediaWiki\Extension\ParserPower;
 
 use Countable;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
+use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
@@ -926,11 +927,22 @@ final class ListFunctions {
 	 * @return array The array stripped of any values with non-unique keys.
 	 */
 	private static function filterFromListByTemplate( Parser $parser, PPFrame $frame, array $inValues, $template, $fieldSep ) {
+		$operation = new TemplateOperation( $parser, $frame, $template );
+
 		$outValues = [];
-		foreach ( $inValues as $value ) {
-			$result = self::applyTemplate( $parser, $frame, $value, $template, $fieldSep );
-			if ( $value !== '' && strtolower( $result ) !== 'remove' ) {
-				$outValues[] = $value;
+		if ( $fieldSep === '' ) {
+			foreach ( $inValues as $value ) {
+				$result = $operation->apply( [ $value ] );
+				if ( $value !== '' && strtolower( $result ) !== 'remove' ) {
+					$outValues[] = $value;
+				}
+			}
+		} else {
+			foreach ( $inValues as $value ) {
+				$result = $operation->apply( explode( $fieldSep, $value ) );
+				if ( $value !== '' && strtolower( $result ) !== 'remove' ) {
+					$outValues[] = $value;
+				}
 			}
 		}
 
@@ -1194,13 +1206,25 @@ final class ListFunctions {
 		$template,
 		$fieldSep
 	) {
+		$operation = new TemplateOperation( $parser, $frame, $template );
+
 		$previousKeys = [];
 		$outValues = [];
-		foreach ( $inValues as $value ) {
-			$key = self::applyTemplate( $parser, $frame, $value, $template, $fieldSep );
-			if ( !in_array( $key, $previousKeys ) ) {
-				$previousKeys[] = $key;
-				$outValues[] = $value;
+		if ( $fieldSep === '' ) {
+			foreach ( $inValues as $value ) {
+				$key = $operation->apply( [ $value ] );
+				if ( !in_array( $key, $previousKeys ) ) {
+					$previousKeys[] = $key;
+					$outValues[] = $value;
+				}
+			}
+		} else {
+			foreach ( $inValues as $value ) {
+				$key = $operation->apply( explode( $fieldSep, $value ) );
+				if ( !in_array( $key, $previousKeys ) ) {
+					$previousKeys[] = $key;
+					$outValues[] = $value;
+				}
 			}
 		}
 
@@ -1392,9 +1416,17 @@ final class ListFunctions {
 	 * @return array An array where each value has been paired with a sort key in a two-element array.
 	 */
 	private static function generateSortKeysByTemplate( Parser $parser, PPFrame $frame, array $values, $template, $fieldSep ) {
+		$operation = new TemplateOperation( $parser, $frame, $template );
+
 		$pairedValues = [];
-		foreach ( $values as $value ) {
-			$pairedValues[] = [ self::applyTemplate( $parser, $frame, $value, $template, $fieldSep ), $value ];
+		if ( $fieldSep === '' ) {
+			foreach ( $values as $value ) {
+				$pairedValues[] = [ $operation->apply( [ $value ] ), $value ];
+			}
+		} else {
+			foreach ( $values as $value ) {
+				$pairedValues[] = [ $operation->apply( explode( $fieldSep, $value ) ), $value ];
+			}
 		}
 
 		return $pairedValues;
@@ -1743,9 +1775,17 @@ final class ListFunctions {
 			$inValues = self::sortList( $inValues, $sortOptions );
 		}
 
+		$operation = new TemplateOperation( $parser, $frame, $template );
+
 		$outValues = [];
-		foreach ( $inValues as $inValue ) {
-			$outValues[] = self::applyTemplate( $parser, $frame, $inValue, $template, $fieldSep );
+		if ( $fieldSep === '' ) {
+			foreach ( $inValues as $inValue ) {
+				$outValues[] = $operation->apply( [ $inValue ] );
+			}
+		} else {
+			foreach ( $inValues as $inValue ) {
+				$outValues[] = $operation->apply( explode( $fieldSep, $inValue ) );
+			}
 		}
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
@@ -2018,10 +2058,13 @@ final class ListFunctions {
 		$template,
 		$fieldSep
 	) {
+		$operation = new TemplateOperation( $parser, $frame, $template );
+
 		if ( $fieldSep === '' ) {
-			$fieldSep = '|';
+			return $operation->apply( [ $inValue1, $inValue2 ] );
+		} else {
+			return $operation->apply( [ ...explode( $fieldSep, $inValue1 ), ...explode( $fieldSep, $inValue2 ) ] );
 		}
-		return self::applyTemplate( $parser, $frame, $inValue1 . $fieldSep . $inValue2, $template, $fieldSep );
 	}
 
 	/**
