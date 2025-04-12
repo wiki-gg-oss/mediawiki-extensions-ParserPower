@@ -32,6 +32,17 @@ class ListSorter {
 	}
 
 	/**
+	 * Sorts a list of values.
+	 *
+	 * @param array $values Values to sort.
+	 * @return array The sorted list of values.
+	 */
+	public function sort( array &$values ): array {
+		usort( $values, $this->valueCompare );
+		return $values;
+	}
+
+	/**
 	 * Sorts a list of pairs of values.
 	 *
 	 * @param array $pairs Value pairs to sort.
