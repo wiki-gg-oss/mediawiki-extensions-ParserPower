@@ -1330,33 +1330,8 @@ final class ListFunctions {
 	 * @return array The values in an array of strings.
 	 */
 	private static function sortList( array $values, $options ) {
-		if ( $options & self::SORT_NUMERIC ) {
-			if ( $options & self::SORT_DESC ) {
-				rsort( $values, SORT_NUMERIC );
-				return $values;
-			} else {
-				sort( $values, SORT_NUMERIC );
-				return $values;
-			}
-		} else {
-			if ( $options & self::SORT_CS ) {
-				if ( $options & self::SORT_DESC ) {
-					rsort( $values, SORT_STRING );
-					return $values;
-				} else {
-					sort( $values, SORT_STRING );
-					return $values;
-				}
-			} else {
-				if ( $options & self::SORT_DESC ) {
-					usort( $values, [ ComparisonUtils::class, 'rstrcasecmp' ] );
-					return $values;
-				} else {
-					usort( $values, 'strcasecmp' );
-					return $values;
-				}
-			}
-		}
+		$sorter = new ListSorter( $options );
+		return $sorter->sort( $values );
 	}
 
 	/**
