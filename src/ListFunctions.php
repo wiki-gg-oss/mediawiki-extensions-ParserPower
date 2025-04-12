@@ -1418,6 +1418,7 @@ final class ListFunctions {
 	 *
 	 * @param Parser $parser The parser object.
 	 * @param PPFrame $frame The parser frame object.
+	 * @param ListSorter $sorter The list sorter.
 	 * @param array $values The input list.
 	 * @param string $template The template to use.
 	 * @param string $fieldSep The delimiter separating values in the input list.
@@ -1425,22 +1426,19 @@ final class ListFunctions {
 	 * @param string $token The token in the pattern that represents where the list value should go.
 	 * @param array|null $tokens Or if there are mulitple fields, the tokens representing where they go.
 	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
-	 * @param int $sortOptions Options for the key sort as handled by #listsort.
-	 * @param ?int $subsortOptions Options for the value sort, null to not sort values.
 	 * @return array An array where each value has been paired with a sort key in a two-element array.
 	 */
 	private static function sortListByKeys(
 		Parser $parser,
 		PPFrame $frame,
+		ListSorter $sorter,
 		array $values,
 		$template,
 		$fieldSep,
 		$indexToken,
 		$token,
 		$tokens,
-		$pattern,
-		$sortOptions,
-		$subsortOptions
+		$pattern
 	) {
 		if ( $template !== '' ) {
 			$pairedValues = self::generateSortKeysByTemplate( $parser, $frame, $values, $template, $fieldSep );
@@ -1457,7 +1455,6 @@ final class ListFunctions {
 			);
 		}
 
-		$sorter = new ListSorter( $sortOptions, $subsortOptions );
 		$sorter->sortPairs( $pairedValues );
 
 		return self::discardSortKeys( $pairedValues );
@@ -1519,18 +1516,18 @@ final class ListFunctions {
 
 		if ( $template !== '' || ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) ) {
 			$sortOptions = self::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+			$sorter = new ListSorter( $sortOptions, $subsortOptions );
 			$values = self::sortListByKeys(
 				$parser,
 				$frame,
+				$sorter,
 				$values,
 				$template,
 				$fieldSep,
 				$indexToken,
 				$token,
 				$tokens ?? null,
-				$pattern,
-				$sortOptions,
-				$subsortOptions
+				$pattern
 			);
 		} else {
 			$sortOptions = self::decodeSortOptions( $sortOptions );
