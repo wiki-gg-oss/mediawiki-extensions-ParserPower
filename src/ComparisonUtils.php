@@ -7,7 +7,7 @@ namespace MediaWiki\Extension\ParserPower;
 final class ComparisonUtils {
 	/**
 	 * The function compares two strings by numerical value, attempting to match the observed behavior of the built-in
-	 * sort function using SORT_NUMERIC.
+	 * sort function using ListSorter::NUMERIC.
 	 *
 	 * @param string $string1 A string to compare to $string2.
 	 * @param string $string2 A string to compare to $string1.
@@ -19,7 +19,7 @@ final class ComparisonUtils {
 
 	/**
 	 * The function compares two strings by numerical value, attempting to match the observed behavior of the built-in
-	 * sort function using SORT_NUMERIC, except that it gives negated results.
+	 * sort function using ListSorter::NUMERIC, except that it gives negated results.
 	 *
 	 * @param string $string1 A string to compare to $string2.
 	 * @param string $string2 A string to compare to $string1.

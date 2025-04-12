@@ -11,31 +11,6 @@ use MediaWiki\Parser\PPNode_Hash_Array;
 
 final class ListFunctions {
 	/**
-	 * Flag for alphanumeric sorting. 0 as this is a default mode.
-	 */
-	public const SORT_ALPHA = 0;
-	/**
-	 * Flag for numeric sorting.
-	 */
-	public const SORT_NUMERIC = 4;
-	/**
-	 * Flag for case insensitive sorting. 0 as this is a default mode, and ignored in numeric sorts.
-	 */
-	public const SORT_NCS = 0;
-	/**
-	 * Flag for case sensitive sorting. 0 as this is a default mode, and ignored in numeric sorts.
-	 */
-	public const SORT_CS = 2;
-	/**
-	 * Flag for sorting in ascending order. 0 as this is a default mode.
-	 */
-	public const SORT_ASC = 0;
-	/**
-	 * Flag for sorting in descending order.
-	 */
-	public const SORT_DESC = 1;
-
-	/**
 	 * Flag for index search returning a positive index. 0 as this is a default mode.
 	 */
 	public const INDEX_POS = 0;
@@ -177,22 +152,22 @@ final class ListFunctions {
 		foreach ( $optionKeywords as $optionKeyword ) {
 			switch ( strtolower( trim( $optionKeyword ) ) ) {
 				case 'numeric':
-					$options |= self::SORT_NUMERIC;
+					$options |= ListSorter::NUMERIC;
 					break;
 				case 'alpha':
-					$options &= ~self::SORT_NUMERIC;
+					$options &= ~ListSorter::NUMERIC;
 					break;
 				case 'cs':
-					$options |= self::SORT_CS;
+					$options |= ListSorter::CASE_SENSITIVE;
 					break;
 				case 'ncs':
-					$options &= ~self::SORT_CS;
+					$options &= ~ListSorter::CASE_SENSITIVE;
 					break;
 				case 'desc':
-					$options |= self::SORT_DESC;
+					$options |= ListSorter::DESCENDING;
 					break;
 				case 'asc':
-					$options &= ~self::SORT_DESC;
+					$options &= ~ListSorter::DESCENDING;
 					break;
 			}
 		}
@@ -1543,7 +1518,7 @@ final class ListFunctions {
 		}
 
 		if ( $template !== '' || ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) ) {
-			$sortOptions = self::decodeSortOptions( $sortOptions, self::SORT_NUMERIC );
+			$sortOptions = self::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
 			$values = self::sortListByKeys(
 				$parser,
 				$frame,
