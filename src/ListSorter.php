@@ -5,6 +5,18 @@
 namespace MediaWiki\Extension\ParserPower;
 
 class ListSorter {
+	/**
+	 * Flag for numeric sorting, instead of alphanumeric.
+	 */
+	public const NUMERIC = 4;
+	/**
+	 * Flag for case sensitive sorting. 0 as this is a default mode, and ignored in numeric sorts.
+	 */
+	public const CASE_SENSITIVE = 2;
+	/**
+	 * Flag for sorting in descending order.
+	 */
+	public const DESCENDING = 1;
 
 	/**
 	 * Function to use to compare values.
@@ -77,21 +89,21 @@ class ListSorter {
 	 * @return callable
 	 */
 	private function getComparer( int $options ): callable {
-		if ( $options & ListFunctions::SORT_NUMERIC ) {
-			if ( $options & ListFunctions::SORT_DESC ) {
+		if ( $options & self::NUMERIC ) {
+			if ( $options & self::DESCENDING ) {
 				return [ ComparisonUtils::class, 'numericrstrcmp' ];
 			} else {
 				return [ ComparisonUtils::class, 'numericstrcmp' ];
 			}
 		} else {
-			if ( $options & ListFunctions::SORT_CS ) {
-				if ( $options & ListFunctions::SORT_DESC ) {
+			if ( $options & self::CASE_SENSITIVE ) {
+				if ( $options & self::DESCENDING ) {
 					return [ ComparisonUtils::class, 'rstrcmp' ];
 				} else {
 					return 'strcmp';
 				}
 			} else {
-				if ( $options & ListFunctions::SORT_DESC ) {
+				if ( $options & self::DESCENDING ) {
 					return [ ComparisonUtils::class, 'rstrcasecmp' ];
 				} else {
 					return 'strcasecmp';
