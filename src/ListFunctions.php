@@ -260,6 +260,22 @@ final class ListFunctions {
 	}
 
 	/**
+	 * Split a token into an array by a given delimiter.
+	 * Whitespaces are trimmed from the end of each token.
+	 *
+	 * @param string $sep Delimiter used to separate the tokens.
+	 * @param string $token Token to split.
+	 * @return array The tokens, in an array of strings.
+	 */
+	private static function explodeToken( string $sep, string $token ): array {
+		if ( $sep === '' ) {
+			return [ trim( $token ) ];
+		} else {
+			return array_map( 'trim', explode( $sep, $token ) );
+		}
+	}
+
+	/**
 	 * Slice an array according to the specified 1-based offset and length.
 	 *
 	 * @param array $values Array to slice.
@@ -712,7 +728,7 @@ final class ListFunctions {
 	): array {
 		$outValues = [];
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
-			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
+			$tokens = self::explodeToken( $tokenSep, $token );
 			$tokenCount = count( $tokens );
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 			foreach ( $inValues as $i => $value ) {
@@ -1096,7 +1112,7 @@ final class ListFunctions {
 		$inValues = self::explodeList( $inSep, $inList );
 
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
-			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
+			$tokens = self::explodeToken( $tokenSep, $token );
 		}
 
 		if ( $template !== '' ) {
@@ -1361,7 +1377,7 @@ final class ListFunctions {
 		}
 
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
-			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
+			$tokens = self::explodeToken( $tokenSep, $token );
 		}
 
 		if ( $template !== '' || ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) ) {
@@ -1483,7 +1499,7 @@ final class ListFunctions {
 
 		$outValues = [];
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
-			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
+			$tokens = self::explodeToken( $tokenSep, $token );
 			$tokenCount = count( $tokens );
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 			foreach ( $inValues as $i => $inValue ) {
@@ -1993,8 +2009,8 @@ final class ListFunctions {
 		}
 
 		if ( $tokenSep !== '' ) {
-			$tokens1 = array_map( 'trim', explode( $tokenSep, $token1 ) );
-			$tokens2 = array_map( 'trim', explode( $tokenSep, $token2 ) );
+			$tokens1 = self::explodeToken( $tokenSep, $token1 );
+			$tokens2 = self::explodeToken( $tokenSep, $token2 );
 		} else {
 			$tokens1 = [ $token1 ];
 			$tokens2 = [ $token2 ];
