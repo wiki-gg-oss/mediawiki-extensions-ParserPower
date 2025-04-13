@@ -278,6 +278,22 @@ final class ListFunctions {
 	}
 
 	/**
+	 * Split a list value into an array of fields by a given delimiter.
+	 *
+	 * @param string $sep Delimiter used to separate the fields.
+	 * @param string $value Value to split.
+	 * @param ?int $fieldLimit Maximum number of fields, null if there is no upper bound.
+	 * @return array The fields, in an array of strings.
+	 */
+	private static function explodeValue( string $sep, string $value, ?int $fieldLimit = null ): array {
+		if ( $sep === '' ) {
+			return [ $value ];
+		} else {
+			return explode( $sep, $value, $fieldLimit ?? PHP_INT_MAX );
+		}
+	}
+
+	/**
 	 * Slice an array according to the specified 1-based offset and length.
 	 *
 	 * @param array $values Array to slice.
@@ -735,7 +751,7 @@ final class ListFunctions {
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 			foreach ( $inValues as $i => $value ) {
 				if ( $value !== '' ) {
-					$result = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $i + 1 );
+					$result = $operation->apply( self::explodeValue( $fieldSep, $value, $tokenCount ), $i + 1 );
 					if ( strtolower( $result ) !== 'remove' ) {
 						$outValues[] = $value;
 					}
@@ -785,7 +801,7 @@ final class ListFunctions {
 			}
 		} else {
 			foreach ( $inValues as $value ) {
-				$result = $operation->apply( explode( $fieldSep, $value ) );
+				$result = $operation->apply( self::explodeValue( $fieldSep, $value ) );
 				if ( $value !== '' && strtolower( $result ) !== 'remove' ) {
 					$outValues[] = $value;
 				}
@@ -1010,7 +1026,7 @@ final class ListFunctions {
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 			foreach ( $inValues as $i => $value ) {
 				if ( $value !== '' ) {
-					$key = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $i + 1 );
+					$key = $operation->apply( self::explodeValue( $fieldSep, $value, $tokenCount ), $i + 1 );
 					if ( !in_array( $key, $previousKeys ) ) {
 						$previousKeys[] = $key;
 						$outValues[] = $value;
@@ -1066,7 +1082,7 @@ final class ListFunctions {
 			}
 		} else {
 			foreach ( $inValues as $value ) {
-				$key = $operation->apply( explode( $fieldSep, $value ) );
+				$key = $operation->apply( self::explodeValue( $fieldSep, $value ) );
 				if ( !in_array( $key, $previousKeys ) ) {
 					$previousKeys[] = $key;
 					$outValues[] = $value;
@@ -1195,7 +1211,7 @@ final class ListFunctions {
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 			foreach ( $values as $i => $value ) {
 				if ( $value !== '' ) {
-					$key = $operation->apply( explode( $fieldSep, $value, $tokenCount ), $i + 1 );
+					$key = $operation->apply( self::explodeValue( $fieldSep, $value, $tokenCount ), $i + 1 );
 					$pairedValues[] = [ $key, $value ];
 				}
 			}
@@ -1240,7 +1256,7 @@ final class ListFunctions {
 			}
 		} else {
 			foreach ( $values as $value ) {
-				$pairedValues[] = [ $operation->apply( explode( $fieldSep, $value ) ), $value ];
+				$pairedValues[] = [ $operation->apply( self::explodeValue( $fieldSep, $value ) ), $value ];
 			}
 		}
 
@@ -1506,7 +1522,7 @@ final class ListFunctions {
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 			foreach ( $inValues as $i => $inValue ) {
 				if ( $inValue !== '' ) {
-					$outValue = $operation->apply( explode( $fieldSep, $inValue, $tokenCount ), $i + 1 );
+					$outValue = $operation->apply( self::explodeValue( $fieldSep, $inValue, $tokenCount ), $i + 1 );
 					if ( $outValue !== '' ) {
 						$outValues[] = $outValue;
 					}
@@ -1604,7 +1620,7 @@ final class ListFunctions {
 			}
 		} else {
 			foreach ( $inValues as $inValue ) {
-				$outValues[] = $operation->apply( explode( $fieldSep, $inValue ) );
+				$outValues[] = $operation->apply( self::explodeValue( $fieldSep, $inValue ) );
 			}
 		}
 
@@ -1849,8 +1865,8 @@ final class ListFunctions {
 		if ( $fieldSep === '' ) {
 			$fields = [ $inValue1, $tokenCount1 => $inValue2 ];
 		} else {
-			$fields = explode( $fieldSep, $inValue1, $tokenCount1 );
-			foreach ( explode( $fieldSep, $inValue1, $tokenCount2 ) as $i => $field ) {
+			$fields = self::explodeValue( $fieldSep, $inValue1, $tokenCount1 );
+			foreach ( self::explodeValue( $fieldSep, $inValue1, $tokenCount2 ) as $i => $field ) {
 				$fields[$tokenCount1 + $i] = $field;
 			}
 		}
@@ -1883,7 +1899,10 @@ final class ListFunctions {
 		if ( $fieldSep === '' ) {
 			return $operation->apply( [ $inValue1, $inValue2 ] );
 		} else {
-			return $operation->apply( [ ...explode( $fieldSep, $inValue1 ), ...explode( $fieldSep, $inValue2 ) ] );
+			return $operation->apply( [
+				...self::explodeValue( $fieldSep, $inValue1 ),
+				...self::explodeValue( $fieldSep, $inValue2 )
+			] );
 		}
 	}
 
