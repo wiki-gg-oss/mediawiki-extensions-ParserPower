@@ -762,13 +762,12 @@ final class ListFunctions {
 	): array {
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
 			$tokens = self::explodeToken( $tokenSep, $token );
-			$fieldLimit = count( $tokens );
 		} else {
 			$tokens = [ $token ];
-			$fieldLimit = 1;
 		}
 
 		$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+		$fieldLimit = $operation->getFieldLimit();
 
 		$outValues = [];
 		foreach ( $inValues as $i => $value ) {
@@ -1021,14 +1020,12 @@ final class ListFunctions {
 		?array $tokens,
 		string $pattern
 	): array {
-		if ( ( isset( $tokens ) && is_array( $tokens ) ) ) {
-			$fieldLimit = count( $tokens );
-		} else {
+		if ( $tokens === null ) {
 			$tokens = [ $token ];
-			$fieldLimit = 1;
 		}
 
 		$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+		$fieldLimit = $operation->getFieldLimit();
 
 		$previousKeys = [];
 		$outValues = [];
@@ -1191,14 +1188,12 @@ final class ListFunctions {
 		?array $tokens,
 		string $pattern
 	): array {
-		if ( ( isset( $tokens ) && is_array( $tokens ) ) ) {
-			$fieldLimit = count( $tokens );
-		} else {
+		if ( $tokens === null ) {
 			$tokens = [ $token ];
-			$fieldLimit = 1;
 		}
 
 		$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+		$fieldLimit = $operation->getFieldLimit();
 
 		$pairedValues = [];
 		foreach ( $values as $i => $value ) {
@@ -1494,13 +1489,12 @@ final class ListFunctions {
 
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
 			$tokens = self::explodeToken( $tokenSep, $token );
-			$fieldLimit = count( $tokens );
 		} else {
 			$tokens = [ $token ];
-			$fieldLimit = 1;
 		}
 
 		$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+		$fieldLimit = $operation->getFieldLimit();
 
 		$outValues = [];
 		foreach ( $inValues as $i => $inValue ) {
