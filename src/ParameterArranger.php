@@ -25,8 +25,13 @@ final class ParameterArranger {
 	/**
 	 * @param PPFrame $frame Parser frame object.
 	 * @param array $params Parameters and values together, not yet expanded or trimmed.
+	 * @param array $paramOptions Parsing and post-processing options for all parameters.
 	 */
-	public function __construct( private readonly PPFrame $frame, array $params ) {
+	public function __construct(
+		private readonly PPFrame $frame,
+		array $params,
+		private array $paramOptions = []
+	) {
 		$this->params = [];
 
 		if ( isset( $params[0] ) && is_string( $params[0] ) ) {
@@ -54,7 +59,7 @@ final class ParameterArranger {
 	 * Get the expanded value of a parameter.
 	 *
 	 * @param int|string $key Parameter index or name.
-	 * @param array $options Parsing and post-processing options.
+	 * @param array $options Parsing and post-processing options, overriding the default ones if it has not already been parsed.
 	 * @return string The expanded (and post-processed) parameter value.
 	 */
 	public function get( int|string $key, array $options = [] ): string {
@@ -62,13 +67,14 @@ final class ParameterArranger {
 			return $this->expandedParams[$key];
 		}
 
-		$value = $this->params[$key] ?? $options['default'] ?? '';
+		$options = array_merge( $this->paramOptions[$key] ?? [], $options );
 
 		$flags = 0;
 		if ( $options['unescape'] ?? false ) {
 			$flags |= ParserPower::UNESCAPE;
 		}
 
+		$value = $this->params[$key] ?? $options['default'] ?? '';
 		$value = ParserPower::expand( $this->frame, $value, $flags );
 
 		$this->expandedParams[$key] = $value;
