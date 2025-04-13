@@ -760,7 +760,7 @@ final class ListFunctions {
 		string $tokenSep,
 		string $pattern
 	): array {
-		if ( $fieldSep !== '' && $tokenSep !== '' ) {
+		if ( $fieldSep !== '' ) {
 			$tokens = self::explodeToken( $tokenSep, $token );
 		} else {
 			$tokens = [ $token ];
@@ -1112,7 +1112,7 @@ final class ListFunctions {
 
 		$inValues = self::explodeList( $inSep, $inList );
 
-		if ( $fieldSep !== '' && $tokenSep !== '' ) {
+		if ( $fieldSep !== '' ) {
 			$tokens = self::explodeToken( $tokenSep, $token );
 		}
 
@@ -1366,7 +1366,7 @@ final class ListFunctions {
 			$values = array_unique( $values );
 		}
 
-		if ( $fieldSep !== '' && $tokenSep !== '' ) {
+		if ( $fieldSep !== '' ) {
 			$tokens = self::explodeToken( $tokenSep, $token );
 		}
 
@@ -1487,7 +1487,7 @@ final class ListFunctions {
 			$inValues = $sorter->sort( $inValues );
 		}
 
-		if ( $fieldSep !== '' && $tokenSep !== '' ) {
+		if ( $fieldSep !== '' ) {
 			$tokens = self::explodeToken( $tokenSep, $token );
 		} else {
 			$tokens = [ $token ];
@@ -1978,13 +1978,8 @@ final class ListFunctions {
 			$inValues = $sorter->sort( $inValues );
 		}
 
-		if ( $tokenSep !== '' ) {
-			$tokens1 = self::explodeToken( $tokenSep, $token1 );
-			$tokens2 = self::explodeToken( $tokenSep, $token2 );
-		} else {
-			$tokens1 = [ $token1 ];
-			$tokens2 = [ $token2 ];
-		}
+		$tokens1 = self::explodeToken( $tokenSep, $token1 );
+		$tokens2 = self::explodeToken( $tokenSep, $token2 );
 
 		$matchParams = [ $parser, $frame, '', '', $fieldSep, $tokens1, $tokens2, $matchPattern ];
 		$mergeParams = [ $parser, $frame, '', '', $fieldSep, $tokens1, $tokens2, $mergePattern ];
