@@ -10,6 +10,7 @@ use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
+use StringUtils;
 
 final class ListFunctions {
 	/**
@@ -223,9 +224,9 @@ final class ListFunctions {
 	 */
 	private static function explodeList( string $sep, string $list ): array {
 		if ( $sep === '' ) {
-			$inValues = preg_split( '/(.)/u', $list, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE );
+			$inValues = preg_split( '/(?<!^)(?!$)/u', $list );
 		} else {
-			$inValues = explode( $sep, $list );
+			$inValues = StringUtils::explode( $sep, $list );
 		}
 
 		if ( $inValues === false ) {
