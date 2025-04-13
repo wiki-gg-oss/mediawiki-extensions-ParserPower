@@ -248,82 +248,73 @@ final class ListFunctions {
 	}
 
 	/**
-	 * This function splits a string of delimited values into an array by a given delimiter or default delimiters.
+	 * Split a list of delimited values into an array by a given delimiter.
+	 * Whitespaces are trimmed from the end of each value, and empty values are filtered out.
 	 *
-	 * @param string $sep The delimiter used to separate the strings, or an empty string to use the default delimiters.
-	 * @param string $list The list in string format with values separated by the given or default delimiters.
-	 * @return array The values in an array of strings.
+	 * @param string $sep Delimiter used to separate the values, an empty string to make each character a value.
+	 * @param string $list List to split.
+	 * @return array The values, in an array of strings.
 	 */
 	private static function explodeList( string $sep, string $list ): array {
 		if ( $sep === '' ) {
-			$values = preg_split( '/(.)/u', $list, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE );
+			$inValues = preg_split( '/(.)/u', $list, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE );
 		} else {
-			$values = explode( $sep, $list );
+			$inValues = explode( $sep, $list );
 		}
 
-		if ( $values === false ) {
+		if ( $inValues === false ) {
 			return [];
-		} else {
-			return $values;
 		}
-	}
-
-	/**
-	 * This function trims whitespace from the end of each value while also filtering empty values from the array,
-	 * then slicing it according to specified offset and length. It also performs un-escaping on each item.
-	 * Note that values that are only empty after the unescape are preserved.
-	 *
-	 * @param array $inValues The array to trim, unescape, and remove empty values from.
-	 * @param int $offset
-	 * @param ?int $length
-	 * @return array A new array with trimmed values, character escapes replaced, and empty values pre unescape removed.
-	 */
-	private static function arrayTrimUnescape( array $inValues, int $offset = 0, ?int $length = null ): array {
-		if ( $offset > 0 ) {
-			$offset = $offset - 1;
-		}
-
-		$trimmedValues = [];
-		foreach ( $inValues as $inValue ) {
-			$trimmedValue = trim( $inValue );
-			if ( $trimmedValue !== '' ) {
-				$trimmedValues[] = $trimmedValue;
-			}
-		}
-
-		// If a negative $offset is bigger than $trimmedValues,
-		// we need to reduce the number of values array_slice will retrieve.
-		if ( $offset < 0 && $length !== null ) {
-			$outOfBounds = $offset + count( $trimmedValues );
-			if ( $outOfBounds < 0 ) {
-				$length = $length + $outOfBounds;
-			}
-		}
-
-		$trimmedValues = array_slice( $trimmedValues, $offset, $length );
 
 		$outValues = [];
-		foreach ( $trimmedValues as $trimmedValue ) {
-			$outValues[] = ParserPower::unescape( $trimmedValue );
+		foreach ( $inValues as $value ) {
+			$value = trim( $value );
+			if ( $value !== '' ) {
+				$outValues[] = ParserPower::unescape( $value );
+			}
 		}
 
 		return $outValues;
 	}
 
 	/**
-	 * This function gets the specified element from the array after filtering out any empty values before it so that
-	 * the empty values are skipped in index counting. The returned element is unescaped.
+	 * Slice an array according to the specified 1-based offset and length.
 	 *
-	 * @param int $index The 1-based index of the array element to get, or a negative value to start from the end.
-	 * @param array $inValues The array to get the element from.
-	 * @return string The array element, trimmed and with character escapes replaced, or empty string if not found.
+	 * @param array $values Array to slice.
+	 * @param int $offset 1-based index of the first value to extract.
+	 * @param ?int $length Maximum number of elements to extract.
+	 * @return array A new sliced array.
 	 */
-	private static function arrayElementTrimUnescape( int $index, array $inValues ): string {
+	private static function arraySlice( array $values, int $offset = 0, ?int $length = null ): array {
+		if ( $offset > 0 ) {
+			$offset = $offset - 1;
+		}
+
+		// If a negative $offset is bigger than $values,
+		// we need to reduce the number of values array_slice will retrieve.
+		if ( $offset < 0 && $length !== null ) {
+			$outOfBounds = $offset + count( $values );
+			if ( $outOfBounds < 0 ) {
+				$length = $length + $outOfBounds;
+			}
+		}
+
+		return array_slice( $values, $offset, $length );
+	}
+
+	/**
+	 * Get an element from an array from its 1-based index.
+	 *
+	 * @param int $index 1-based index of the array element to get, or a negative value to start from the end.
+	 * @param array $values Array to get the element from.
+	 * @return string The array element, or empty string if not found.
+	 */
+	private static function arrayElement( array $values, int $index ): string {
 		if ( $index === 0 ) {
 			return '';
 		}
 
-		$outValues = self::arrayTrimUnescape( $inValues, $index, 1 );
+		$outValues = self::arraySlice( $values, $index, 1 );
 		return $outValues[0] ?? '';
 	}
 
@@ -346,7 +337,7 @@ final class ListFunctions {
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
-		return (string)count( self::arrayTrimUnescape( self::explodeList( $sep, $list ) ) );
+		return (string)count( self::explodeList( $sep, $list ) );
 	}
 
 	/**
@@ -369,7 +360,7 @@ final class ListFunctions {
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$values = self::explodeList( $inSep, $inList );
 		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $values ) );
 	}
 
@@ -398,7 +389,7 @@ final class ListFunctions {
 			$index = intval( $inIndex );
 		}
 
-		$value = self::arrayElementTrimUnescape( $index, self::explodeList( $inSep, $inList ) );
+		$value = self::arrayElement( self::explodeList( $inSep, $inList ), $index );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $value );
 	}
@@ -435,7 +426,7 @@ final class ListFunctions {
 			$length = intval( $inLength );
 		}
 
-		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ), $offset, $length );
+		$values = self::arraySlice( self::explodeList( $inSep, $inList ), $offset, $length );
 
 		if ( count( $values ) > 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $values ) );
@@ -466,7 +457,7 @@ final class ListFunctions {
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$csOption = self::decodeCSOption( $csOption );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
+		$values = self::explodeList( $sep, $list );
 		if ( $csOption ) {
 			foreach ( $values as $value ) {
 				if ( $value === $item ) {
@@ -505,7 +496,7 @@ final class ListFunctions {
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$options = self::decodeIndexOptions( $inOptions );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
+		$values = self::explodeList( $sep, $list );
 		$count = ( is_array( $values ) || $values instanceof Countable ) ? count( $values ) : 0;
 		if ( $options & self::INDEX_DESC ) {
 			if ( $options & self::INDEX_CS ) {
@@ -559,7 +550,7 @@ final class ListFunctions {
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
+		$values = self::explodeList( $sep, $list );
 		if ( $value !== '' ) {
 			$values[] = $value;
 		}
@@ -586,7 +577,7 @@ final class ListFunctions {
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $sep, $list ) );
+		$values = self::explodeList( $sep, $list );
 		if ( $value !== '' ) {
 			array_unshift( $values, $value );
 		}
@@ -614,7 +605,7 @@ final class ListFunctions {
 		} else {
 			$inSep1 = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
 			$inSep1 = $parser->getStripState()->unstripNoWiki( $inSep1 );
-			$values1 = self::arrayTrimUnescape( self::explodeList( $inSep1, $inList1 ) );
+			$values1 = self::explodeList( $inSep1, $inList1 );
 		}
 
 		if ( $inList2 === '' ) {
@@ -622,7 +613,7 @@ final class ListFunctions {
 		} else {
 			$inSep2 = ParserPower::expand( $frame, $params[3] ?? ',', ParserPower::UNESCAPE );
 			$inSep2 = $parser->getStripState()->unstripNoWiki( $inSep2 );
-			$values2 = self::arrayTrimUnescape( self::explodeList( $inSep2, $inList2 ) );
+			$values2 = self::explodeList( $inSep2, $inList2 );
 		}
 
 		$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
@@ -667,7 +658,7 @@ final class ListFunctions {
 	 */
 	private static function filterListByInclusion( array $inValues, string $values, string $valueSep, bool $valueCS ): array {
 		if ( $valueSep !== '' ) {
-			$includeValues = self::arrayTrimUnescape( self::explodeList( $valueSep, $values ) );
+			$includeValues = self::explodeList( $valueSep, $values );
 		} else {
 			$includeValues = [ ParserPower::unescape( $values ) ];
 		}
@@ -696,7 +687,7 @@ final class ListFunctions {
 	 */
 	private static function filterListByExclusion( array $inValues, string $values, string $valueSep, bool $valueCS ): array {
 		if ( $valueSep !== '' ) {
-			$excludeValues = self::arrayTrimUnescape( self::explodeList( $valueSep, $values ) );
+			$excludeValues = self::explodeList( $valueSep, $values );
 		} else {
 			$excludeValues = [ ParserPower::unescape( $values ) ];
 		}
@@ -847,7 +838,7 @@ final class ListFunctions {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
 
-		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$inValues = self::explodeList( $inSep, $inList );
 
 		if ( $keepValues !== '' ) {
 			$outValues = self::filterListByInclusion( $inValues, $keepValues, $keepSep, $keepCS );
@@ -902,7 +893,7 @@ final class ListFunctions {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$csOption = self::decodeCSOption( $csOption );
 
-		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$inValues = self::explodeList( $inSep, $inList );
 
 		$outValues = self::filterListByInclusion( $inValues, $values, $valueSep, $csOption );
 
@@ -936,7 +927,7 @@ final class ListFunctions {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$csOption = self::decodeCSOption( $csOption );
 
-		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$inValues = self::explodeList( $inSep, $inList );
 
 		$outValues = self::filterListByExclusion( $inValues, $value, '', $csOption );
 
@@ -983,7 +974,7 @@ final class ListFunctions {
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$csOption = self::decodeCSOption( $csOption );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $sep, $inList ) );
+		$values = self::explodeList( $sep, $inList );
 		$values = self::reduceToUniqueValues( $values, $csOption );
 		return (string)count( $values );
 	}
@@ -1120,7 +1111,7 @@ final class ListFunctions {
 
 		$uniqueCS = self::decodeBool( $uniqueCS );
 
-		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$inValues = self::explodeList( $inSep, $inList );
 
 		if ( $fieldSep !== '' && $tokenSep !== '' ) {
 			$tokens = array_map( 'trim', explode( $tokenSep, $token ) );
@@ -1169,7 +1160,7 @@ final class ListFunctions {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$csOption = self::decodeCSOption( $csOption );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$values = self::explodeList( $inSep, $inList );
 		$values = self::reduceToUniqueValues( $values, $csOption );
 		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $values ) );
 	}
@@ -1382,7 +1373,7 @@ final class ListFunctions {
 
 		$duplicates = self::decodeDuplicates( $duplicates );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$values = self::explodeList( $inSep, $inList );
 		if ( $duplicates & self::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
 		}
@@ -1444,7 +1435,7 @@ final class ListFunctions {
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 		$sorter = new ListSorter( $sortOptions );
 
-		$values = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$values = self::explodeList( $inSep, $inList );
 		$values = $sorter->sort( $values );
 		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $values ) );
 	}
@@ -1498,7 +1489,7 @@ final class ListFunctions {
 
 		$sorter = new ListSorter( $sortOptions );
 
-		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$inValues = self::explodeList( $inSep, $inList );
 
 		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
@@ -1595,7 +1586,7 @@ final class ListFunctions {
 
 		$sorter = new ListSorter( $sortOptions );
 
-		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$inValues = self::explodeList( $inSep, $inList );
 		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
 		}
@@ -2010,7 +2001,7 @@ final class ListFunctions {
 
 		$sorter = new ListSorter( $sortOptions );
 
-		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$inValues = self::explodeList( $inSep, $inList );
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
@@ -2093,7 +2084,7 @@ final class ListFunctions {
 
 		$sorter = new ListSorter( $sortOptions );
 
-		$inValues = self::arrayTrimUnescape( self::explodeList( $inSep, $inList ) );
+		$inValues = self::explodeList( $inSep, $inList );
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
