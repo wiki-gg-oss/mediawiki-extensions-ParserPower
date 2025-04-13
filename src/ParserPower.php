@@ -59,48 +59,6 @@ class ParserPower {
 	];
 
 	/**
-	 * This function converts the parameters to the parser function into an array form with all parameter values
-	 * trimmed, as per longstanding MediaWiki conventions.
-	 *
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $unexpandedParams The parameters and values together, not yet exploded or trimmed.
-	 * @return array The parameter values associated with the appropriate named or numbered keys
-	 */
-	public static function arrangeParams( PPFrame $frame, array $unexpandedParams ): array {
-		$params = [];
-
-		if ( isset( $unexpandedParams[0] ) && is_string( $unexpandedParams[0] ) ) {
-			$pair = explode( '=', array_shift( $unexpandedParams ), 2 );
-			if ( count( $pair ) === 2 ) {
-				$params[trim( $pair[0] )] = trim( $pair[1] );
-			} else {
-				$params[] = trim( $pair[0] );
-			}
-		}
-
-		foreach ( $unexpandedParams as $unexpandedParam ) {
-			$bits = $unexpandedParam->splitArg();
-			if ( $bits['index'] === '' ) {
-				$params[self::expand( $frame, $bits['name'] )] = $bits['value'];
-			} else {
-				$params[] = $bits['value'];
-			}
-		}
-
-		return $params;
-	}
-
-	/**
-	 * The function returns tests a value to see that isn't null or an empty string.
-	 *
-	 * @param string $value The value to check.
-	 * @return bool true for a value that is not null or an empty string.
-	 */
-	public static function isEmpty( string $value ): bool {
-		return $value === null || $value === '';
-	}
-
-	/**
 	 * Expands and trims a PPNode.
 	 *
 	 * @param PPFrame $frame
