@@ -53,6 +53,40 @@ final class ListFunctions {
 	public const SORTMODE_POST = 2;
 	public const SORTMODE_COMPAT = 4;
 
+	private const PARAM_OPTIONS = [
+		'counttoken' => [ 'unescape' => true ],
+		'default' => [ 'unescape' => true ],
+		'duplicates' => [],
+		'fieldsep' => [ 'unescape' => true ],
+		'keep' => [],
+		'keepcs' => [],
+		'keepsep' => [ 'default' => ',' ],
+		'indextoken' => [ 'unescape' => true ],
+		'insep' => [ 'unescape' => true, 'default' => ',' ],
+		'intro' => [ 'unescape' => true ],
+		'list' => [],
+		'outro' => [ 'unescape' => true ],
+		'outsep' => [ 'unescape' => true, 'default' => ',\_' ],
+		'matchpattern' => [],
+		'matchtemplate' => [],
+		'mergepattern' => [],
+		'mergetemplate' => [],
+		'pattern' => [],
+		'remove' => [],
+		'removecs' => [],
+		'removesep' => [ 'default' => ',' ],
+		'removecs' => [],
+		'sortoptions' => [],
+		'subsort' => [],
+		'subsortoptions' => [],
+		'template' => [],
+		'token' => [ 'unescape' => true ],
+		'token1' => [ 'unescape' => true ],
+		'token2' => [ 'unescape' => true ],
+		'tokensep' => [ 'unescape' => true, 'default' => ',' ],
+		'uniquecs' => [],
+	];
+
 	/**
 	 * This function converts a string containing a boolean keyword into a boolean.
 	 *
@@ -780,28 +814,28 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listfilterRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params );
+		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default', [ 'unescape' => true ] );
+		$default = $params->get( 'default' );
 
 		$keepValues = $params->get( 'keep' );
-		$keepSep = $params->get( 'keepsep', [ 'default' => ',' ] );
+		$keepSep = $params->get( 'keepsep' );
 		$keepCS = $params->get( 'keepcs' );
 		$removeValues = $params->get( 'remove' );
-		$removeSep = $params->get( 'removesep', [ 'default' => ',' ] );
+		$removeSep = $params->get( 'removesep' );
 		$removeCS = $params->get( 'removecs' );
 		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep', [ 'unescape' => true, 'default' => ',' ] );
-		$fieldSep = $params->get( 'fieldsep', [ 'unescape' => true ] );
-		$indexToken = $params->get( 'indextoken', [ 'unescape' => true ] );
-		$token = $params->get( 'token', [ 'unescape' => true ] );
-		$tokenSep = $params->get( 'tokensep', [ 'unescape' => true, 'default' => ',' ] );
+		$inSep = $params->get( 'insep' );
+		$fieldSep = $params->get( 'fieldsep' );
+		$indexToken = $params->get( 'indextoken' );
+		$token = $params->get( 'token' );
+		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep', [ 'unescape' => true, 'default' => ',\_' ] );
-		$countToken = $params->get( 'counttoken', [ 'unescape' => true ] );
-		$intro = $params->get( 'intro', [ 'unescape' => true ] );
-		$outro = $params->get( 'outro', [ 'unescape' => true ] );
+		$outSep = $params->get( 'outsep' );
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 
 		if ( $inList === '' ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
@@ -1062,23 +1096,23 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listuniqueRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params );
+		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default', [ 'unescape' => true ] );
+		$default = $params->get( 'default' );
 
 		$uniqueCS = $params->get( 'uniquecs' );
 		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep', [ 'unescape' => true, 'default' => ',' ] );
-		$fieldSep = $params->get( 'fieldsep', [ 'unescape' => true ] );
-		$indexToken = $params->get( 'indextoken', [ 'unescape' => true ] );
-		$token = $params->get( 'token', [ 'unescape' => true ] );
-		$tokenSep = $params->get( 'tokensep', [ 'unescape' => true, 'default' => ',' ] );
+		$inSep = $params->get( 'insep' );
+		$fieldSep = $params->get( 'fieldsep' );
+		$indexToken = $params->get( 'indextoken' );
+		$token = $params->get( 'token' );
+		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep', [ 'unescape' => true, 'default' => ',\_' ] );
-		$countToken = $params->get( 'counttoken', [ 'unescape' => true ] );
-		$intro = $params->get( 'intro', [ 'unescape' => true ] );
-		$outro = $params->get( 'outro', [ 'unescape' => true ] );
+		$outSep = $params->get( 'outsep' );
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 
 		if ( $inList === '' ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
@@ -1312,26 +1346,26 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listsortRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params );
+		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default', [ 'unescape' => true ] );
+		$default = $params->get( 'default' );
 
 		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep', [ 'unescape' => true, 'default' => ',' ] );
-		$fieldSep = $params->get( 'fieldsep', [ 'unescape' => true ] );
-		$indexToken = $params->get( 'indextoken', [ 'unescape' => true ] );
-		$token = $params->get( 'token', [ 'unescape' => true ] );
-		$tokenSep = $params->get( 'tokensep', [ 'unescape' => true, 'default' => ',' ] );
+		$inSep = $params->get( 'insep' );
+		$fieldSep = $params->get( 'fieldsep' );
+		$indexToken = $params->get( 'indextoken' );
+		$token = $params->get( 'token' );
+		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep', [ 'unescape' => true, 'default' => ',\_' ] );
+		$outSep = $params->get( 'outsep' );
 		$sortOptions = $params->get( 'sortoptions' );
 		$subsort = $params->get( 'subsort' );
 		$subsortOptions = $params->get( 'subsortoptions' );
 		$duplicates = $params->get( 'duplicates' );
-		$countToken = $params->get( 'counttoken', [ 'unescape' => true ] );
-		$intro = $params->get( 'intro', [ 'unescape' => true ] );
-		$outro = $params->get( 'outro', [ 'unescape' => true ] );
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 
 		if ( $inList === '' ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
@@ -1610,25 +1644,25 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listmapRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params );
+		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default', [ 'unescape' => true ] );
+		$default = $params->get( 'default' );
 
 		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep', [ 'unescape' => true, 'default' => ',' ] );
-		$fieldSep = $params->get( 'fieldsep', [ 'unescape' => true ] );
-		$indexToken = $params->get( 'indextoken', [ 'unescape' => true ] );
-		$token = $params->get( 'token', [ 'unescape' => true ] );
-		$tokenSep = $params->get( 'tokensep', [ 'unescape' => true, 'default' => ',' ] );
+		$inSep = $params->get( 'insep' );
+		$fieldSep = $params->get( 'fieldsep' );
+		$indexToken = $params->get( 'indextoken' );
+		$token = $params->get( 'token' );
+		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep', [ 'unescape' => true, 'default' => ',\_' ] );
+		$outSep = $params->get( 'outsep' );
 		$sortMode = $params->get( 'sortmode' );
 		$sortOptions = $params->get( 'sortoptions' );
 		$duplicates = $params->get( 'duplicates' );
-		$countToken = $params->get( 'counttoken', [ 'unescape' => true ] );
-		$intro = $params->get( 'intro', [ 'unescape' => true ] );
-		$outro = $params->get( 'outro', [ 'unescape' => true ] );
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 
 		if ( $inList === '' ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
@@ -2101,26 +2135,26 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listmergeRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params );
+		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default', [ 'unescape' => true ] );
+		$default = $params->get( 'default' );
 
 		$matchTemplate = $params->get( 'matchtemplate' );
 		$mergeTemplate = $params->get( 'mergetemplate' );
-		$inSep = $params->get( 'insep', [ 'unescape' => true, 'default' => ',' ] );
-		$fieldSep = $params->get( 'fieldsep', [ 'unescape' => true ] );
-		$token1 = $params->get( 'token1', [ 'unescape' => true ] );
-		$token2 = $params->get( 'token2', [ 'unescape' => true ] );
-		$tokenSep = $params->get( 'tokensep', [ 'unescape' => true, 'default' => ',' ] );
+		$inSep = $params->get( 'insep' );
+		$fieldSep = $params->get( 'fieldsep' );
+		$token1 = $params->get( 'token1' );
+		$token2 = $params->get( 'token2' );
+		$tokenSep = $params->get( 'tokensep' );
 		$matchPattern = $params->get( 'matchpattern' );
 		$mergePattern = $params->get( 'mergepattern' );
-		$outSep = $params->get( 'outsep', [ 'unescape' => true, 'default' => ',\_' ] );
+		$outSep = $params->get( 'outsep' );
 		$sortMode = $params->get( 'sortmode' );
 		$sortOptions = $params->get( 'sortoptions' );
-		$countToken = $params->get( 'counttoken', [ 'unescape' => true ] );
-		$intro = $params->get( 'intro', [ 'unescape' => true ] );
-		$outro = $params->get( 'outro', [ 'unescape' => true ] );
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 
 		if ( $inList === '' ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
