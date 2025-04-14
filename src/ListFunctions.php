@@ -8,6 +8,7 @@ use Countable;
 use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
+use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use StringUtils;
@@ -681,81 +682,21 @@ final class ListFunctions {
 	}
 
 	/**
-	 * This function performs the filtering operation for the listfiler function when done by value inclusion.
+	 * This function performs the filtering operation for the listfilter function.
 	 *
-	 * @param ListInclusionOperation $operation Operation to apply.
-	 * @param array $inValues Array with the input values.
-	 * @return array The array stripped of any values with non-unique keys.
-	 */
-	private static function filterListByInclusion( ListInclusionOperation $operation, array $inValues ): array {
-		$outValues = [];
-		foreach ( $inValues as $inValue ) {
-			$result = $operation->apply( [ $inValue ] );
-			if ( strtolower( $result ) !== 'remove' ) {
-				$outValues[] = $inValue;
-			}
-		}
-
-		return $outValues;
-	}
-
-	/**
-	 * This function performs the filtering operation for the listfiler function when done by value exclusion.
-	 *
-	 * @param ListInclusionOperation $operation Operation to apply.
-	 * @param array $inValues Array with the input values.
-	 * @return array The array stripped of any values with non-unique keys.
-	 */
-	private static function filterListByExclusion( ListInclusionOperation $operation, array $inValues ): array {
-		$outValues = [];
-		foreach ( $inValues as $inValue ) {
-			$result = $operation->apply( [ $inValue ] );
-			if ( strtolower( $result ) !== 'remove' ) {
-				$outValues[] = $inValue;
-			}
-		}
-
-		return $outValues;
-	}
-
-	/**
-	 * This function performs the filtering operation for the listfilter function when done by pattern.
-	 *
-	 * @param PatternOperation $operation Operation to apply.
+	 * @param WikitextOperation $operation Operation to apply.
 	 * @param array $inValues Array with the input values.
 	 * @param string $fieldSep Separator between fields, if any.
 	 * @return array The array stripped of any values with non-unique keys.
 	 */
-	private static function filterFromListByPattern( PatternOperation $operation, array $inValues, string $fieldSep ): array {
+	private static function filterList( WikitextOperation $operation, array $inValues, string $fieldSep = '' ): array {
 		$fieldLimit = $operation->getFieldLimit();
 
 		$outValues = [];
-		foreach ( $inValues as $i => $value ) {
-			if ( $value !== '' ) {
-				$result = $operation->apply( self::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
-				if ( strtolower( $result ) !== 'remove' ) {
-					$outValues[] = $value;
-				}
-			}
-		}
-
-		return $outValues;
-	}
-
-	/**
-	 * This function performs the filtering operation for the listfilter function when done by template.
-	 *
-	 * @param TemplateOperation $operation Operation to apply.
-	 * @param array $inValues Array with the input values.
-	 * @param string $fieldSep Separator between fields, if any.
-	 * @return array The array stripped of any values with non-unique keys.
-	 */
-	private static function filterFromListByTemplate( TemplateOperation $operation, array $inValues, string $fieldSep ): array {
-		$outValues = [];
-		foreach ( $inValues as $value ) {
-			$result = $operation->apply( self::explodeValue( $fieldSep, $value ) );
-			if ( $value !== '' && strtolower( $result ) !== 'remove' ) {
-				$outValues[] = $value;
+		foreach ( $inValues as $i => $inValue ) {
+			$result = $operation->apply( self::explodeValue( $fieldSep, $inValue, $fieldLimit ), $i + 1 );
+			if ( strtolower( $result ) !== 'remove' ) {
+				$outValues[] = $inValue;
 			}
 		}
 
@@ -815,7 +756,7 @@ final class ListFunctions {
 			}
 	
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
-			$outValues = self::filterListByInclusion( $operation, $inValues );
+			$outValues = self::filterList( $operation, $inValues );
 		} elseif ( $removeValues !== '' ) {
 			if ( $removeSep !== '' ) {
 				$removeValues = self::explodeList( $removeSep, $removeValues );
@@ -824,10 +765,10 @@ final class ListFunctions {
 			}
 	
 			$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
-			$outValues = self::filterListByExclusion( $operation, $inValues );
+			$outValues = self::filterList( $operation, $inValues );
 		} elseif ( $template !== '' ) {
 			$operation = new TemplateOperation( $parser, $frame, $template );
-			$outValues = self::filterFromListByTemplate( $operation, $inValues, $fieldSep );
+			$outValues = self::filterList( $operation, $inValues, $fieldSep );
 		} else {
 			if ( $fieldSep !== '' ) {
 				$tokens = self::explodeToken( $tokenSep, $token );
@@ -836,7 +777,7 @@ final class ListFunctions {
 			}
 	
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$outValues = self::filterFromListByPattern( $operation, $inValues, $fieldSep );
+			$outValues = self::filterList( $operation, $inValues, $fieldSep );
 		}
 
 		if ( count( $outValues ) === 0 ) {
@@ -882,7 +823,7 @@ final class ListFunctions {
 		}
 
 		$operation = new ListInclusionOperation( $values, '', 'remove', $csOption );
-		$outValues = self::filterListByInclusion( $operation, $inValues );
+		$outValues = self::filterList( $operation, $inValues );
 
 		if ( count( $outValues ) > 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $outValues ) );
@@ -917,7 +858,7 @@ final class ListFunctions {
 		$inValues = self::explodeList( $inSep, $inList );
 
 		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
-		$outValues = self::filterListByExclusion( $operation, $inValues );
+		$outValues = self::filterList( $operation, $inValues );
 
 		if ( count( $outValues ) > 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $outValues ) );
@@ -968,47 +909,24 @@ final class ListFunctions {
 	}
 
 	/**
-	 * Generates keys by replacing tokens in a pattern with the fields in the values, excludes any value that generates
-	 * any key generated by the previous values, and returns an array of the nonexcluded values.
+	 * This function performs the reduction to unique values operation for the listunique function.
 	 *
-	 * @param PatternOperation $operation Operation to apply.
-	 * @param array $inValues The input list.
+	 * @param WikitextOperation $operation Operation to apply.
+	 * @param array $inValues Array with the input values.
 	 * @param string $fieldSep Separator between fields, if any.
-	 * @return array An array with only values that generated unique keys via the given pattern.
+	 * @return array The array stripped of any values with non-unique keys.
 	 */
-	private static function reduceToUniqueValuesByKeyPattern( PatternOperation $operation, array $inValues, string $fieldSep ): array {
+	private static function reduceToUniqueValuesByKey(
+		WikitextOperation $operation,
+		array $inValues,
+		string $fieldSep = ''
+	): array {
 		$fieldLimit = $operation->getFieldLimit();
 
 		$previousKeys = [];
 		$outValues = [];
 		foreach ( $inValues as $i => $value ) {
-			if ( $value !== '' ) {
-				$key = $operation->apply( self::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
-				if ( !in_array( $key, $previousKeys ) ) {
-					$previousKeys[] = $key;
-					$outValues[] = $value;
-				}
-			}
-		}
-
-		return $outValues;
-	}
-
-	/**
-	 * Generates keys by turning the input value into one or more template parameters and processing that template,
-	 * excludes any value that generates any key generated by the previous values, and returns an array of the
-	 * nonexcluded values.
-	 *
-	 * @param TemplateOperation $operation Operation to apply.
-	 * @param array $inValues The input list.
-	 * @param string $fieldSep Separator between fields, if any.
-	 * @return array An array with only values that generated unique keys via the given pattern.
-	 */
-	private static function reduceToUniqueValuesByKeyTemplate( TemplateOperation $operation, array $inValues, string $fieldSep ): array {
-		$previousKeys = [];
-		$outValues = [];
-		foreach ( $inValues as $value ) {
-			$key = $operation->apply( self::explodeValue( $fieldSep, $value ) );
+			$key = $operation->apply( self::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
 			if ( !in_array( $key, $previousKeys ) ) {
 				$previousKeys[] = $key;
 				$outValues[] = $value;
@@ -1062,10 +980,10 @@ final class ListFunctions {
 
 		if ( $template !== '' ) {
 			$operation = new TemplateOperation( $parser, $frame, $template );
-			$outValues = self::reduceToUniqueValuesByKeyTemplate( $operation, $inValues, $fieldSep );
+			$outValues = self::reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
 		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$outValues = self::reduceToUniqueValuesByKeyPattern( $operation, $inValues, $fieldSep );
+			$outValues = self::reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
 		} else {
 			$outValues = self::reduceToUniqueValues( $inValues, $uniqueCS );
 		}
@@ -1102,43 +1020,21 @@ final class ListFunctions {
 	}
 
 	/**
-	 * Generates the sort keys by replacing tokens in a pattern with the fields in the values. This returns an array
-	 * of the values where each element is an array with the sort key in element 0 and the value in element 1.
+	 * Generates the sort keys. This returns an array of the values where each element is an array with the sort key
+	 * in element 0 and the value in element 1.
 	 *
-	 * @param PatternOperation $operation Operation to apply.
-	 * @param array $values The input list.
+	 * @param WikitextOperation $operation Operation to apply.
+	 * @param array $values Array with the input values.
 	 * @param string $fieldSep Separator between fields, if any.
 	 * @return array An array where each value has been paired with a sort key in a two-element array.
 	 */
-	private static function generateSortKeysByPattern( PatternOperation $operation, array $values, string $fieldSep ): array {
+	private static function generateSortKeys( WikitextOperation $operation, array $values, string $fieldSep = '' ): array {
 		$fieldLimit = $operation->getFieldLimit();
 
 		$pairedValues = [];
 		foreach ( $values as $i => $value ) {
-			if ( $value !== '' ) {
-				$key = $operation->apply( self::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
-				$pairedValues[] = [ $key, $value ];
-			}
-		}
-
-		return $pairedValues;
-	}
-
-	/**
-	 * Generates the sort keys by turning the input value into one or more template parameters and processing that
-	 * template. This returns an array of the values where each element is an array with the sort key in element 0 and
-	 * the value in element 1.
-	 *
-	 * @param TemplateOperation $operation Operation to apply.
-	 * @param array $values The input list.
-	 * @param string $template
-	 * @param string $fieldSep Separator between fields, if any.
-	 * @return array An array where each value has been paired with a sort key in a two-element array.
-	 */
-	private static function generateSortKeysByTemplate( TemplateOperation $operation, array $values, string $fieldSep ): array {
-		$pairedValues = [];
-		foreach ( $values as $value ) {
-			$pairedValues[] = [ $operation->apply( self::explodeValue( $fieldSep, $value ) ), $value ];
+			$key = $operation->apply( self::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
+			$pairedValues[] = [ $key, $value ];
 		}
 
 		return $pairedValues;
@@ -1207,14 +1103,14 @@ final class ListFunctions {
 	): array {
 		if ( $template !== '' ) {
 			$operation = new TemplateOperation( $parser, $frame, $template );	
-			$pairedValues = self::generateSortKeysByTemplate( $operation, $values, $fieldSep );
+			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
 		} else {
 			if ( $tokens === null ) {
 				$tokens = [ $token ];
 			}
 
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$pairedValues = self::generateSortKeysByPattern( $operation, $values, $fieldSep );
+			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
 		}
 
 		$sorter->sortPairs( $pairedValues );
@@ -1335,41 +1231,28 @@ final class ListFunctions {
 	}
 
 	/**
-	 * This function performs the pattern changing operation for the listmap function.
+	 * This function performs the value changing operation for the listmap function.
 	 *
-	 * @param PatternOperation $operation Operation to apply.
-	 * @param array $inValues The input list.
+	 * @param WikitextOperation $operation Operation to apply.
+	 * @param bool $keepEmpty True to keep empty values once the operation applied, false to remove empty values.
+	 * @param array $inValues Array with the input values.
 	 * @param string $fieldSep Separator between fields, if any.
 	 * @return string The function output.
 	 */
-	private static function applyPatternToList( PatternOperation $operation, array $inValues, string $fieldSep ): array {
+	private static function mapList(
+		WikitextOperation $operation,
+		bool $keepEmpty,
+		array $inValues,
+		string $fieldSep = ''
+	): array {
 		$fieldLimit = $operation->getFieldLimit();
 
 		$outValues = [];
 		foreach ( $inValues as $i => $inValue ) {
-			if ( $inValue !== '' ) {
-				$outValue = $operation->apply( self::explodeValue( $fieldSep, $inValue, $fieldLimit ), $i + 1 );
-				if ( $outValue !== '' ) {
-					$outValues[] = $outValue;
-				}
+			$outValue = $operation->apply( self::explodeValue( $fieldSep, $inValue, $fieldLimit ), $i + 1 );
+			if ( $outValue !== '' || $keepEmpty ) {
+				$outValues[] = $outValue;
 			}
-		}
-
-		return $outValues;
-	}
-
-	/**
-	 * This function performs the sort option for the listmtemp function.
-	 *
-	 * @param TemplateOperation $operation Operation to apply.
-	 * @param array $inValues The input list.
-	 * @param string $fieldSep Separator between fields, if any.
-	 * @return string The function output.
-	 */
-	private static function applyTemplateToList( TemplateOperation $operation, array $inValues, string $fieldSep ): array {
-		$outValues = [];
-		foreach ( $inValues as $inValue ) {
-			$outValues[] = $operation->apply( self::explodeValue( $fieldSep, $inValue ) );
 		}
 
 		return $outValues;
@@ -1433,7 +1316,7 @@ final class ListFunctions {
 			}
 
 			$operation = new TemplateOperation( $parser, $frame, $template );	
-			$outValues = self::applyTemplateToList( $operation, $inValues, $fieldSep );
+			$outValues = self::mapList( $operation, true, $inValues, $fieldSep );
 
 			if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 				$outValues = $sorter->sort( $outValues );
@@ -1450,7 +1333,7 @@ final class ListFunctions {
 			}
 
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$outValues = self::applyPatternToList( $operation, $inValues, $fieldSep );
+			$outValues = self::mapList( $operation, false, $inValues, $fieldSep );
 
 			if ( ( $indexToken === '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_POST ) {
 				$outValues = $sorter->sort( $outValues );
@@ -1510,7 +1393,7 @@ final class ListFunctions {
 		}
 
 		$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ] );
-		$outValues = self::applyPatternToList( $operation, $inValues, '' );
+		$outValues = self::mapList( $operation, false, $inValues, '' );
 
 		if ( $sortMode & ( self::SORTMODE_COMPAT | self::SORTMODE_POST ) ) {
 			$outValues = $sorter->sort( $outValues );
@@ -1563,10 +1446,10 @@ final class ListFunctions {
 
 		if ( $template === '' ) {
 			$operation = new PatternOperation( $parser, $frame, '', [ '' ] );
-			$outValues = self::applyPatternToList( $operation, $inValues, '' );
+			$outValues = self::mapList( $operation, false, $inValues, '' );
 		} else {
 			$operation = new TemplateOperation( $parser, $frame, $template );	
-			$outValues = self::applyTemplateToList( $operation, $inValues, '' );
+			$outValues = self::mapList( $operation, true, $inValues, '' );
 		}
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
