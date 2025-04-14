@@ -756,7 +756,6 @@ final class ListFunctions {
 			}
 	
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
-			$outValues = self::filterList( $operation, $inValues );
 		} elseif ( $removeValues !== '' ) {
 			if ( $removeSep !== '' ) {
 				$removeValues = self::explodeList( $removeSep, $removeValues );
@@ -765,10 +764,8 @@ final class ListFunctions {
 			}
 	
 			$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
-			$outValues = self::filterList( $operation, $inValues );
 		} elseif ( $template !== '' ) {
 			$operation = new TemplateOperation( $parser, $frame, $template );
-			$outValues = self::filterList( $operation, $inValues, $fieldSep );
 		} else {
 			if ( $fieldSep !== '' ) {
 				$tokens = self::explodeToken( $tokenSep, $token );
@@ -777,8 +774,9 @@ final class ListFunctions {
 			}
 	
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$outValues = self::filterList( $operation, $inValues, $fieldSep );
 		}
+
+		$outValues = self::filterList( $operation, $inValues, $fieldSep );
 
 		if ( count( $outValues ) === 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
@@ -1075,50 +1073,6 @@ final class ListFunctions {
 	}
 
 	/**
-	 * Sorts a list by keys
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param ListSorter $sorter The list sorter.
-	 * @param array $values The input list.
-	 * @param string $template The template to use.
-	 * @param string $fieldSep The delimiter separating values in the input list.
-	 * @param string $indexToken Replace the current 1-based index of the element. Null/empty to skip.
-	 * @param string $token The token in the pattern that represents where the list value should go.
-	 * @param ?array $tokens Or if there are mulitple fields, the tokens representing where they go.
-	 * @param string $pattern The pattern containing token that list values are inserted into at that token.
-	 * @return array An array where each value has been paired with a sort key in a two-element array.
-	 */
-	private static function sortListByKeys(
-		Parser $parser,
-		PPFrame $frame,
-		ListSorter $sorter,
-		array $values,
-		string $template,
-		string $fieldSep,
-		string $indexToken,
-		string $token,
-		?array $tokens,
-		string $pattern
-	): array {
-		if ( $template !== '' ) {
-			$operation = new TemplateOperation( $parser, $frame, $template );	
-			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
-		} else {
-			if ( $tokens === null ) {
-				$tokens = [ $token ];
-			}
-
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
-		}
-
-		$sorter->sortPairs( $pairedValues );
-
-		return self::discardSortKeys( $pairedValues );
-	}
-
-	/**
 	 * This function directs the sort operation for the listsort function.
 	 *
 	 * @param Parser $parser The parser object.
@@ -1168,25 +1122,28 @@ final class ListFunctions {
 			$values = array_unique( $values );
 		}
 
-		if ( $fieldSep !== '' ) {
-			$tokens = self::explodeToken( $tokenSep, $token );
-		}
-
-		if ( $template !== '' || ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) ) {
+		if ( $template !== '' ) {
 			$sortOptions = self::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
 			$sorter = new ListSorter( $sortOptions, $subsortOptions );
-			$values = self::sortListByKeys(
-				$parser,
-				$frame,
-				$sorter,
-				$values,
-				$template,
-				$fieldSep,
-				$indexToken,
-				$token,
-				$tokens ?? null,
-				$pattern
-			);
+			$operation = new TemplateOperation( $parser, $frame, $template );
+
+			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
+			$sorter->sortPairs( $pairedValues );
+			$values = self::discardSortKeys( $pairedValues );
+		} else if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+			if ( $fieldSep !== '' ) {
+				$tokens = self::explodeToken( $tokenSep, $token );
+			} else {
+				$tokens = [ $token ];
+			}
+
+			$sortOptions = self::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+			$sorter = new ListSorter( $sortOptions, $subsortOptions );
+			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+
+			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
+			$sorter->sortPairs( $pairedValues );
+			$values = self::discardSortKeys( $pairedValues );
 		} else {
 			$sortOptions = self::decodeSortOptions( $sortOptions );
 			$sorter = new ListSorter( $sortOptions );
@@ -1584,85 +1541,6 @@ final class ListFunctions {
 	}
 
 	/**
-	 * This function performs the pattern changing operation for the listmerge function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param string $inList The input list.
-	 * @param string $inSep The delimiter seoarating values in the input list.
-	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
-	 * @param string $token1 The token(s) that represents where the list value should go for item 1.
-	 * @param string $token2 The token(s) that represents where the list value should go for item 2.
-	 * @param string $tokenSep The separator between tokens if used.
-	 * @param string $matchPattern The pattern that determines if items match.
-	 * @param string $mergePattern The pattern that list values are inserted into at that token.
-	 * @param string $outSep The delimiter that should separate values in the output list.
-	 * @param int $sortMode What sort mode to use, if any.
-	 * @param int $sortOptions Options for the sort as handled by #listsort.
-	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
-	 * @param string $intro Content to include before outputted list values, if at least one item is output.
-	 * @param string $outro Content to include after outputted list values, if at least one item is output.
-	 * @param string $default Content to output if no list values are.
-	 * @return string The function output.
-	 */
-	private static function mergeListByPattern(
-		PatternOperation $matchOperation,
-		PatternOperation $mergeOperation,
-		int $tokenCount1,
-		int $tokenCount2,
-		array $inValues,
-		string $fieldSep
-	): array {
-		$matchParams = [ $matchOperation, $tokenCount1, $tokenCount2, '', '', $fieldSep ];
-		$mergeParams = [ $mergeOperation, $tokenCount1, $tokenCount2, '', '', $fieldSep ];
-		return self::iterativeListMerge(
-			$inValues,
-			[ __CLASS__, 'applyTwoSetFieldPattern' ],
-			$matchParams,
-			$mergeParams,
-			3,
-			4
-		);
-	}
-
-	/**
-	 * This function performs the template changing option for the listmerge function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param string $inList The input list.
-	 * @param string $matchTemplate The template to use for the matching test.
-	 * @param string $mergeTemplate The template to use for the merging operation.
-	 * @param string $inSep The delimiter seoarating values in the input list.
-	 * @param string $fieldSep The optional delimiter seoarating fields in each value.
-	 * @param string $outSep The delimiter that should separate values in the output list.
-	 * @param int $sortMode What sort mode to use, if any.
-	 * @param int $sortOptions Options for the sort as handled by #listsort.
-	 * @param string $countToken The token to replace with the list count. Null/empty to skip.
-	 * @param string $intro Content to include before outputted list values, if at least one item is output.
-	 * @param string $outro Content to include after outputted list values, if at least one item is output.
-	 * @param string $default Content to output if no list values are.
-	 * @return string The function output.
-	 */
-	private static function mergeListByTemplate(
-		TemplateOperation $matchOperation,
-		TemplateOperation $mergeOperation,
-		array $inValues,
-		string $fieldSep
-	): array {
-		$matchParams = [ $matchOperation, '', '', $fieldSep ];
-		$mergeParams = [ $mergeOperation, '', '', $fieldSep ];
-		return self::iterativeListMerge(
-			$inValues,
-			[ __CLASS__, 'applyTemplateToTwoValues' ],
-			$matchParams,
-			$mergeParams,
-			1,
-			2
-		);
-	}
-
-	/**
 	 * This function renders the listmerge function, sending it to the appropriate processing function based on what
 	 * parameter values are provided.
 	 *
@@ -1717,20 +1595,29 @@ final class ListFunctions {
 		if ( $matchTemplate !== '' && $mergeTemplate !== '' ) {
 			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
-			$outValues = self::mergeListByTemplate( $matchOperation, $mergeOperation, $inValues, $fieldSep );
+
+			$outValues = self::iterativeListMerge(
+				$inValues,
+				[ __CLASS__, 'applyTemplateToTwoValues' ],
+				[ $matchOperation, '', '', $fieldSep ],
+				[ $mergeOperation, '', '', $fieldSep ],
+				1,
+				2
+			);
 		} else {
 			$tokens1 = self::explodeToken( $tokenSep, $token1 );
 			$tokens2 = self::explodeToken( $tokenSep, $token2 );
 
 			$matchOperation = new PatternOperation( $parser, $frame, $matchPattern, [ ...$tokens1, ...$tokens2 ] );
 			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, [ ...$tokens1, ...$tokens2 ] );
-			$outValues = self::mergeListByPattern(
-				$matchOperation,
-				$mergeOperation,
-				count( $tokens1 ),
-				count( $tokens2 ),
+
+			$outValues = self::iterativeListMerge(
 				$inValues,
-				$fieldSep
+				[ __CLASS__, 'applyTwoSetFieldPattern' ],
+				[ $matchOperation, count( $tokens1 ), count( $tokens2 ), '', '', $fieldSep ],
+				[ $mergeOperation, count( $tokens1 ), count( $tokens2 ), '', '', $fieldSep ],
+				3,
+				4
 			);
 		}
 
