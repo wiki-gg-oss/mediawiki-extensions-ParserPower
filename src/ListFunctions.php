@@ -1401,13 +1401,8 @@ final class ListFunctions {
 			$inValues = $sorter->sort( $inValues );
 		}
 
-		if ( $template === '' ) {
-			$operation = new PatternOperation( $parser, $frame, '', [ '' ] );
-			$outValues = self::mapList( $operation, false, $inValues, '' );
-		} else {
-			$operation = new TemplateOperation( $parser, $frame, $template );	
-			$outValues = self::mapList( $operation, true, $inValues, '' );
-		}
+		$operation = new TemplateOperation( $parser, $frame, $template );	
+		$outValues = self::mapList( $operation, true, $inValues, '' );
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 			$outValues = $sorter->sort( $outValues );
