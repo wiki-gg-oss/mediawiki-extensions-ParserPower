@@ -754,7 +754,7 @@ final class ListFunctions {
 			} else {
 				$keepValues = [ ParserPower::unescape( $keepValues ) ];
 			}
-	
+
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
 		} elseif ( $removeValues !== '' ) {
 			if ( $removeSep !== '' ) {
@@ -762,7 +762,7 @@ final class ListFunctions {
 			} else {
 				$removeValues = [ ParserPower::unescape( $removeValues ) ];
 			}
-	
+
 			$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
 		} elseif ( $template !== '' ) {
 			$operation = new TemplateOperation( $parser, $frame, $template );
@@ -772,7 +772,7 @@ final class ListFunctions {
 			} else {
 				$tokens = [ $token ];
 			}
-	
+
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 		}
 
@@ -1130,7 +1130,7 @@ final class ListFunctions {
 			$pairedValues = self::generateSortKeys( $operation, $values, $fieldSep );
 			$sorter->sortPairs( $pairedValues );
 			$values = self::discardSortKeys( $pairedValues );
-		} else if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
 			if ( $fieldSep !== '' ) {
 				$tokens = self::explodeToken( $tokenSep, $token );
 			} else {
@@ -1272,7 +1272,7 @@ final class ListFunctions {
 				$inValues = $sorter->sort( $inValues );
 			}
 
-			$operation = new TemplateOperation( $parser, $frame, $template );	
+			$operation = new TemplateOperation( $parser, $frame, $template );
 			$outValues = self::mapList( $operation, true, $inValues, $fieldSep );
 
 			if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
@@ -1394,14 +1394,14 @@ final class ListFunctions {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
 		$sorter = new ListSorter( $sortOptions );
-	
+
 		$inValues = self::explodeList( $inSep, $inList );
 
 		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
 		}
 
-		$operation = new TemplateOperation( $parser, $frame, $template );	
+		$operation = new TemplateOperation( $parser, $frame, $template );
 		$outValues = self::mapList( $operation, true, $inValues, '' );
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
@@ -1465,7 +1465,7 @@ final class ListFunctions {
 
 					if ( isset( $checkedPairs[$value1][$value2] ) ) {
 						$doMerge = $checkedPairs[$value1][$value2];
-					} {
+					} else {
 						$doMerge = $matchOperation->apply( $fields );
 						$doMerge = self::decodeBool( $doMerge );
 						$checkedPairs[$value1][$value2] = $doMerge;
@@ -1542,17 +1542,18 @@ final class ListFunctions {
 		if ( $matchTemplate !== '' && $mergeTemplate !== '' ) {
 			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
-
-			$outValues = self::iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep );
 		} else {
 			$tokens1 = self::explodeToken( $tokenSep, $token1 );
 			$tokens2 = self::explodeToken( $tokenSep, $token2 );
+			$tokens = [ ...$tokens1, ...$tokens2 ];
+			$fieldOffset = count( $tokens1 );
 
-			$matchOperation = new PatternOperation( $parser, $frame, $matchPattern, [ ...$tokens1, ...$tokens2 ] );
-			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, [ ...$tokens1, ...$tokens2 ] );
+			$matchOperation = new PatternOperation( $parser, $frame, $matchPattern, $tokens );
+			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, $tokens );
 
-			$outValues = self::iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, count( $tokens1 ) );
 		}
+
+		$outValues = self::iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, $fieldOffset ?? null );
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 			$outValues = $sorter->sort( $outValues );
