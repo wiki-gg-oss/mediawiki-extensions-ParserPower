@@ -1416,86 +1416,25 @@ final class ListFunctions {
 	}
 
 	/**
-	 * Breaks the input values into fields and then replaces the indicated tokens in the pattern
-	 * with those field values. This is for special cases when two sets of replacements are
-	 * necessary for a given pattern.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param string $inValue1 The first value to (potentially) split and replace tokens with
-	 * @param string $inValue2 The second value to (potentially) split and replace tokens with
-	 * @param string $fieldSep The delimiter separating the fields in the value.
-	 * @param array $tokens1 The list of tokens to replace when performing the replacement for $inValue1.
-	 * @param array $tokens2 The list of tokens to replace when performing the replacement for $inValue2.
-	 * @param string $pattern Pattern containing tokens to be replaced by field (or unsplit) values.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	private static function applyTwoSetFieldPattern(
-		PatternOperation $operation,
-		int $tokenCount1,
-		int $tokenCount2,
-		string $inValue1,
-		string $inValue2,
-		string $fieldSep
-	): string {
-		if ( $inValue1 === '' || $inValue2 === '' ) {
-			return '';
-		}
-
-		$fields = self::explodeValue( $fieldSep, $inValue1, $tokenCount1 );
-		foreach ( self::explodeValue( $fieldSep, $inValue2, $tokenCount2 ) as $i => $field ) {
-			$fields[$tokenCount1 + $i] = $field;
-		}
-
-		return $operation->apply( $fields );
-	}
-
-	/**
-	 * Turns the input value into one or more template parameters, processes the templates with those parameters, and
-	 * returns the result.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param string $inValue1 The first value to change into one or more template parameters.
-	 * @param string $inValue2 The second value to change into one of more template parameters.
-	 * @param string $template The template to pass the parameters to.
-	 * @param string $fieldSep The delimiter separating the parameter values.
-	 * @return string The result of the template.
-	 */
-	private static function applyTemplateToTwoValues(
-		TemplateOperation $operation,
-		string $inValue1,
-		string $inValue2,
-		string $fieldSep
-	): string {
-		return $operation->apply( [
-			...self::explodeValue( $fieldSep, $inValue1 ),
-			...self::explodeValue( $fieldSep, $inValue2 )
-		] );
-	}
-
-	/**
 	 * This function performs repeated merge passes until either the input array is merged to a single value, or until
 	 * a merge pass is completed that does not perform any further merges (pre- and post-pass array count is the same).
 	 * Each merge pass operates by performing a conditional on all possible pairings of items, immediately merging two
 	 * if the conditional indicates it should and reducing the possible pairings. The logic for the conditional and
 	 * the actual merge process is supplied through a user-defined function.
 	 *
-	 * @param array $values The input values, should be already exploded and fully preprocessed.
-	 * @param callable $applyFunction Valid name of the function to call for both match and merge processes.
-	 * @param array $matchParams Parameter values for the matching process, with open spots for the values.
-	 * @param array $mergeParams Parameter values for the merging process, with open spots for the values.
-	 * @param int $valueIndex1 The index in $matchParams and $mergeParams where the first value is to go.
-	 * @param int $valueIndex2 The index in $matchParams and $mergeParams where the second value is to go.
+	 * @param WikitextOperation $matchOperation Operation to apply for the matching process.
+	 * @param WikitextOperation $mergeOperation Operation to apply for the merging process.
+	 * @param array $values Array with the input values.
+	 * @param string $fieldSep Separator between fields, if any.
+	 * @param ?int $fieldOffset Number of fields that the first value should cover.
 	 * @return array An array with the output values.
 	 */
 	private static function iterativeListMerge(
+		WikitextOperation $matchOperation,
+		WikitextOperation $mergeOperation,
 		array $values,
-		callable $applyFunction,
-		array $matchParams,
-		array $mergeParams,
-		int $valueIndex1,
-		int $valueIndex2
+		string $fieldSep = '',
+		?int $fieldOffset = null
 	): array {
 		$checkedPairs = [];
 
@@ -1503,24 +1442,37 @@ final class ListFunctions {
 			$preCount = $count = count( $values );
 
 			for ( $i1 = 0; $i1 < $count; ++$i1 ) {
-				$value1 = $matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $values[$i1];
+				$value1 = $values[$i1];
 				$shift = 0;
 
 				for ( $i2 = $i1 + 1; $i2 < $count; ++$i2 ) {
-					$value2 = $matchParams[$valueIndex2] = $mergeParams[$valueIndex2] = $values[$i2];
+					$value2 = $values[$i2];
 					unset( $values[$i2] );
+
+					if ( $fieldSep === '' ) {
+						$fields = [ $value1, $fieldOffset ?? 1 => $value2 ];
+					} else {
+						$fieldLimit = $operation->getFieldLimit();
+						if ( $fieldLimit !== null ) {
+							$fieldLimit = $fieldLimit - ( $fieldOffset ?? count( $fields ) );
+						}
+
+						$fields = explode( $fieldSep, $value1, $fieldOffset );
+						foreach ( explode( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
+							$fields[$offset + $i] = $field;
+						}
+					}
 
 					if ( isset( $checkedPairs[$value1][$value2] ) ) {
 						$doMerge = $checkedPairs[$value1][$value2];
-					} else {
-						$doMerge = call_user_func_array( $applyFunction, $matchParams );
+					} {
+						$doMerge = $matchOperation->apply( $fields );
 						$doMerge = self::decodeBool( $doMerge );
 						$checkedPairs[$value1][$value2] = $doMerge;
 					}
 
 					if ( $doMerge ) {
-						$value1 = call_user_func_array( $applyFunction, $mergeParams );
-						$matchParams[$valueIndex1] = $mergeParams[$valueIndex1] = $value1;
+						$value1 = $mergeOperation->apply( $fields );
 						$shift += 1;
 					} else {
 						$values[$i2 - $shift] = $value2;
@@ -1591,14 +1543,7 @@ final class ListFunctions {
 			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
 
-			$outValues = self::iterativeListMerge(
-				$inValues,
-				[ __CLASS__, 'applyTemplateToTwoValues' ],
-				[ $matchOperation, '', '', $fieldSep ],
-				[ $mergeOperation, '', '', $fieldSep ],
-				1,
-				2
-			);
+			$outValues = self::iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep );
 		} else {
 			$tokens1 = self::explodeToken( $tokenSep, $token1 );
 			$tokens2 = self::explodeToken( $tokenSep, $token2 );
@@ -1606,14 +1551,7 @@ final class ListFunctions {
 			$matchOperation = new PatternOperation( $parser, $frame, $matchPattern, [ ...$tokens1, ...$tokens2 ] );
 			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, [ ...$tokens1, ...$tokens2 ] );
 
-			$outValues = self::iterativeListMerge(
-				$inValues,
-				[ __CLASS__, 'applyTwoSetFieldPattern' ],
-				[ $matchOperation, count( $tokens1 ), count( $tokens2 ), '', '', $fieldSep ],
-				[ $mergeOperation, count( $tokens1 ), count( $tokens2 ), '', '', $fieldSep ],
-				3,
-				4
-			);
+			$outValues = self::iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, count( $tokens1 ) );
 		}
 
 		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
