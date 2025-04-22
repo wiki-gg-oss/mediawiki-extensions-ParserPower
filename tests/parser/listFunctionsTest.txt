@@ -55,6 +55,12 @@ KeEP
 !! endarticle
 
 !! article
+Template:Remove/if index
+!! text
+{{#switch: {{{index}}} | 2 | 6 | 7 | 10 = rEMovE }}
+!! endarticle
+
+!! article
 Template:Remove/if value
 !! text
 {{#switch: {{{1}}} | b | f | g | j = rEMovE }}
@@ -67,15 +73,33 @@ Template:Remove/if fields
 !! endarticle
 
 !! article
+Template:Unique/index
+!! text
+{{#expr: trunc( {{{index}}} / 2 ) }}
+!! endarticle
+
+!! article
 Template:Unique/value
 !! text
 {{#switch: {{{1}}} | b | c | f = x | {{{1}}} }}
 !! endarticle
 
 !! article
+Template:Sort/index
+!! text
+{{#expr: 10 - {{{index}}} }}
+!! endarticle
+
+!! article
 Template:Sort/value
 !! text
 {{#switch: {{lc: {{{1}}} }} | a = 3 | c = 2 | 1 }}
+!! endarticle
+
+!! article
+Template:Map/index
+!! text
+{{#expr: {{{index}}} mod 3 }}
 !! endarticle
 
 !! article
@@ -466,6 +490,7 @@ cs desc neg: "-3" / ""
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = unknown }}"
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/keep }}"
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/if index }}"
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = remove/if value }}"
 "{{#listfilter: list = a:k, b :l ,c: m,:n,d :o:,e:p: p, ,f:q :r, g : s | template = remove/if fields | fieldsep = : }}"
 !! html/php
@@ -473,6 +498,7 @@ cs desc neg: "-3" / ""
 "a, b, c, d, e, f, g, h, i, j"
 "a, b, c, d, e, f, g, h, i, j"
 ""
+"a, c, d, e, h, i"
 "a, c, d, e, h, i"
 "a:k, b :l, c: m, d :o:, e:p: p, f:q :r, g&#160;: s"
 </p>
@@ -626,10 +652,12 @@ cs desc neg: "-3" / ""
 !! wikitext
 "{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = empty }}"
 "{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unknown }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unique/index }}"
 "{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | template = unique/value }}"
 !! html/php
 <p>"a"
 "a"
+"a, b, D, b, D, f"
 "a, b, C, D, A, E"
 </p>
 !! end
@@ -698,10 +726,12 @@ cs desc neg: "-3" / ""
 !! wikitext
 "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = empty }}"
 "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = unknown }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = sort/index }}"
 "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | template = sort/value }}"
 !! html/php
 <p>"f, D, C, A, F, B, e, a, c, C"
 "f, D, C, A, F, B, e, a, c, C"
+"C, c, a, e, B, F, A, C, D, f"
 "f, D, F, B, e, C, c, C, A, a"
 </p>
 !! end
@@ -812,10 +842,12 @@ numeric desc: "6!6!4!4!3!3!3!2!1!1"
 !! wikitext
 "{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = empty }}"
 "{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = unknown }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = map/index }}"
 "{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | template = map/value }}"
 !! html/php
 <p>", , , , , , , , , "
 "x y, x y, x y, x y, x y, x y, x y, x y, x y, x y"
+"1, 2, 0, 1, 2, 0, 1, 2, 0, 1"
 "a, -b, c, d, e, -f, -g, h, i, -j"
 </p>
 !! end
@@ -934,6 +966,7 @@ numeric desc: "6!6!4!4!3!3!3!2!1!1"
 !! wikitext
 "{{#lstmaptemp:}}"
 "{{#lstmaptemp: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 }}"
+"{{#lstmaptemp: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | map/index }}"
 "{{#lstmaptemp: 5, 6 ,7,8,,9 ,0, ,1, 2,3,4 | opposite }}"
 "{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; }}"
 "{{#lstmaptemp: 5; 6 ;7;8;;9 ;0; ;1; 2;3;4 | opposite | ; | ! }}"
@@ -946,6 +979,7 @@ numeric desc: "6!6!4!4!3!3!3!2!1!1"
 !! html/php
 <p>""
 "5, 6, 7, 8, 9, 0, 1, 2, 3, 4"
+"1, 2, 0, 1, 2, 0, 1, 2, 0, 1"
 "4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
 "4, 3, 2, 1, 0, 9, 8, 7, 6, 5"
 "4!3!2!1!0!9!8!7!6!5"
