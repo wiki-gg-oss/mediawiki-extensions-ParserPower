@@ -36,12 +36,12 @@ Target
 !! wikitext
 "<esc></esc>"
 "<esc>\
-{}[]<>=|</esc>" are all escaped
+  {}[]<>=|</esc>" are all escaped
 "<esc>\a\{\</esc>" only escapes backslashes
 "{{<esc>!</esc>}}" output is not stripped
 !! html/php
 <p>""
-"\\\n\{\}\(\)\l\g\e\!" are all escaped
+"\\\n\_\_\{\}\(\)\l\g\e\!" are all escaped
 "\\a\\{\\" only escapes backslashes
 "|" output is not stripped
 </p>
@@ -62,10 +62,13 @@ Target
 {{#uesc}}
 !! wikitext
 "{{#uesc:}}"
+"{{#uesc: \\\n\{\}\_\_\(\)\s\s\l\g\e\! }}"
 "{{#uesc: \_{\{!}\}\0 }}"
 "{{#uesc:\}}"
 !! html/php
 <p>""
+"\
+{}  []  &lt;&gt;=|"
 " |"
 "\"
 </p>
