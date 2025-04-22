@@ -37,6 +37,9 @@ final class TemplateOperation implements WikitextOperation {
 		foreach ( $fields as $i => $value ) {
 			$result .= '|' . ( $i + 1 ) . '=' . $value;
 		}
+		if ( $index !== null ) {
+			$result .= '|index=' . $index;
+		}
 		$result .= '}}';
 
 		return ParserPower::evaluateUnescaped( $this->parser, $this->frame, $result, ParserPower::WITH_ARGS );
