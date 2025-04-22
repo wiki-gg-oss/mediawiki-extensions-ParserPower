@@ -47,6 +47,7 @@ class ParserPower {
 	private const UNESCAPE_SEQS = [
 		'n' => "\n",
 		'_' => ' ',
+		's' => ' ',
 		'{' => '{',
 		'}' => '}',
 		'(' => '[',
