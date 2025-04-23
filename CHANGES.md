@@ -15,5 +15,5 @@ Add new entries to the top of the 1.x.x-NEXT section.
 
 ## Versions
 
-### 1.x.x-NEXT
+### 1.x.x-NEXT (YYYY-MM-DD)
 * …
