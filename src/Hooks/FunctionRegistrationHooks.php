@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Hooks;
 
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\SimpleFunctions;
 use MediaWiki\Page\RedirectLookup;
@@ -16,10 +17,13 @@ final class FunctionRegistrationHooks implements
 	private readonly ListFunctions $listFunctions;
 
 	public function __construct(
+		Config $config,
 		RedirectLookup $redirectLookup
 	) {
 		$this->simpleFunctions = new SimpleFunctions( $redirectLookup );
-		$this->listFunctions = new ListFunctions();
+		$this->listFunctions = new ListFunctions(
+			$config->get( 'ParserPowerLstmapExpansionCompat' )
+		);
 	}
 
 	/**

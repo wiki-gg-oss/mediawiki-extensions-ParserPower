@@ -352,6 +352,10 @@ final class ListFunctions {
 		return $outValues[0] ?? '';
 	}
 
+	public function __construct(
+		private readonly bool $useLegacyLstmapExpansion
+	) { }
+
 	/**
 	 * This function directs the counting operation for the lstcnt function.
 	 *
@@ -1326,8 +1330,9 @@ final class ListFunctions {
 		}
 
 		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$token = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::UNESCAPE );
-		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x' );
+		$legacyExpansionFlags = $this->useLegacyLstmapExpansion ? ParserPower::NO_VARS : 0;
+		$token = ParserPower::expand( $frame, $params[2] ?? 'x', $legacyExpansionFlags | ParserPower::UNESCAPE );
+		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x', $legacyExpansionFlags );
 		$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
 		$sortMode = ParserPower::expand( $frame, $params[5] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );

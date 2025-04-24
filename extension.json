@@ -33,12 +33,19 @@
 		"FunctionRegistration": {
 			"class": "MediaWiki\\Extension\\ParserPower\\Hooks\\FunctionRegistrationHooks",
 			"services": [
+				"MainConfig",
 				"RedirectLookup"
 			]
 		}
 	},
 	"Hooks": {
 		"ParserFirstCallInit": "FunctionRegistration"
+	},
+	"config_prefix": "wgParserPower",
+	"config": {
+		"LstmapExpansionCompat": {
+			"value": false
+		}
 	},
 	"manifest_version": 2
 }
