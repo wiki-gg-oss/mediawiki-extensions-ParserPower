@@ -1439,29 +1439,38 @@ final class ListFunctions {
 					$value2 = $values[$i2];
 					unset( $values[$i2] );
 
-					if ( $fieldSep === '' ) {
-						$fields = [ $value1, $fieldOffset ?? 1 => $value2 ];
-					} else {
-						$fieldLimit = $operation->getFieldLimit();
-						if ( $fieldLimit !== null ) {
-							$fieldLimit = $fieldLimit - ( $fieldOffset ?? count( $fields ) );
-						}
-
-						$fields = explode( $fieldSep, $value1, $fieldOffset );
-						foreach ( explode( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
-							$fields[$offset + $i] = $field;
-						}
-					}
+					$fields1 = self::explodeValue( $fieldSep, $value1, $fieldOffset );
+					$offset = $fieldOffset ?? count( $fields1 );
 
 					if ( isset( $checkedPairs[$value1][$value2] ) ) {
 						$doMerge = $checkedPairs[$value1][$value2];
 					} else {
+						$fieldLimit = $matchOperation->getFieldLimit();
+						if ( $fieldLimit !== null ) {
+							$fieldLimit = $fieldLimit - $offset;
+						}
+
+						$fields = $fields1;
+						foreach ( self::explodeValue( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
+							$fields[$offset + $i] = $field;
+						}
+
 						$doMerge = $matchOperation->apply( $fields );
 						$doMerge = self::decodeBool( $doMerge );
 						$checkedPairs[$value1][$value2] = $doMerge;
 					}
 
 					if ( $doMerge ) {
+						$fieldLimit = $mergeOperation->getFieldLimit();
+						if ( $fieldLimit !== null ) {
+							$fieldLimit = $fieldLimit - $offset;
+						}
+
+						$fields = $fields1;
+						foreach ( self::explodeValue( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
+							$fields[$offset + $i] = $field;
+						}
+
 						$value1 = $mergeOperation->apply( $fields );
 						$shift += 1;
 					} else {
@@ -1528,8 +1537,13 @@ final class ListFunctions {
 			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
 		} else {
-			$tokens1 = self::explodeToken( $tokenSep, $token1 );
-			$tokens2 = self::explodeToken( $tokenSep, $token2 );
+			if ( $fieldSep !== '' ) {
+				$tokens1 = self::explodeToken( $tokenSep, $token1 );
+				$tokens2 = self::explodeToken( $tokenSep, $token2 );
+			} else {
+				$tokens1 = [ $token1 ];
+				$tokens2 = [ $token2 ];
+			}
 			$tokens = [ ...$tokens1, ...$tokens2 ];
 			$fieldOffset = count( $tokens1 );
 
