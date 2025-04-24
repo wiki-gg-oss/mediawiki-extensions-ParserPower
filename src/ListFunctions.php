@@ -1194,7 +1194,7 @@ final class ListFunctions {
 	 * @param bool $keepEmpty True to keep empty values once the operation applied, false to remove empty values.
 	 * @param array $inValues Array with the input values.
 	 * @param string $fieldSep Separator between fields, if any.
-	 * @return string The function output.
+	 * @return array The function output.
 	 */
 	private static function mapList(
 		WikitextOperation $operation,
