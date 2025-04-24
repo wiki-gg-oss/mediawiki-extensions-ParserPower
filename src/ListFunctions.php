@@ -1388,7 +1388,7 @@ final class ListFunctions {
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 
 		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, '' );
 		}
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
@@ -1409,7 +1409,7 @@ final class ListFunctions {
 		}
 
 		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, '' );
 		}
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $outValues ) );
