@@ -1249,15 +1249,10 @@ final class ListFunctions {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
 		$duplicates = self::decodeDuplicates( $duplicates );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
 		$sorter = new ListSorter( $sortOptions );
 
@@ -1332,14 +1327,9 @@ final class ListFunctions {
 		$sortMode = ParserPower::expand( $frame, $params[5] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
 
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, '' );
-		}
-
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
 		$sorter = new ListSorter( $sortOptions );
 
@@ -1357,7 +1347,7 @@ final class ListFunctions {
 		}
 
 		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, '' );
+			return '';
 		}
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $outValues ) );
@@ -1384,14 +1374,9 @@ final class ListFunctions {
 		$sortMode = ParserPower::expand( $frame, $params[4] ?? '' );
 		$sortOptions = ParserPower::expand( $frame, $params[5] ?? '' );
 
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, '' );
-		}
-
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
 		$sorter = new ListSorter( $sortOptions );
 
@@ -1409,7 +1394,7 @@ final class ListFunctions {
 		}
 
 		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, '' );
+			return '';
 		}
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, implode( $outSep, $outValues ) );
@@ -1522,14 +1507,9 @@ final class ListFunctions {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortMode = self::decodeSortMode( $sortMode );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
 		$sorter = new ListSorter( $sortOptions );
 
