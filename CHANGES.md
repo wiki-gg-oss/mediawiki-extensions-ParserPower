@@ -17,3 +17,6 @@ Add new entries to the top of the 1.x.x-NEXT section.
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
 * …
+
+### 1.6.1 (2025-04-27)
+* Resolved exceptions and undefined variable warnings being thrown when using `#lstmap`, `#listmerge`, `lstmaptemp`.
