@@ -102,8 +102,8 @@ class ListMapFunction implements ParserFunction {
 			}
 		} else {
 			$indexToken = $params->get( 'indextoken' );
-			$token = $params->get( 'token' );
-			$tokenSep = $params->get( 'tokensep' );
+			$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+			$tokens = ListUtils::explodeToken( $tokenSep, $params->get( 'token' ) );
 			$pattern = $params->get( 'pattern' );
 
 			if (
@@ -111,12 +111,6 @@ class ListMapFunction implements ParserFunction {
 				$sortMode & ListUtils::SORTMODE_PRE
 			) {
 				$inValues = $sorter->sort( $inValues );
-			}
-
-			if ( $fieldSep !== '' ) {
-				$tokens = ListUtils::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
 			}
 
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
