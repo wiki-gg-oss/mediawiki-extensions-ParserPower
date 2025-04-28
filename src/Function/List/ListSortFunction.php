@@ -112,14 +112,8 @@ class ListSortFunction implements ParserFunction {
 
 			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
 				$fieldSep = $params->get( 'fieldsep' );
-				$tokenSep = $params->get( 'tokensep' );
-
-				if ( $fieldSep !== '' ) {
-					$tokens = ListUtils::explodeToken( $tokenSep, $token );
-				} else {
-					$tokens = [ $token ];
-				}
-
+				$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+				$tokens = ListUtils::explodeToken( $tokenSep, $token );
 				$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
 				$sorter = new ListSorter( $sortOptions, $subsortOptions );
 				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );

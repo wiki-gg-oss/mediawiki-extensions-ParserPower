@@ -144,17 +144,9 @@ class ListMergeFunction implements ParserFunction {
 			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
 		} else {
-			$token1 = $params->get( 'token1' );
-			$token2 = $params->get( 'token2' );
-			$tokenSep = $params->get( 'tokensep' );
-
-			if ( $fieldSep !== '' ) {
-				$tokens1 = ListUtils::explodeToken( $tokenSep, $token1 );
-				$tokens2 = ListUtils::explodeToken( $tokenSep, $token2 );
-			} else {
-				$tokens1 = [ $token1 ];
-				$tokens2 = [ $token2 ];
-			}
+			$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+			$tokens1 = ListUtils::explodeToken( $tokenSep, $params->get( 'token1' ) );
+			$tokens2 = ListUtils::explodeToken( $tokenSep, $params->get( 'token2' ) );
 			$tokens = [ ...$tokens1, ...$tokens2 ];
 			$fieldOffset = count( $tokens1 );
 

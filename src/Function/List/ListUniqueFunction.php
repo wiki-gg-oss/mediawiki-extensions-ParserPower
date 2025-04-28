@@ -102,14 +102,8 @@ class ListUniqueFunction implements ParserFunction {
 
 			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
 				$fieldSep = $params->get( 'fieldsep' );
-				$tokenSep = $params->get( 'tokensep' );
-
-				if ( $fieldSep !== '' ) {
-					$tokens = ListUtils::explodeToken( $tokenSep, $token );
-				} else {
-					$tokens = [ $token ];
-				}
-
+				$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+				$tokens = ListUtils::explodeToken( $tokenSep, $token );
 				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 				$outValues = $this->reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
 			} else {
