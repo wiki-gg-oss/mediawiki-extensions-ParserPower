@@ -799,11 +799,11 @@ final class ListFunctions {
 				} else {
 					$indexToken = $params->get( 'indextoken' );
 					$token = $params->get( 'token' );
-					$tokenSep = $params->get( 'tokensep' );
-					$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
 					$pattern = $params->get( 'pattern' );
 
 					if ( $fieldSep !== '' ) {
+						$tokenSep = $params->get( 'tokensep' );
+						$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
 						$tokens = self::explodeToken( $tokenSep, $token );
 					} else {
 						$tokens = [ $token ];
@@ -1039,9 +1039,9 @@ final class ListFunctions {
 
 			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
 				$fieldSep = $params->get( 'fieldsep' );
-				$tokenSep = $params->get( 'tokensep' );
 
 				if ( $fieldSep !== '' ) {
+					$tokenSep = $params->get( 'tokensep' );
 					$tokens = self::explodeToken( $tokenSep, $token );
 				} else {
 					$tokens = [ $token ];
@@ -1225,9 +1225,9 @@ final class ListFunctions {
 
 			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
 				$fieldSep = $params->get( 'fieldsep' );
-				$tokenSep = $params->get( 'tokensep' );
 
 				if ( $fieldSep !== '' ) {
+					$tokenSep = $params->get( 'tokensep' );
 					$tokens = self::explodeToken( $tokenSep, $token );
 				} else {
 					$tokens = [ $token ];
@@ -1390,7 +1390,6 @@ final class ListFunctions {
 		} else {
 			$indexToken = $params->get( 'indextoken' );
 			$token = $params->get( 'token' );
-			$tokenSep = $params->get( 'tokensep' );
 			$pattern = $params->get( 'pattern' );
 
 			if ( ( $indexToken !== '' && $sortMode & self::SORTMODE_COMPAT ) || $sortMode & self::SORTMODE_PRE ) {
@@ -1398,6 +1397,7 @@ final class ListFunctions {
 			}
 
 			if ( $fieldSep !== '' ) {
+				$tokenSep = $params->get( 'tokensep' );
 				$tokens = self::explodeToken( $tokenSep, $token );
 			} else {
 				$tokens = [ $token ];
@@ -1681,9 +1681,8 @@ final class ListFunctions {
 			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
 		} else {
-			$tokenSep = $params->get( 'tokensep' );
-
 			if ( $fieldSep !== '' ) {
+				$tokenSep = $params->get( 'tokensep' );
 				$tokens1 = self::explodeToken( $tokenSep, $params->get( 'token1' ) );
 				$tokens2 = self::explodeToken( $tokenSep, $params->get( 'token2' ) );
 			} else {
