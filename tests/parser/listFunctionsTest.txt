@@ -1580,6 +1580,21 @@ numeric desc: "6!6!4!4!3!3!3!2!1!1"
 !! end
 
 !! test
+{{#listmap}} outconj
+!! wikitext
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | outconj = }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | outconj = \_\n! }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = | outconj = }}"
+"{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = | outconj = ! }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i  j"
+"a, b, c, d, e, f, g, h, i&#160;! j"
+"abcdefghij"
+"abcdefghi&#160;! j"
+</p>
+!! end
+
+!! test
 {{#listmap}} pattern
 !! wikitext
 "{{#listmap: list = a, b ,c,d,,e ,f, ,g, h,i,j | pattern = }}"
