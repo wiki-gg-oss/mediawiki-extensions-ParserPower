@@ -287,7 +287,20 @@ final class ListFunctions {
 	 * @return string The output list.
 	 */
 	private static function implodeList( array $values, string $sep ): string {
-		return implode( $sep, $values );
+		$value = end( $values );
+		if ( key( $values ) === null ) {
+			return '';
+		}
+
+		$list = $value;
+		$value = prev( $values );
+
+		while ( key( $values ) !== null ) {
+			$list = $value . $sep . $list;
+			$value = prev( $values );
+		}
+
+		return $list;
 	}
 
 	/**
