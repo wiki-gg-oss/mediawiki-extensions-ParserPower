@@ -69,13 +69,16 @@ final class ParameterArranger {
 
 		$options = array_merge( $this->paramOptions[$key] ?? [], $options );
 
-		$flags = 0;
-		if ( $options['unescape'] ?? false ) {
-			$flags |= ParserPower::UNESCAPE;
-		}
+		if ( !isset( $this->params[$key] ) ) {
+			$value = $options['default'] ?? '';
+		} else {
+			$flags = 0;
+			if ( $options['unescape'] ?? false ) {
+				$flags |= ParserPower::UNESCAPE;
+			}
 
-		$value = $this->params[$key] ?? $options['default'] ?? '';
-		$value = ParserPower::expand( $this->frame, $value, $flags );
+			$value = ParserPower::expand( $this->frame, $this->params[$key], $flags );
+		}
 
 		$this->expandedParams[$key] = $value;
 		return $value;
