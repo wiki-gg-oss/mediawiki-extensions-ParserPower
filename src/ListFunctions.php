@@ -68,7 +68,7 @@ final class ListFunctions {
 		'intro' => [ 'unescape' => true ],
 		'list' => [],
 		'outro' => [ 'unescape' => true ],
-		'outsep' => [ 'unescape' => true, 'default' => ',\_' ],
+		'outsep' => [ 'unescape' => true, 'default' => ', ' ],
 		'matchpattern' => [],
 		'matchtemplate' => [],
 		'mergepattern' => [],
