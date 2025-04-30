@@ -16,6 +16,7 @@ Add new entries to the top of the 1.x.x-NEXT section.
 ## Versions
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
+* Added `outconj` optional parameter to `#listmap`. If defined, its value is unescaped then trimmed, and will be used as delimiter for the last 2 output list values.
 * …
 
 ### 1.6.1 (2025-04-27)
