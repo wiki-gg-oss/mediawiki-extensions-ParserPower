@@ -73,6 +73,7 @@ final class ListFunctions {
 		'matchtemplate' => [],
 		'mergepattern' => [],
 		'mergetemplate' => [],
+		'outconj' => [ 'unescape' => true ],
 		'pattern' => [],
 		'remove' => [],
 		'removecs' => [],
@@ -284,16 +285,24 @@ final class ListFunctions {
 	 *
 	 * @param array $values Array with the output values.
 	 * @param string $sep Delimiter used to separate the values.
+	 * @param ?string $conj Delimiter used to separate the last 2 values, null to use the base delimiter.
 	 * @return string The output list.
 	 */
-	private static function implodeList( array $values, string $sep ): string {
-		$value = end( $values );
+	private static function implodeList( array $values, string $sep, ?string $conj = null ): string {
+		$list = end( $values );
 		if ( key( $values ) === null ) {
 			return '';
 		}
 
-		$list = $value;
 		$value = prev( $values );
+		if ( key( $values ) === null ) {
+			return $list;
+		}
+
+		if ( $conj !== null ) {
+			$list = $value . $conj . $list;
+			$value = prev( $values );
+		}
 
 		while ( key( $values ) !== null ) {
 			$list = $value . $sep . $list;
@@ -1268,6 +1277,7 @@ final class ListFunctions {
 		$tokenSep = $params->get( 'tokensep' );
 		$pattern = $params->get( 'pattern' );
 		$outSep = $params->get( 'outsep' );
+		$outConj = $params->get( 'outconj', [ 'default' => $outSep ] );
 		$sortMode = $params->get( 'sortmode' );
 		$sortOptions = $params->get( 'sortoptions' );
 		$duplicates = $params->get( 'duplicates' );
@@ -1326,12 +1336,17 @@ final class ListFunctions {
 			$outValues = array_unique( $outValues );
 		}
 
-		if ( count( $outValues ) === 0 ) {
+
+		$count = count( $outValues );
+		if ( $count === 0 ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$count = count( $outValues );
-		$outList = self::implodeList( $outValues, $outSep );
+		if ( $outConj !== $outSep ) {
+			$outConj = ' ' . trim( $outConj ) . ' ';
+		}
+
+		$outList = self::implodeList( $outValues, $outSep, $outConj );
 		$outList = self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
@@ -1590,8 +1605,7 @@ final class ListFunctions {
 		}
 
 		$count = count( $outValues );
-		$outList = self::implodeList( $outValues, $outSep );
-		$outList = self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+		$outList = self::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
