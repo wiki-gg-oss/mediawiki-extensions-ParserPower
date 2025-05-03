@@ -24,7 +24,7 @@ final class ParameterArranger {
 
 	/**
 	 * @param PPFrame $frame Parser frame object.
-	 * @param array $params Parameters and values together, not yet expanded or trimmed.
+	 * @param array $params Unexpanded parameters.
 	 * @param array $paramOptions Parsing and post-processing options for all parameters.
 	 */
 	public function __construct(
@@ -32,28 +32,7 @@ final class ParameterArranger {
 		array $params,
 		private array $paramOptions = []
 	) {
-		$this->params = [];
-		$numberedCount = 0;
-
-		foreach ( $params as $param ) {
-			if ( is_string( $param ) ) {
-				$pair = explode( '=', $param, 2 );
-				if ( isset( $pair[1] ) ) {
-					$key = array_shift( $pair );
-				}
-				$value = $pair[0];
-			} else {
-				$bits = $param->splitArg();
-				if ( $bits['index'] === '' ) {
-					$key = $bits['name'];
-				}
-				$value = $bits['value'];
-			}
-
-			$key = isset( $key ) ? ParserPower::expand( $frame, $key ) : $numberedCount++;
-
-			$this->params[$key] = $value;
-		}
+		$this->params = self::arrange( $frame, $params );
 	}
 
 	/**
@@ -83,5 +62,38 @@ final class ParameterArranger {
 
 		$this->expandedParams[$key] = $value;
 		return $value;
+	}
+
+	/**
+	 * Arranges parser function parameters, separating named from numbered parameters.
+	 *
+	 * @param PPFrame $frame Parser frame object.
+	 * @param array $params Unexpanded parameters.
+	 */
+	public static function arrange( PPFrame $frame, array $params ): array {
+		$arrangedParams = [];
+		$numberedCount = 0;
+
+		foreach ( $params as $param ) {
+			if ( is_string( $param ) ) {
+				$pair = explode( '=', $param, 2 );
+				if ( isset( $pair[1] ) ) {
+					$key = array_shift( $pair );
+				}
+				$value = $pair[0];
+			} else {
+				$bits = $param->splitArg();
+				if ( $bits['index'] === '' ) {
+					$key = $bits['name'];
+				}
+				$value = $bits['value'];
+			}
+
+			$key = isset( $key ) ? ParserPower::expand( $frame, $key ) : $numberedCount++;
+
+			$arrangedParams[$key] = $value;
+		}
+
+		return $arrangedParams;
 	}
 }
