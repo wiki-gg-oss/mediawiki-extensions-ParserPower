@@ -33,25 +33,26 @@ final class ParameterArranger {
 		private array $paramOptions = []
 	) {
 		$this->params = [];
-
-		if ( isset( $params[0] ) && is_string( $params[0] ) ) {
-			$pair = explode( '=', array_shift( $params ), 2 );
-			if ( count( $pair ) === 2 ) {
-				$key = ParserPower::expand( $this->frame, $pair[0] );
-				$this->params[$key] = $pair[1];
-			} else {
-				$this->params[] = $pair[0];
-			}
-		}
+		$numberedCount = 0;
 
 		foreach ( $params as $param ) {
-			$bits = $param->splitArg();
-			if ( $bits['index'] === '' ) {
-				$key = ParserPower::expand( $this->frame, $bits['name'] );
-				$this->params[$key] = $bits['value'];
+			if ( is_string( $param ) ) {
+				$pair = explode( '=', $param, 2 );
+				if ( isset( $pair[1] ) ) {
+					$key = array_shift( $pair );
+				}
+				$value = $pair[0];
 			} else {
-				$this->params[] = $bits['value'];
+				$bits = $param->splitArg();
+				if ( $bits['index'] === '' ) {
+					$key = $bits['name'];
+				}
+				$value = $bits['value'];
 			}
+
+			$key = isset( $key ) ? ParserPower::expand( $frame, $key ) : $numberedCount++;
+
+			$this->params[$key] = $value;
 		}
 	}
 
