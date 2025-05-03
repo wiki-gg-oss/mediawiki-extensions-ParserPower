@@ -750,7 +750,7 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listfilterRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
@@ -982,7 +982,7 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listuniqueRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
@@ -1120,7 +1120,7 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listsortRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
@@ -1264,7 +1264,7 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listmapRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
@@ -1538,7 +1538,7 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function listmergeRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterArranger( $frame, $params, self::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), self::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
