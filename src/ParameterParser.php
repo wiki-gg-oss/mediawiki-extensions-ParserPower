@@ -7,16 +7,12 @@ namespace MediaWiki\Extension\ParserPower;
 use MediaWiki\Parser\PPFrame;
 
 /**
- * Named parameter arranger for parser functions.
- * Only evaluates parameter valuyes on use site, and applies some post-processings to parsed values,
+ * Parameter parser for parser functions.
+ * Only evaluates parameter values on use site, and applies some post-processing steps to parsed values,
  * such as trimming whitespaces (as per longstanding MediaWiki conventions).
  */
-final class ParameterArranger {
+final class ParameterParser {
 
-	/**
-	 * Unexpanded parameters.
-	 */
-	private array $params;
 	/**
 	 * Expanded (and post-processed) parameters.
 	 */
@@ -29,10 +25,9 @@ final class ParameterArranger {
 	 */
 	public function __construct(
 		private readonly PPFrame $frame,
-		array $params,
+		private array $params,
 		private array $paramOptions = []
 	) {
-		$this->params = self::arrange( $frame, $params );
 	}
 
 	/**
