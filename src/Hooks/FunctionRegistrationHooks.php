@@ -7,9 +7,9 @@ namespace MediaWiki\Extension\ParserPower\Hooks;
 use MediaWiki\Config\Config;
 use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\SimpleFunctions;
-use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Parser\Parser;
 use Wikimedia\ObjectFactory\ObjectFactory;
+use MediaWiki\Extension\ParserPower\Function\FollowFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 use MediaWiki\Extension\ParserPower\Function\TrimFunction;
@@ -25,6 +25,10 @@ final class FunctionRegistrationHooks implements
 	private array $functions;
 
 	private const SIMPLE_FUNCTIONS = [
+		[
+			'class' => FollowFunction::class,
+			'services' => [ 'RedirectLookup' ]
+		],
 		LinkPageFunction::class,
 		LinkTextFunction::class,
 		TrimFunction::class,
@@ -35,10 +39,9 @@ final class FunctionRegistrationHooks implements
 
 	public function __construct(
 		Config $config,
-		private ObjectFactory $objectFactory,
-		RedirectLookup $redirectLookup
+		private ObjectFactory $objectFactory
 	) {
-		$this->simpleFunctions = new SimpleFunctions( $redirectLookup );
+		$this->simpleFunctions = new SimpleFunctions();
 		$this->listFunctions = new ListFunctions(
 			$config->get( 'ParserPowerLstmapExpansionCompat' )
 		);
@@ -100,7 +103,6 @@ final class FunctionRegistrationHooks implements
 		$parser->setFunctionHook( 'token', [ $this->simpleFunctions, 'tokenRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'tokenif', [ $this->simpleFunctions, 'tokenifRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'ueswitch', [ $this->simpleFunctions, 'ueswitchRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'follow', [ $this->simpleFunctions, 'followRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'argmap', [ $this->simpleFunctions, 'argmapRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'iargmap', [ $this->simpleFunctions, 'iargmapRender' ], Parser::SFH_OBJECT_ARGS );
 
