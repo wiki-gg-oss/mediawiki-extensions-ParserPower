@@ -5,11 +5,11 @@
 namespace MediaWiki\Extension\ParserPower\Hooks;
 
 use MediaWiki\Config\Config;
+use MediaWiki\Extension\ParserPower\EscTag;
 use MediaWiki\Extension\ParserPower\ListFunctions;
-use MediaWiki\Extension\ParserPower\SimpleFunctions;
 use MediaWiki\Parser\Parser;
 use Wikimedia\ObjectFactory\ObjectFactory;
-use MediaWiki\Extension\ParserPower\Function\ArgMapFunction;	
+use MediaWiki\Extension\ParserPower\Function\ArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\FollowFunction;
 use MediaWiki\Extension\ParserPower\Function\IArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
@@ -31,9 +31,9 @@ use MediaWiki\Extension\ParserPower\Function\UeSwitchFunction;
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
 {
-	private readonly SimpleFunctions $simpleFunctions;
 	private readonly ListFunctions $listFunctions;
 	private array $functions;
+	private EscTag $escTag;
 
 	private const SIMPLE_FUNCTIONS = [
 		ArgMapFunction::class,
@@ -66,7 +66,6 @@ final class FunctionRegistrationHooks implements
 		Config $config,
 		private ObjectFactory $objectFactory
 	) {
-		$this->simpleFunctions = new SimpleFunctions();
 		$this->listFunctions = new ListFunctions(
 			$config->get( 'ParserPowerLstmapExpansionCompat' )
 		);
@@ -77,6 +76,8 @@ final class FunctionRegistrationHooks implements
 		if ( !defined( 'PF_VERSION' ) ) {
 			$this->addFunctions( self::PAGE_FORMS_FUNCTIONS );
 		}
+
+		$this->escTag = new EscTag();
 	}
 
 	/**
@@ -120,9 +121,8 @@ final class FunctionRegistrationHooks implements
 		// Tags
 		$parser->setHook( 'linkpage', [ LinkPageFunction::class, 'tagRender' ] );
 		$parser->setHook( 'linktext', [ LinkTextFunction::class, 'tagRender' ] );
-		$parser->setHook( 'esc', [ $this->simpleFunctions, 'escTagRender' ] );
-		for ( $index = 1; $index < 10; $index++ ) {
-			$parser->setHook( 'esc' . $index, [ $this->simpleFunctions, 'escTagRender' ] );
+		foreach ( $this->escTag->getNames() as $escTagName ) {
+			$parser->setHook( $escTagName, [ $this->escTag, 'render' ] );
 		}
 
 		// List functions
