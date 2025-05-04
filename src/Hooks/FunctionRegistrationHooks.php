@@ -9,12 +9,14 @@ use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\SimpleFunctions;
 use MediaWiki\Parser\Parser;
 use Wikimedia\ObjectFactory\ObjectFactory;
-use MediaWiki\Extension\ParserPower\Function\ArgMapFunction;
+use MediaWiki\Extension\ParserPower\Function\ArgMapFunction;	
 use MediaWiki\Extension\ParserPower\Function\FollowFunction;
 use MediaWiki\Extension\ParserPower\Function\IArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 use MediaWiki\Extension\ParserPower\Function\OrFunction;
+use MediaWiki\Extension\ParserPower\Function\PageForms\ArrayMapFunction;
+use MediaWiki\Extension\ParserPower\Function\PageForms\ArrayMapTemplateFunction;
 use MediaWiki\Extension\ParserPower\Function\TokenFunction;
 use MediaWiki\Extension\ParserPower\Function\TokenIfFunction;
 use MediaWiki\Extension\ParserPower\Function\TrimFunction;
@@ -55,6 +57,11 @@ final class FunctionRegistrationHooks implements
 		UeSwitchFunction::class
 	];
 
+	private const PAGE_FORMS_FUNCTIONS = [
+		ArrayMapFunction::class,
+		ArrayMapTemplateFunction::class
+	];
+
 	public function __construct(
 		Config $config,
 		private ObjectFactory $objectFactory
@@ -66,6 +73,10 @@ final class FunctionRegistrationHooks implements
 
 		$this->functions = [];
 		$this->addFunctions( self::SIMPLE_FUNCTIONS );
+		// Do not load if Page Forms is installed.
+		if ( !defined( 'PF_VERSION' ) ) {
+			$this->addFunctions( self::PAGE_FORMS_FUNCTIONS );
+		}
 	}
 
 	/**
@@ -112,14 +123,6 @@ final class FunctionRegistrationHooks implements
 		$parser->setHook( 'esc', [ $this->simpleFunctions, 'escTagRender' ] );
 		for ( $index = 1; $index < 10; $index++ ) {
 			$parser->setHook( 'esc' . $index, [ $this->simpleFunctions, 'escTagRender' ] );
-		}
-
-		// Do not load if Page Forms is installed.
-		if ( !defined( 'PF_VERSION' ) ) {
-			$parser->setFunctionHook( 'arraymap', [ $this->simpleFunctions, 'arraymapRender' ],
-				Parser::SFH_OBJECT_ARGS );
-			$parser->setFunctionHook( 'arraymaptemplate', [ $this->simpleFunctions, 'arraymaptemplateRender' ],
-				Parser::SFH_OBJECT_ARGS );
 		}
 
 		// List functions
