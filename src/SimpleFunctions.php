@@ -17,64 +17,6 @@ final class SimpleFunctions {
 	}
 
 	/**
-	 * This function performs the trim operation for the trim parser function.
-	 *
-	 * @param Parser $parser The parser object. Ignored.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function trimRender( Parser $parser, PPFrame $frame, array $params ): string {
-		return ParserPower::expand( $frame, $params[0] ?? '' );
-	}
-
-	/**
-	 * This function performs the unescape operation for the uesc parser function. This trims the value first, leaving
-	 * whitespace intact if it's there after escape sequences are replaced.
-	 *
-	 * @param Parser $parser The parser object. Ignored.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function uescRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $text );
-	}
-
-	/**
-	 * This function performs the unescape operation for the uescnowiki parser function. This trims the value first,
-	 * leaving whitespace intact if it's there after escape sequences are replaced. It returns the content wrapped in
-	 * <nowiki> tags so that it isn't parsed.
-	 *
-	 * @param Parser $parser The parser object. Ignored.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function uescnowikiRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, '<nowiki>' . $text . '</nowiki>' );
-	}
-
-	/**
-	 * This function performs the unescape operation for the trimuesc parser function. This trims the value after
-	 * replacement, so any leading or trailing whitespace is trimmed no matter how it got there.
-	 *
-	 * @param Parser $parser The parser object. Ignored.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function trimuescRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $text );
-	}
-
-	/**
 	 * @param Parser $parser The parser object. Ignored.
 	 * @param PPFrame $frame The parser frame object.
 	 * @param array $params The parameters and values together, not yet expanded or trimmed.
