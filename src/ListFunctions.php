@@ -398,14 +398,18 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstcntRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$list = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep']
+		] );
+
+		$list = $params->get( 0 );
 
 		if ( $list === '' ) {
 			return '0';
 		}
 
-		$sep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-
+		$sep = $params->get( 1 );
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
 		return (string)count( self::explodeList( $sep, $list ) );
@@ -420,14 +424,20 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstsepRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['outsep']
+		] );
+
+		$inList = $params->get( 0 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$outSep = ParserPower::expand( $frame, $params[2] ?? ',\_', ParserPower::UNESCAPE );
+		$inSep = $params->get( 1 );
+		$outSep = $params->get( 2 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
@@ -444,14 +454,20 @@ final class ListFunctions {
 	 * @return string The function output along with relevant parser options.
 	 */
 	public function lstelemRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			[ 'unescape' => true ]
+		] );
+
+		$inList = $params->get( 0 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$inIndex = ParserPower::expand( $frame, $params[2] ?? '', ParserPower::UNESCAPE );
+		$inSep = $params->get( 1 );
+		$inIndex = $params->get( 2 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
@@ -474,16 +490,24 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstsubRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['outsep'],
+			[ 'unescape' => true ],
+			[ 'unescape' => true ]
+		] );
+
+		$inList = $params->get( 0 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$outSep = ParserPower::expand( $frame, $params[2] ?? ',\_', ParserPower::UNESCAPE );
-		$inOffset = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
-		$inLength = ParserPower::expand( $frame, $params[4] ?? '', ParserPower::UNESCAPE );
+		$inSep = $params->get( 1 );
+		$outSep = $params->get( 2 );
+		$inOffset = $params->get( 3 );
+		$inLength = $params->get( 4 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 
@@ -515,15 +539,22 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstfndRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$list = ParserPower::expand( $frame, $params[1] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			[ 'unescape' => true ],
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			[]
+		] );
+
+		$list = $params->get( 1 );
 
 		if ( $list === '' ) {
 			return '';
 		}
 
-		$item = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-		$sep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[3] ?? '' );
+		$item = $params->get( 0 );
+		$sep = $params->get( 2 );
+		$csOption = $params->get( 3 );
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$csOption = self::decodeCSOption( $csOption );
@@ -554,15 +585,22 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstindRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$list = ParserPower::expand( $frame, $params[1] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			[ 'unescape' => true ],
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			[]
+		] );
+
+		$list = $params->get( 1 );
 
 		if ( $list === '' ) {
 			return '';
 		}
 
-		$item = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-		$sep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
-		$inOptions = ParserPower::expand( $frame, $params[3] ?? '' );
+		$item = $params->get( 0 );
+		$sep = $params->get( 2 );
+		$inOptions = $params->get( 3 );
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$options = self::decodeIndexOptions( $inOptions );
@@ -610,14 +648,20 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstappRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$list = ParserPower::expand( $frame, $params[0] ?? '' );
-		$value = ParserPower::expand( $frame, $params[2] ?? '', ParserPower::UNESCAPE );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			[ 'unescape' => true ]
+		] );
+
+		$list = $params->get( 0 );
+		$value = $params->get( 2 );
 
 		if ( $list === '' ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $value );
 		}
 
-		$sep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
+		$sep = $params->get( 1 );
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
@@ -637,14 +681,20 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstprepRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$value = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-		$list = ParserPower::expand( $frame, $params[2] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			[ 'unescape' => true ],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['list']
+		] );
+
+		$value = $params->get( 0 );
+		$list = $params->get( 2 );
 
 		if ( $list === '' ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $value );
 		}
 
-		$sep = ParserPower::expand( $frame, $params[1] ?? '', ParserPower::UNESCAPE );
+		$sep = $params->get( 1 );
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
@@ -664,8 +714,16 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstjoinRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList1 = ParserPower::expand( $frame, $params[0] ?? '' );
-		$inList2 = ParserPower::expand( $frame, $params[2] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['outsep']
+		] );
+
+		$inList1 = $params->get( 0 );
+		$inList2 = $params->get( 2 );
 
 		if ( $inList1 === '' && $inList2 === '' ) {
 			return '';
@@ -674,7 +732,7 @@ final class ListFunctions {
 		if ( $inList1 === '' ) {
 			$values1 = [];
 		} else {
-			$inSep1 = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
+			$inSep1 = $params->get( 1 );
 			$inSep1 = $parser->getStripState()->unstripNoWiki( $inSep1 );
 			$values1 = self::explodeList( $inSep1, $inList1 );
 		}
@@ -682,12 +740,12 @@ final class ListFunctions {
 		if ( $inList2 === '' ) {
 			$values2 = [];
 		} else {
-			$inSep2 = ParserPower::expand( $frame, $params[3] ?? ',', ParserPower::UNESCAPE );
+			$inSep2 = $params->get( 3 );
 			$inSep2 = $parser->getStripState()->unstripNoWiki( $inSep2 );
 			$values2 = self::explodeList( $inSep2, $inList2 );
 		}
 
-		$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
+		$outSep = $params->get( 4 );
 
 		$values = array_merge( $values1, $values2 );
 		return ParserPower::evaluateUnescaped( $parser, $frame, self::implodeList( $values, $outSep ) );
@@ -835,17 +893,26 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstfltrRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[2] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['keep'],
+			self::PARAM_OPTIONS['keepsep'],
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['outsep'],
+			[]
+		] );
+
+		$inList = $params->get( 2 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$values = ParserPower::expand( $frame, $params[0] ?? '' );
-		$valueSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$inSep = ParserPower::expand( $frame, $params[3] ?? ',', ParserPower::UNESCAPE );
-		$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[5] ?? '' );
+		$values = $params->get( 0 );
+		$valueSep = $params->get( 1 );
+		$inSep = $params->get( 3 );
+		$outSep = $params->get( 4 );
+		$csOption = $params->get( 5 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$csOption = self::decodeCSOption( $csOption );
@@ -877,16 +944,24 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstrmRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[1] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			[ 'unescape' => true ],
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['outsep'],
+			[]
+		] );
+
+		$inList = $params->get( 1 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$value = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-		$inSep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
-		$outSep = ParserPower::expand( $frame, $params[3] ?? ',\_', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[4] ?? '' );
+		$value = $params->get( 0 );
+		$inSep = $params->get( 2 );
+		$outSep = $params->get( 3 );
+		$csOption = $params->get( 4 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$csOption = self::decodeCSOption( $csOption );
@@ -927,14 +1002,20 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstcntuniqRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			[]
+		] );
+
+		$inList = $params->get( 0 );
 
 		if ( $inList === '' ) {
 			return '0';
 		}
 
-		$sep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[2] ?? '' );
+		$sep = $params->get( 1 );
+		$csOption = $params->get( 2 );
 
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$csOption = self::decodeCSOption( $csOption );
@@ -1038,15 +1119,22 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstuniqRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['outsep'],
+			[]
+		] );
+
+		$inList = $params->get( 0 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$outSep = ParserPower::expand( $frame, $params[2] ?? ',\_', ParserPower::UNESCAPE );
-		$csOption = ParserPower::expand( $frame, $params[3] ?? '' );
+		$inSep = $params->get( 1 );
+		$outSep = $params->get( 2 );
+		$csOption = $params->get( 3 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$csOption = self::decodeCSOption( $csOption );
@@ -1207,15 +1295,22 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstsrtRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['outsep'],
+			self::PARAM_OPTIONS['sortoptions']
+		] );
+
+		$inList = $params->get( 0 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$outSep = ParserPower::expand( $frame, $params[2] ?? ',\_', ParserPower::UNESCAPE );
-		$sortOptions = ParserPower::expand( $frame, $params[3] ?? '' );
+		$inSep = $params->get( 1 );
+		$outSep = $params->get( 2 );
+		$sortOptions = $params->get( 3 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortOptions = self::decodeSortOptions( $sortOptions );
@@ -1360,19 +1455,29 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstmapRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
+		$legacyExpansionFlags = $this->useLegacyLstmapExpansion ? [ 'novars' => true ] : [];
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['insep'],
+			array_merge( self::PARAM_OPTIONS['token'], [ 'default' => 'x' ], $legacyExpansionFlags ),
+			array_merge( self::PARAM_OPTIONS['pattern'], [ 'default' => 'x' ], $legacyExpansionFlags ),
+			self::PARAM_OPTIONS['outsep'],
+			[],
+			self::PARAM_OPTIONS['sortoptions']
+		] );
+
+		$inList = $params->get( 0 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$inSep = ParserPower::expand( $frame, $params[1] ?? ',', ParserPower::UNESCAPE );
-		$legacyExpansionFlags = $this->useLegacyLstmapExpansion ? ParserPower::NO_VARS : 0;
-		$token = ParserPower::expand( $frame, $params[2] ?? 'x', $legacyExpansionFlags | ParserPower::UNESCAPE );
-		$pattern = ParserPower::expand( $frame, $params[3] ?? 'x', $legacyExpansionFlags );
-		$outSep = ParserPower::expand( $frame, $params[4] ?? ',\_', ParserPower::UNESCAPE );
-		$sortMode = ParserPower::expand( $frame, $params[5] ?? '' );
-		$sortOptions = ParserPower::expand( $frame, $params[6] ?? '' );
+		$inSep = $params->get( 1 );
+		$token = $params->get( 2 );
+		$pattern = $params->get( 3 );
+		$outSep = $params->get( 4 );
+		$sortMode = $params->get( 5 );
+		$sortOptions = $params->get( 6 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortMode = self::decodeSortMode( $sortMode );
@@ -1409,17 +1514,26 @@ final class ListFunctions {
 	 * @return string The function output.
 	 */
 	public function lstmaptempRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$inList = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			self::PARAM_OPTIONS['list'],
+			self::PARAM_OPTIONS['template'],
+			self::PARAM_OPTIONS['insep'],
+			self::PARAM_OPTIONS['outsep'],
+			[],
+			self::PARAM_OPTIONS['sortoptions']
+		] );
+
+		$inList = $params->get( 0 );
 
 		if ( $inList === '' ) {
 			return '';
 		}
 
-		$template = ParserPower::expand( $frame, $params[1] ?? '' );
-		$inSep = ParserPower::expand( $frame, $params[2] ?? ',', ParserPower::UNESCAPE );
-		$outSep = ParserPower::expand( $frame, $params[3] ?? ',\_', ParserPower::UNESCAPE );
-		$sortMode = ParserPower::expand( $frame, $params[4] ?? '' );
-		$sortOptions = ParserPower::expand( $frame, $params[5] ?? '' );
+		$template = $params->get( 1 );
+		$inSep = $params->get( 2 );
+		$outSep = $params->get( 3 );
+		$sortMode = $params->get( 4 );
+		$sortOptions = $params->get( 5 );
 
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$sortMode = self::decodeSortMode( $sortMode );
