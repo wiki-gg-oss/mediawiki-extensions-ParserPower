@@ -14,7 +14,7 @@ use MediaWiki\Parser\PPFrame;
 final class ParameterParser {
 
 	/**
-	 * Expanded (and post-processed) parameters.
+	 * @var array Expanded (and post-processed) parameters.
 	 */
 	private array $expandedParams = [];
 
@@ -67,6 +67,7 @@ final class ParameterParser {
 	 *
 	 * @param PPFrame $frame Parser frame object.
 	 * @param array $params Unexpanded parameters.
+	 * @return array Parameters with separated keys and values.
 	 */
 	public static function arrange( PPFrame $frame, array $params ): array {
 		$arrangedParams = [];
