@@ -4,17 +4,11 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
-use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
-use MediaWiki\Title\Title;
 
 final class SimpleFunctions {
-	public function __construct(
-		private readonly RedirectLookup $redirectLookup
-	) {
-	}
 
 	/**
 	 * This function escapes all appropriate characters in the given text and returns the result.
@@ -214,38 +208,6 @@ final class SimpleFunctions {
 			$default = ParserPower::expand( $frame, $default, ParserPower::UNESCAPE );
 		}
 		return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-	}
-
-	/**
-	 * This function performs the follow operation for the follow parser function.
-	 *
-	 * @param Parser $parser The parser object. Ignored.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function followRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
-
-		$title = Title::newFromText( $text );
-		if ( $title === null || $title->getNamespace() === NS_MEDIA || $title->getNamespace() < 0 ) {
-			return $text;
-		}
-
-		$target = $this->redirectLookup->getRedirectTarget( $title );
-		if ( $target === null ) {
-			return $text;
-		}
-
-		$target = Title::newFromLinkTarget( $target );
-
-		// Replace redirect fragment with the one from the initial text. We need to check whether there is
-		// a # with no fragment after it, since it removes the redirect fragment if there is one.
-		if ( strpos( $text, '#' ) !== false ) {
-			$target = $target->createFragmentTarget( $title->getFragment() );
-		}
-
-		return $target->getFullText();
 	}
 
 	public function arraymapRender( $parser, $frame, $args ) {
