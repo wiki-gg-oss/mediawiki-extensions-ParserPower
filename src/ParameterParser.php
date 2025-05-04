@@ -51,6 +51,9 @@ final class ParameterParser {
 			if ( $options['unescape'] ?? false ) {
 				$flags |= ParserPower::UNESCAPE;
 			}
+			if ( $options['novars'] ?? false ) {
+				$flags |= ParserPower::NO_VARS;
+			}
 
 			$value = ParserPower::expand( $this->frame, $this->params[$key], $flags );
 		}
