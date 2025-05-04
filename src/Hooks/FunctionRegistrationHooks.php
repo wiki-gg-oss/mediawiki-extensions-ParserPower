@@ -9,20 +9,41 @@ use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\SimpleFunctions;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Parser\Parser;
+use Wikimedia\ObjectFactory\ObjectFactory;
 
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
 {
 	private readonly SimpleFunctions $simpleFunctions;
 	private readonly ListFunctions $listFunctions;
+	private array $functions;
 
 	public function __construct(
 		Config $config,
+		private ObjectFactory $objectFactory,
 		RedirectLookup $redirectLookup
 	) {
 		$this->simpleFunctions = new SimpleFunctions( $redirectLookup );
 		$this->listFunctions = new ListFunctions(
 			$config->get( 'ParserPowerLstmapExpansionCompat' )
+		);
+
+		$this->functions = [];
+	}
+
+	/**
+	 * Add a parser function.
+	 *
+	 * @param string|array $functionSpec Parser function class name or specification.
+	 */
+	private function addFunction( string|array $functionSpec ) {
+		if ( is_string( $functionSpec ) ) {
+			$functionSpec = [ 'class' => $functionSpec ];
+		}
+
+		$this->functions[] = $this->objectFactory->createObject(
+			$functionSpec,
+			[ 'assertClass' => $functionSpec['class'] ]
 		);
 	}
 
@@ -33,6 +54,10 @@ final class FunctionRegistrationHooks implements
 	 * @return void
 	 */
 	public function onParserFirstCallInit( $parser ) {
+		foreach ( $this->functions as $function ) {
+			$parser->setFunctionHook( $function->getName(), [ $function, 'render' ], Parser::SFH_OBJECT_ARGS );
+		}
+
 		// Simple functions
 
 		$parser->setFunctionHook( 'trim', [ $this->simpleFunctions, 'trimRender' ], Parser::SFH_OBJECT_ARGS );

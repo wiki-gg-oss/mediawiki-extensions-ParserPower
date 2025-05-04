@@ -34,6 +34,7 @@
 			"class": "MediaWiki\\Extension\\ParserPower\\Hooks\\FunctionRegistrationHooks",
 			"services": [
 				"MainConfig",
+				"ObjectFactory",
 				"RedirectLookup"
 			]
 		}
