@@ -10,6 +10,8 @@ use MediaWiki\Extension\ParserPower\SimpleFunctions;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Parser\Parser;
 use Wikimedia\ObjectFactory\ObjectFactory;
+use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
+use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 use MediaWiki\Extension\ParserPower\Function\TrimFunction;
 use MediaWiki\Extension\ParserPower\Function\TrimUescFunction;
 use MediaWiki\Extension\ParserPower\Function\UescFunction;
@@ -23,6 +25,8 @@ final class FunctionRegistrationHooks implements
 	private array $functions;
 
 	private const SIMPLE_FUNCTIONS = [
+		LinkPageFunction::class,
+		LinkTextFunction::class,
 		TrimFunction::class,
 		TrimUescFunction::class,
 		UescFunction::class,
@@ -83,10 +87,8 @@ final class FunctionRegistrationHooks implements
 
 		// Simple functions
 
-		$parser->setFunctionHook( 'linkpage', [ $this->simpleFunctions, 'linkpageRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'linktext', [ $this->simpleFunctions, 'linktextRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setHook( 'linkpage', [ $this->simpleFunctions, 'linkpageTagRender' ] );
-		$parser->setHook( 'linktext', [ $this->simpleFunctions, 'linktextTagRender' ] );
+		$parser->setHook( 'linkpage', [ LinkPageFunction::class, 'tagRender' ] );
+		$parser->setHook( 'linktext', [ LinkTextFunction::class, 'tagRender' ] );
 		$parser->setHook( 'esc', [ $this->simpleFunctions, 'escTagRender' ] );
 		for ( $index = 1; $index < 10; $index++ ) {
 			$parser->setHook( 'esc' . $index, [ $this->simpleFunctions, 'escTagRender' ] );
