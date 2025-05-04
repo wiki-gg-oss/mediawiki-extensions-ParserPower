@@ -9,13 +9,22 @@ use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\SimpleFunctions;
 use MediaWiki\Parser\Parser;
 use Wikimedia\ObjectFactory\ObjectFactory;
+use MediaWiki\Extension\ParserPower\Function\ArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\FollowFunction;
+use MediaWiki\Extension\ParserPower\Function\IArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
+use MediaWiki\Extension\ParserPower\Function\OrFunction;
+use MediaWiki\Extension\ParserPower\Function\TokenFunction;
+use MediaWiki\Extension\ParserPower\Function\TokenIfFunction;
 use MediaWiki\Extension\ParserPower\Function\TrimFunction;
 use MediaWiki\Extension\ParserPower\Function\TrimUescFunction;
+use MediaWiki\Extension\ParserPower\Function\UeIfeqFunction;
+use MediaWiki\Extension\ParserPower\Function\UeIfFunction;
+use MediaWiki\Extension\ParserPower\Function\UeOrFunction;
 use MediaWiki\Extension\ParserPower\Function\UescFunction;
 use MediaWiki\Extension\ParserPower\Function\UescNowikiFunction;
+use MediaWiki\Extension\ParserPower\Function\UeSwitchFunction;
 
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
@@ -25,16 +34,25 @@ final class FunctionRegistrationHooks implements
 	private array $functions;
 
 	private const SIMPLE_FUNCTIONS = [
+		ArgMapFunction::class,
 		[
 			'class' => FollowFunction::class,
 			'services' => [ 'RedirectLookup' ]
 		],
+		IArgMapFunction::class,
 		LinkPageFunction::class,
 		LinkTextFunction::class,
+		OrFunction::class,
+		TokenFunction::class,
+		TokenIfFunction::class,
 		TrimFunction::class,
 		TrimUescFunction::class,
+		UeIfeqFunction::class,
+		UeIfFunction::class,
+		UeOrFunction::class,
 		UescFunction::class,
-		UescNowikiFunction::class
+		UescNowikiFunction::class,
+		UeSwitchFunction::class
 	];
 
 	public function __construct(
@@ -88,23 +106,13 @@ final class FunctionRegistrationHooks implements
 			$parser->setFunctionHook( $function->getName(), [ $function, 'render' ], Parser::SFH_OBJECT_ARGS );
 		}
 
-		// Simple functions
-
+		// Tags
 		$parser->setHook( 'linkpage', [ LinkPageFunction::class, 'tagRender' ] );
 		$parser->setHook( 'linktext', [ LinkTextFunction::class, 'tagRender' ] );
 		$parser->setHook( 'esc', [ $this->simpleFunctions, 'escTagRender' ] );
 		for ( $index = 1; $index < 10; $index++ ) {
 			$parser->setHook( 'esc' . $index, [ $this->simpleFunctions, 'escTagRender' ] );
 		}
-		$parser->setFunctionHook( 'ueif', [ $this->simpleFunctions, 'ueifRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'or', [ $this->simpleFunctions, 'orRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'ueor', [ $this->simpleFunctions, 'ueorRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'ueifeq', [ $this->simpleFunctions, 'ueifeqRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'token', [ $this->simpleFunctions, 'tokenRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'tokenif', [ $this->simpleFunctions, 'tokenifRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'ueswitch', [ $this->simpleFunctions, 'ueswitchRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'argmap', [ $this->simpleFunctions, 'argmapRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'iargmap', [ $this->simpleFunctions, 'iargmapRender' ], Parser::SFH_OBJECT_ARGS );
 
 		// Do not load if Page Forms is installed.
 		if ( !defined( 'PF_VERSION' ) ) {
