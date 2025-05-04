@@ -10,6 +10,10 @@ use MediaWiki\Extension\ParserPower\SimpleFunctions;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Parser\Parser;
 use Wikimedia\ObjectFactory\ObjectFactory;
+use MediaWiki\Extension\ParserPower\Function\TrimFunction;
+use MediaWiki\Extension\ParserPower\Function\TrimUescFunction;
+use MediaWiki\Extension\ParserPower\Function\UescFunction;
+use MediaWiki\Extension\ParserPower\Function\UescNowikiFunction;
 
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
@@ -17,6 +21,13 @@ final class FunctionRegistrationHooks implements
 	private readonly SimpleFunctions $simpleFunctions;
 	private readonly ListFunctions $listFunctions;
 	private array $functions;
+
+	private const SIMPLE_FUNCTIONS = [
+		TrimFunction::class,
+		TrimUescFunction::class,
+		UescFunction::class,
+		UescNowikiFunction::class
+	];
 
 	public function __construct(
 		Config $config,
@@ -29,6 +40,18 @@ final class FunctionRegistrationHooks implements
 		);
 
 		$this->functions = [];
+		$this->addFunctions( self::SIMPLE_FUNCTIONS );
+	}
+
+	/**
+	 * Add a list of parser functions.
+	 *
+	 * @param array $functionSpecs List of parser function class names or specifications.
+	 */
+	private function addFunctions( array $functionSpecs ) {
+		foreach ( $functionSpecs as $functionSpec ) {
+			$this->addFunction( $functionSpec );
+		}
 	}
 
 	/**
@@ -60,10 +83,6 @@ final class FunctionRegistrationHooks implements
 
 		// Simple functions
 
-		$parser->setFunctionHook( 'trim', [ $this->simpleFunctions, 'trimRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'uesc', [ $this->simpleFunctions, 'uescRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'uescnowiki', [ $this->simpleFunctions, 'uescnowikiRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'trimuesc', [ $this->simpleFunctions, 'trimuescRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'linkpage', [ $this->simpleFunctions, 'linkpageRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'linktext', [ $this->simpleFunctions, 'linktextRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setHook( 'linkpage', [ $this->simpleFunctions, 'linkpageTagRender' ] );
