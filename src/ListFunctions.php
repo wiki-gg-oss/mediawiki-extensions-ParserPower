@@ -4,8 +4,6 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
-use Countable;
-use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
@@ -401,7 +399,7 @@ final class ListFunctions {
 	 * @param int $count The count to replace the token with.
 	 * @return string The content wrapped by the intro and outro.
 	 */
-	private static function applyIntroAndOutro(
+	public static function applyIntroAndOutro(
 		string $intro,
 		string $content,
 		string $outro,
@@ -413,200 +411,6 @@ final class ListFunctions {
 			$outro = str_replace( $countToken, (string)$count, $outro );
 		}
 		return $intro . $content . $outro;
-	}
-
-	/**
-	 * This function performs the filtering operation for the listfilter function.
-	 *
-	 * @param WikitextOperation $operation Operation to apply.
-	 * @param array $inValues Array with the input values.
-	 * @param string $fieldSep Separator between fields, if any.
-	 * @return array The array stripped of any values with non-unique keys.
-	 */
-	private static function filterList( WikitextOperation $operation, array $inValues, string $fieldSep = '' ): array {
-		$fieldLimit = $operation->getFieldLimit();
-
-		$outValues = [];
-		foreach ( $inValues as $i => $inValue ) {
-			$result = $operation->apply( self::explodeValue( $fieldSep, $inValue, $fieldLimit ), $i + 1 );
-			if ( strtolower( $result ) !== 'remove' ) {
-				$outValues[] = $inValue;
-			}
-		}
-
-		return $outValues;
-	}
-
-	/**
-	 * This function renders the listfilter function, sending it to the appropriate processing function based on what
-	 * parameter values are provided.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function listfilterRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), self::PARAM_OPTIONS );
-
-		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
-
-		$keepValues = $params->get( 'keep' );
-		$keepSep = $params->get( 'keepsep' );
-		$keepCS = self::decodeBool( $params->get( 'keepcs' ) );
-		$removeValues = $params->get( 'remove' );
-		$removeSep = $params->get( 'removesep' );
-		$removeCS = self::decodeBool( $params->get( 'removecs' ) );
-		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep' );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
-		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		$inValues = self::explodeList( $inSep, $inList );
-
-		if ( $keepValues !== '' ) {
-			if ( $keepSep !== '' ) {
-				$keepValues = self::explodeList( $keepSep, $keepValues );
-			} else {
-				$keepValues = [ ParserPower::unescape( $keepValues ) ];
-			}
-
-			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
-		} elseif ( $removeValues !== '' ) {
-			if ( $removeSep !== '' ) {
-				$removeValues = self::explodeList( $removeSep, $removeValues );
-			} else {
-				$removeValues = [ ParserPower::unescape( $removeValues ) ];
-			}
-
-			$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
-		} elseif ( $template !== '' ) {
-			$operation = new TemplateOperation( $parser, $frame, $template );
-		} else {
-			if ( $fieldSep !== '' ) {
-				$tokens = self::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
-			}
-
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-		}
-
-		$outValues = self::filterList( $operation, $inValues, $fieldSep );
-
-		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		$count = count( $outValues );
-		$outList = self::implodeList( $outValues, $outSep );
-		$outList = self::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
-	}
-
-	/**
-	 * This function renders the lstfltr function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstfltrRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			self::PARAM_OPTIONS['keep'],
-			self::PARAM_OPTIONS['keepsep'],
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			self::PARAM_OPTIONS['outsep'],
-			[]
-		] );
-
-		$inList = $params->get( 2 );
-
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$values = $params->get( 0 );
-		$valueSep = $params->get( 1 );
-		$inSep = $params->get( 3 );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 4 );
-		$csOption = self::decodeCSOption( $params->get( 5 ) );
-
-		$inValues = self::explodeList( $inSep, $inList );
-
-		if ( $valueSep !== '' ) {
-			$values = self::explodeList( $valueSep, $values );
-		} else {
-			$values = [ ParserPower::unescape( $values ) ];
-		}
-
-		$operation = new ListInclusionOperation( $values, '', 'remove', $csOption );
-		$outValues = self::filterList( $operation, $inValues );
-
-		if ( count( $outValues ) > 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, self::implodeList( $outValues, $outSep ) );
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * This function renders the lstrm function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstrmRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			[ 'unescape' => true ],
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			self::PARAM_OPTIONS['outsep'],
-			[]
-		] );
-
-		$inList = $params->get( 1 );
-
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$value = $params->get( 0 );
-		$inSep = $params->get( 2 );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 3 );
-		$csOption = self::decodeCSOption( $params->get( 4 ) );
-
-		$inValues = self::explodeList( $inSep, $inList );
-
-		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
-		$outValues = self::filterList( $operation, $inValues );
-
-		if ( count( $outValues ) > 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, self::implodeList( $outValues, $outSep ) );
-		} else {
-			return '';
-		}
 	}
 
 	/**
