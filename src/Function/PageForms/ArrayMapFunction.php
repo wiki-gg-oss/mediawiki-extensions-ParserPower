@@ -23,7 +23,7 @@ final class ArrayMapFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
+	public function render( Parser $parser, PPFrame $frame, array $args ): string {
 		// Set variables.
 		$value = isset( $args[0] ) ? trim( $frame->expand( $args[0] ) ) : '';
 		$delimiter = isset( $args[1] ) ? trim( $frame->expand( $args[1] ) ) : ',';
