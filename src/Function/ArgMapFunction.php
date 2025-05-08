@@ -20,7 +20,7 @@ final class ArgMapFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
+	public function render( Parser $parser, PPFrame $frame, array $args ): string {
 		if ( !isset( $args[0] ) ) {
 			return '<strong class="error">argmap error: The parameter "formatter" is required.</strong>';
 		}
