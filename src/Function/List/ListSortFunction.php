@@ -1,0 +1,145 @@
+<?php
+
+/** @license GPL-2.0-or-later */
+
+namespace MediaWiki\Extension\ParserPower\Function\List;
+
+use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListSorter;
+use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
+use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
+use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
+use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\ParserPower;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Extension\ParserPower\Function\ParserFunction;
+
+/**
+ * Parser function for sorting list values (#listsort).
+ */
+class ListSortFunction implements ParserFunction {
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getName(): string {
+		return 'listsort';
+	}
+
+	/**
+	 * Generates the sort keys. This returns an array of the values where each element is an array with the sort key
+	 * in element 0 and the value in element 1.
+	 *
+	 * @param WikitextOperation $operation Operation to apply.
+	 * @param array $values Array with the input values.
+	 * @param string $fieldSep Separator between fields, if any.
+	 * @return array An array where each value has been paired with a sort key in a two-element array.
+	 */
+	private function generateSortKeys( WikitextOperation $operation, array $values, string $fieldSep = '' ): array {
+		$fieldLimit = $operation->getFieldLimit();
+
+		$pairedValues = [];
+		foreach ( $values as $i => $value ) {
+			$key = $operation->apply( ListFunctions::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
+			$pairedValues[] = [ $key, $value ];
+		}
+
+		return $pairedValues;
+	}
+
+	/**
+	 * This takes an array where each element is an array with a sort key in element 0 and a value in element 1, and it
+	 * returns an array with just the values.
+	 *
+	 * @param array $pairedValues An array with values paired with sort keys.
+	 * @return array An array with just the values.
+	 */
+	private function discardSortKeys( array $pairedValues ): array {
+		$values = [];
+
+		foreach ( $pairedValues as $pairedValue ) {
+			$values[] = $pairedValue[1];
+		}
+
+		return $values;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function render( Parser $parser, PPFrame $frame, array $params ): string {
+		$params = ParameterParser::arrange( $frame, $params );
+		$params = new ParameterParser( $frame, $params, ListFunctions::PARAM_OPTIONS );
+
+		$inList = $params->get( 'list' );
+		$default = $params->get( 'default' );
+
+		$template = $params->get( 'template' );
+		$inSep = $params->get( 'insep' );
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$fieldSep = $params->get( 'fieldsep' );
+		$indexToken = $params->get( 'indextoken' );
+		$token = $params->get( 'token' );
+		$tokenSep = $params->get( 'tokensep' );
+		$pattern = $params->get( 'pattern' );
+		$outSep = $params->get( 'outsep' );
+		$sortOptions = $params->get( 'sortoptions' );
+		$subsort = ListFunctions::decodeBool( $params->get( 'subsort' ) );
+		$subsortOptions = ListFunctions::decodeSortOptions( $params->get( 'subsortoptions' ) );
+		$duplicates = ListFunctions::decodeDuplicates( $params->get( 'duplicates' ) );
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
+
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
+		if ( !$subsort ) {
+			$subsortOptions = null;
+		}
+
+		$values = ListFunctions::explodeList( $inSep, $inList );
+		if ( $duplicates & ListFunctions::DUPLICATES_STRIP ) {
+			$values = array_unique( $values );
+		}
+
+		if ( $template !== '' ) {
+			$sortOptions = ListFunctions::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+			$sorter = new ListSorter( $sortOptions, $subsortOptions );
+			$operation = new TemplateOperation( $parser, $frame, $template );
+
+			$pairedValues = $this->generateSortKeys( $operation, $values, $fieldSep );
+			$sorter->sortPairs( $pairedValues );
+			$values = $this->discardSortKeys( $pairedValues );
+		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+			if ( $fieldSep !== '' ) {
+				$tokens = ListFunctions::explodeToken( $tokenSep, $token );
+			} else {
+				$tokens = [ $token ];
+			}
+
+			$sortOptions = ListFunctions::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+			$sorter = new ListSorter( $sortOptions, $subsortOptions );
+			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+
+			$pairedValues = $this->generateSortKeys( $operation, $values, $fieldSep );
+			$sorter->sortPairs( $pairedValues );
+			$values = $this->discardSortKeys( $pairedValues );
+		} else {
+			$sortOptions = ListFunctions::decodeSortOptions( $sortOptions );
+			$sorter = new ListSorter( $sortOptions );
+			$values = $sorter->sort( $values );
+		}
+
+		if ( count( $values ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
+		$count = count( $values );
+		$outList = ListFunctions::implodeList( $values, $outSep );
+		$outList = ListFunctions::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+	}
+}
