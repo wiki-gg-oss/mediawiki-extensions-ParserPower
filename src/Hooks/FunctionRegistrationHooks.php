@@ -15,8 +15,10 @@ use MediaWiki\Extension\ParserPower\Function\IArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListFilterFunction;
+use MediaWiki\Extension\ParserPower\Function\List\ListUniqueFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstAppFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstCntFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstCntUniqFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstElemFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstFltrFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstFndFunction;
@@ -26,6 +28,7 @@ use MediaWiki\Extension\ParserPower\Function\List\LstPrepFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstRmFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstSepFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstSubFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstUniqFunction;
 use MediaWiki\Extension\ParserPower\Function\OrFunction;
 use MediaWiki\Extension\ParserPower\Function\PageForms\ArrayMapFunction;
 use MediaWiki\Extension\ParserPower\Function\PageForms\ArrayMapTemplateFunction;
@@ -76,8 +79,10 @@ final class FunctionRegistrationHooks implements
 
 	private const LIST_FUNCTIONS = [
 		ListFilterFunction::class,
+		ListUniqueFunction::class,
 		LstAppFunction::class,
 		LstCntFunction::class,
+		LstCntUniqFunction::class,
 		LstElemFunction::class,
 		LstFltrFunction::class,
 		LstFndFunction::class,
@@ -86,7 +91,8 @@ final class FunctionRegistrationHooks implements
 		LstPrepFunction::class,
 		LstRmFunction::class,
 		LstSepFunction::class,
-		LstSubFunction::class
+		LstSubFunction::class,
+		LstUniqFunction::class
 	];
 
 	public function __construct(
@@ -155,9 +161,6 @@ final class FunctionRegistrationHooks implements
 
 		// List functions
 
-		$parser->setFunctionHook( 'lstcntuniq', [ $this->listFunctions, 'lstcntuniqRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'listunique', [ $this->listFunctions, 'listuniqueRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstuniq', [ $this->listFunctions, 'lstuniqRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'listsort', [ $this->listFunctions, 'listsortRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'lstsrt', [ $this->listFunctions, 'lstsrtRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'listmap', [ $this->listFunctions, 'listmapRender' ], Parser::SFH_OBJECT_ARGS );
