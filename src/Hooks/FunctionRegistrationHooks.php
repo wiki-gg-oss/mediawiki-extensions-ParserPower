@@ -15,6 +15,7 @@ use MediaWiki\Extension\ParserPower\Function\IArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListFilterFunction;
+use MediaWiki\Extension\ParserPower\Function\List\ListSortFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListUniqueFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstAppFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstCntFunction;
@@ -27,6 +28,7 @@ use MediaWiki\Extension\ParserPower\Function\List\LstJoinFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstPrepFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstRmFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstSepFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstSrtFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstSubFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstUniqFunction;
 use MediaWiki\Extension\ParserPower\Function\OrFunction;
@@ -79,6 +81,7 @@ final class FunctionRegistrationHooks implements
 
 	private const LIST_FUNCTIONS = [
 		ListFilterFunction::class,
+		ListSortFunction::class,
 		ListUniqueFunction::class,
 		LstAppFunction::class,
 		LstCntFunction::class,
@@ -91,6 +94,7 @@ final class FunctionRegistrationHooks implements
 		LstPrepFunction::class,
 		LstRmFunction::class,
 		LstSepFunction::class,
+		LstSrtFunction::class,
 		LstSubFunction::class,
 		LstUniqFunction::class
 	];
@@ -161,8 +165,6 @@ final class FunctionRegistrationHooks implements
 
 		// List functions
 
-		$parser->setFunctionHook( 'listsort', [ $this->listFunctions, 'listsortRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstsrt', [ $this->listFunctions, 'lstsrtRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'listmap', [ $this->listFunctions, 'listmapRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'lstmap', [ $this->listFunctions, 'lstmapRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'lstmaptemp', [ $this->listFunctions, 'lstmaptempRender' ], Parser::SFH_OBJECT_ARGS );
