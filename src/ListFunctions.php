@@ -55,7 +55,7 @@ final class ListFunctions {
 	public const SORTMODE_POST = 2;
 	public const SORTMODE_COMPAT = 4;
 
-	private const PARAM_OPTIONS = [
+	public const PARAM_OPTIONS = [
 		'counttoken' => [ 'unescape' => true ],
 		'default' => [ 'unescape' => true ],
 		'duplicates' => [],
@@ -185,7 +185,7 @@ final class ListFunctions {
 	 * @param int $default Any flags that should be set by default.
 	 * @return int The flags representing the requested options.
 	 */
-	private static function decodeSortOptions( string $text, int $default = 0 ): int {
+	public static function decodeSortOptions( string $text, int $default = 0 ): int {
 		$optionKeywords = explode( ' ', $text );
 		$options = $default;
 		foreach ( $optionKeywords as $optionKeyword ) {
@@ -221,7 +221,7 @@ final class ListFunctions {
 	 * @param int $default Any flags that should be set by default.
 	 * @return int The flags representing the requested options.
 	 */
-	private static function decodeIndexOptions( string $text, int $default = 0 ): int {
+	public static function decodeIndexOptions( string $text, int $default = 0 ): int {
 		$optionKeywords = explode( ' ', $text );
 		$options = $default;
 		foreach ( $optionKeywords as $optionKeyword ) {
@@ -258,7 +258,7 @@ final class ListFunctions {
 	 * @param string $list List to split.
 	 * @return array The values, in an array of strings.
 	 */
-	private static function explodeList( string $sep, string $list ): array {
+	public static function explodeList( string $sep, string $list ): array {
 		if ( $sep === '' ) {
 			$inValues = preg_split( '/(?<!^)(?!$)/u', $list );
 		} else {
@@ -288,7 +288,7 @@ final class ListFunctions {
 	 * @param ?string $conj Delimiter used to separate the last 2 values, null to use the base delimiter.
 	 * @return string The output list.
 	 */
-	private static function implodeList( array $values, string $sep, ?string $conj = null ): string {
+	public static function implodeList( array $values, string $sep, ?string $conj = null ): string {
 		$list = end( $values );
 		if ( key( $values ) === null ) {
 			return '';
@@ -320,7 +320,7 @@ final class ListFunctions {
 	 * @param ?int $fieldLimit Maximum number of fields, null if there is no upper bound.
 	 * @return array The fields, in an array of strings.
 	 */
-	private static function explodeValue( string $sep, string $value, ?int $fieldLimit = null ): array {
+	public static function explodeValue( string $sep, string $value, ?int $fieldLimit = null ): array {
 		if ( $sep === '' ) {
 			return [ $value ];
 		} else {
@@ -336,7 +336,7 @@ final class ListFunctions {
 	 * @param string $token Token to split.
 	 * @return array The tokens, in an array of strings.
 	 */
-	private static function explodeToken( string $sep, string $token ): array {
+	public static function explodeToken( string $sep, string $token ): array {
 		if ( $sep === '' ) {
 			return [ trim( $token ) ];
 		} else {
@@ -352,7 +352,7 @@ final class ListFunctions {
 	 * @param ?int $length Maximum number of elements to extract.
 	 * @return array A new sliced array.
 	 */
-	private static function arraySlice( array $values, int $offset = 0, ?int $length = null ): array {
+	public static function arraySlice( array $values, int $offset = 0, ?int $length = null ): array {
 		if ( $offset > 0 ) {
 			$offset = $offset - 1;
 		}
@@ -376,7 +376,7 @@ final class ListFunctions {
 	 * @param int $index 1-based index of the array element to get, or a negative value to start from the end.
 	 * @return string The array element, or empty string if not found.
 	 */
-	private static function arrayElement( array $values, int $index ): string {
+	public static function arrayElement( array $values, int $index ): string {
 		if ( $index === 0 ) {
 			return '';
 		}
@@ -388,346 +388,6 @@ final class ListFunctions {
 	public function __construct(
 		private readonly bool $useLegacyLstmapExpansion
 	) {
-	}
-
-	/**
-	 * This function directs the counting operation for the lstcnt function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstcntRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep']
-		] );
-
-		$list = $params->get( 0 );
-		if ( $list === '' ) {
-			return '0';
-		}
-
-		$sep = $params->get( 1 );
-		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-
-		return (string)count( self::explodeList( $sep, $list ) );
-	}
-
-	/**
-	 * This function directs the delimiter replacement operation for the lstsep function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstsepRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			self::PARAM_OPTIONS['outsep']
-		] );
-
-		$inList = $params->get( 0 );
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$inSep = $params->get( 1 );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 2 );
-
-		$values = self::explodeList( $inSep, $inList );
-		return ParserPower::evaluateUnescaped( $parser, $frame, self::implodeList( $values, $outSep ) );
-	}
-
-	/**
-	 * This function directs the list element retrieval operation for the lstelem function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output along with relevant parser options.
-	 */
-	public function lstelemRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			[ 'unescape' => true ]
-		] );
-
-		$inList = $params->get( 0 );
-
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$inSep = $params->get( 1 );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$index = $params->get( 2 );
-		$index = is_numeric( $index ) ? intval( $index ) : 1;
-
-		$value = self::arrayElement( self::explodeList( $inSep, $inList ), $index );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $value );
-	}
-
-	/**
-	 * This function directs the list subdivision and delimiter replacement operation for the lstsub function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstsubRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			self::PARAM_OPTIONS['outsep'],
-			[ 'unescape' => true ],
-			[ 'unescape' => true ]
-		] );
-
-		$inList = $params->get( 0 );
-
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$inSep = $params->get( 1 );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 2 );
-		$offset = $params->get( 3 );
-		$offset = is_numeric( $offset ) ? intval( $offset ) : 0;
-		$length = $params->get( 4 );
-		$length = is_numeric( $length ) ? intval( $length ) : null;
-
-		$values = self::arraySlice( self::explodeList( $inSep, $inList ), $offset, $length );
-
-		if ( count( $values ) > 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, self::implodeList( $values, $outSep ) );
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * This function directs the search operation for the lstfnd function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstfndRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			[ 'unescape' => true ],
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			[]
-		] );
-
-		$list = $params->get( 1 );
-
-		if ( $list === '' ) {
-			return '';
-		}
-
-		$item = $params->get( 0 );
-		$sep = $params->get( 2 );
-		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-		$csOption = $params->get( 3 );
-		$csOption = self::decodeCSOption( $csOption );
-
-		$values = self::explodeList( $sep, $list );
-		if ( $csOption ) {
-			foreach ( $values as $value ) {
-				if ( $value === $item ) {
-					return ParserPower::evaluateUnescaped( $parser, $frame, $value );
-				}
-			}
-		} else {
-			foreach ( $values as $value ) {
-				if ( strtolower( $value ) === strtolower( $item ) ) {
-					return ParserPower::evaluateUnescaped( $parser, $frame, $value );
-				}
-			}
-		}
-		return '';
-	}
-
-	/**
-	 * This function directs the search operation for the lstind function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstindRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			[ 'unescape' => true ],
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			[]
-		] );
-
-		$list = $params->get( 1 );
-
-		if ( $list === '' ) {
-			return '';
-		}
-
-		$item = $params->get( 0 );
-		$sep = $params->get( 2 );
-		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-		$options = self::decodeIndexOptions( $params->get( 3 ) );
-
-		$values = self::explodeList( $sep, $list );
-		$count = ( is_array( $values ) || $values instanceof Countable ) ? count( $values ) : 0;
-		if ( $options & self::INDEX_DESC ) {
-			if ( $options & self::INDEX_CS ) {
-				for ( $index = $count - 1; $index > -1; --$index ) {
-					if ( $values[$index] === $item ) {
-						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
-					}
-				}
-			} else {
-				for ( $index = $count - 1; $index > -1; --$index ) {
-					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
-					}
-				}
-			}
-		} else {
-			if ( $options & self::INDEX_CS ) {
-				for ( $index = 0; $index < $count; ++$index ) {
-					if ( $values[$index] === $item ) {
-						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
-					}
-				}
-			} else {
-				for ( $index = 0; $index < $count; ++$index ) {
-					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
-					}
-				}
-			}
-		}
-		return '';
-	}
-
-	/**
-	 * This function directs the append operation for the lstapp function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstappRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			[ 'unescape' => true ]
-		] );
-
-		$list = $params->get( 0 );
-		$value = $params->get( 2 );
-
-		if ( $list === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $value );
-		}
-
-		$sep = $params->get( 1 );
-		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-
-		$values = self::explodeList( $sep, $list );
-		if ( $value !== '' ) {
-			$values[] = $value;
-		}
-		return ParserPower::evaluateUnescaped( $parser, $frame, self::implodeList( $values, $sep ) );
-	}
-
-	/**
-	 * This function directs the prepend operation for the lstprep function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstprepRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			[ 'unescape' => true ],
-			self::PARAM_OPTIONS['insep'],
-			self::PARAM_OPTIONS['list']
-		] );
-
-		$value = $params->get( 0 );
-		$list = $params->get( 2 );
-
-		if ( $list === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $value );
-		}
-
-		$sep = $params->get( 1 );
-
-		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-
-		$values = self::explodeList( $sep, $list );
-		if ( $value !== '' ) {
-			array_unshift( $values, $value );
-		}
-		return ParserPower::evaluateUnescaped( $parser, $frame, self::implodeList( $values, $sep ) );
-	}
-
-	/**
-	 * This function directs the joining operation for the lstjoin function.
-	 *
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @param array $params The parameters and values together, not yet expanded or trimmed.
-	 * @return string The function output.
-	 */
-	public function lstjoinRender( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			self::PARAM_OPTIONS['list'],
-			self::PARAM_OPTIONS['insep'],
-			self::PARAM_OPTIONS['outsep']
-		] );
-
-		$inList1 = $params->get( 0 );
-		$inList2 = $params->get( 2 );
-		if ( $inList1 === '' && $inList2 === '' ) {
-			return '';
-		}
-
-		if ( $inList1 === '' ) {
-			$values1 = [];
-		} else {
-			$inSep1 = $params->get( 1 );
-			$inSep1 = $parser->getStripState()->unstripNoWiki( $inSep1 );
-			$values1 = self::explodeList( $inSep1, $inList1 );
-		}
-
-		if ( $inList2 === '' ) {
-			$values2 = [];
-		} else {
-			$inSep2 = $params->get( 3 );
-			$inSep2 = $parser->getStripState()->unstripNoWiki( $inSep2 );
-			$values2 = self::explodeList( $inSep2, $inList2 );
-		}
-
-		$outSep = $params->get( 4 );
-
-		$values = array_merge( $values1, $values2 );
-		return ParserPower::evaluateUnescaped( $parser, $frame, self::implodeList( $values, $outSep ) );
 	}
 
 	/**

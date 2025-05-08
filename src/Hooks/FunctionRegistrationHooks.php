@@ -14,6 +14,15 @@ use MediaWiki\Extension\ParserPower\Function\FollowFunction;
 use MediaWiki\Extension\ParserPower\Function\IArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstAppFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstCntFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstElemFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstFndFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstIndFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstJoinFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstPrepFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstSepFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstSubFunction;
 use MediaWiki\Extension\ParserPower\Function\OrFunction;
 use MediaWiki\Extension\ParserPower\Function\PageForms\ArrayMapFunction;
 use MediaWiki\Extension\ParserPower\Function\PageForms\ArrayMapTemplateFunction;
@@ -62,6 +71,18 @@ final class FunctionRegistrationHooks implements
 		ArrayMapTemplateFunction::class
 	];
 
+	private const LIST_FUNCTIONS = [
+		LstAppFunction::class,
+		LstCntFunction::class,
+		LstElemFunction::class,
+		LstFndFunction::class,
+		LstIndFunction::class,
+		LstJoinFunction::class,
+		LstPrepFunction::class,
+		LstSepFunction::class,
+		LstSubFunction::class
+	];
+
 	public function __construct(
 		Config $config,
 		private ObjectFactory $objectFactory
@@ -76,6 +97,7 @@ final class FunctionRegistrationHooks implements
 		if ( !defined( 'PF_VERSION' ) ) {
 			$this->addFunctions( self::PAGE_FORMS_FUNCTIONS );
 		}
+		$this->addFunctions( self::LIST_FUNCTIONS );
 
 		$this->escTag = new EscTag();
 	}
@@ -127,15 +149,6 @@ final class FunctionRegistrationHooks implements
 
 		// List functions
 
-		$parser->setFunctionHook( 'lstcnt', [ $this->listFunctions, 'lstcntRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstsep', [ $this->listFunctions, 'lstsepRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstelem', [ $this->listFunctions, 'lstelemRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstsub', [ $this->listFunctions, 'lstsubRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstfnd', [ $this->listFunctions, 'lstfndRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstind', [ $this->listFunctions, 'lstindRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstapp', [ $this->listFunctions, 'lstappRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstprep', [ $this->listFunctions, 'lstprepRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstjoin', [ $this->listFunctions, 'lstjoinRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'lstcntuniq', [ $this->listFunctions, 'lstcntuniqRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'listunique', [ $this->listFunctions, 'listuniqueRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'lstuniq', [ $this->listFunctions, 'lstuniqRender' ], Parser::SFH_OBJECT_ARGS );
