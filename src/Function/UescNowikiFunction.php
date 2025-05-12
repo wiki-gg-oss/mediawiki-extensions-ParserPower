@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -25,8 +26,10 @@ final class UescNowikiFunction implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$text = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
+		$params = new ParameterParser( $frame, $params, [
+			0 => [ 'unescape' => true ]
+		] );
 
-		return ParserPower::evaluateUnescaped( $parser, $frame, '<nowiki>' . $text . '</nowiki>' );
+		return ParserPower::evaluateUnescaped( $parser, $frame, '<nowiki>' . $params->get( 0 ) . '</nowiki>' );
 	}
 }

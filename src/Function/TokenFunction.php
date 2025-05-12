@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -24,12 +25,13 @@ final class TokenFunction implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$inValue = ParserPower::expand( $frame, $params[0] ?? '' );
+		$params = new ParameterParser( $frame, $params, [
+			0 => [],
+			1 => [ 'default' => 'x', 'unescape' => true ],
+			2 => [ 'default' => 'x', 'novars' => true ]
+		] );
 
-		$token = ParserPower::expand( $frame, $params[1] ?? 'x', ParserPower::UNESCAPE );
-		$pattern = ParserPower::expand( $frame, $params[2] ?? 'x', ParserPower::NO_VARS );
-
-		$outValue = ParserPower::applyPattern( $inValue, $token, $pattern );
+		$outValue = ParserPower::applyPattern( $params->get( 0 ), $params->get( 1 ), $params->get( 2 ) );
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
 		$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
 
