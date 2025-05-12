@@ -22,11 +22,13 @@ final class ParameterParser {
 	 * @param PPFrame $frame Parser frame object.
 	 * @param array $params Unexpanded parameters.
 	 * @param array $paramOptions Parsing and post-processing options for all parameters.
+	 * @param array $defaultOptions Parsing and post-processing options for unknown parameters.
 	 */
 	public function __construct(
 		private readonly PPFrame $frame,
 		private array $params,
-		private array $paramOptions = []
+		private array $paramOptions = [],
+		private array $defaultOptions = []
 	) {
 	}
 
@@ -42,7 +44,7 @@ final class ParameterParser {
 			return $this->expandedParams[$key];
 		}
 
-		$options = array_merge( $this->paramOptions[$key] ?? [], $options );
+		$options = array_merge( $this->paramOptions[$key] ?? $this->defaultOptions, $options );
 
 		if ( !isset( $this->params[$key] ) ) {
 			$value = $options['default'] ?? '';
