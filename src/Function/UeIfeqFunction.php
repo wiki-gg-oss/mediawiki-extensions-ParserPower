@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -24,13 +25,17 @@ final class UeIfeqFunction implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$leftValue = ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE );
-		$rightValue = ParserPower::expand( $frame, $params[1] ?? '', ParserPower::UNESCAPE );
+		$params = new ParameterParser( $frame, $params, [
+			0 => [ 'unescape' => true ],
+			1 => [ 'unescape' => true ],
+			2 => [ 'unescape' => true ],
+			3 => [ 'unescape' => true ]
+		] );
 
-		if ( $leftValue === $rightValue ) {
-			$value = ParserPower::expand( $frame, $params[2] ?? '', ParserPower::UNESCAPE );
+		if ( $params->get( 0 ) === $params->get( 1 ) ) {
+			$value = $params->get( 2 );
 		} else {
-			$value = ParserPower::expand( $frame, $params[3] ?? '', ParserPower::UNESCAPE );
+			$value = $params->get( 3 );
 		}
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $value );

@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
-use MediaWiki\Extension\ParserPower\ParserPower;
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Page\RedirectLookup;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -34,7 +34,11 @@ final class FollowFunction implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
+		$params = new ParameterParser( $frame, $params, [
+			0 => [ 'unescape' => true ]
+		] );
+
+		$text = trim( $params->get( 0 ) );
 
 		$title = Title::newFromText( $text );
 		if ( $title === null || $title->getNamespace() === NS_MEDIA || $title->getNamespace() < 0 ) {

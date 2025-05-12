@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -25,7 +26,11 @@ final class TrimUescFunction implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$text = trim( ParserPower::expand( $frame, $params[0] ?? '', ParserPower::UNESCAPE ) );
+		$params = new ParameterParser( $frame, $params, [
+			0 => [ 'unescape' => true ]
+		] );
+
+		$text = trim( $params->get( 0 ) );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $text );
 	}

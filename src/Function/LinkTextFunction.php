@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
-use MediaWiki\Extension\ParserPower\ParserPower;
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
@@ -39,8 +39,11 @@ final class LinkTextFunction implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$text = ParserPower::expand( $frame, $params[0] ?? '' );
-		return preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'replace' ], $text );
+		$params = new ParameterParser( $frame, $params, [
+			0 => []
+		] );
+
+		return preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'replace' ], $params->get( 0 ) );
 	}
 
 	/**
