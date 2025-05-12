@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
@@ -29,8 +29,8 @@ final class LstFndFunction implements ParserFunction {
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = new ParameterParser( $frame, $params, [
 			[ 'unescape' => true ],
-			ListFunctions::PARAM_OPTIONS['list'],
-			ListFunctions::PARAM_OPTIONS['insep'],
+			ListUtils::PARAM_OPTIONS['list'],
+			ListUtils::PARAM_OPTIONS['insep'],
 			[]
 		] );
 
@@ -44,9 +44,9 @@ final class LstFndFunction implements ParserFunction {
 		$sep = $params->get( 2 );
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$csOption = $params->get( 3 );
-		$csOption = ListFunctions::decodeCSOption( $csOption );
+		$csOption = ListUtils::decodeCSOption( $csOption );
 
-		$values = ListFunctions::explodeList( $sep, $list );
+		$values = ListUtils::explode( $sep, $list );
 		if ( $csOption ) {
 			foreach ( $values as $value ) {
 				if ( $value === $item ) {

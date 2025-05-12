@@ -6,7 +6,8 @@ namespace MediaWiki\Extension\ParserPower;
 
 use StringUtils;
 
-final class ListFunctions {
+final class ListUtils {
+
 	/**
 	 * Flag for index search returning a positive index. 0 as this is a default mode.
 	 */
@@ -251,7 +252,7 @@ final class ListFunctions {
 	 * @param string $list List to split.
 	 * @return array The values, in an array of strings.
 	 */
-	public static function explodeList( string $sep, string $list ): array {
+	public static function explode( string $sep, string $list ): array {
 		if ( $sep === '' ) {
 			$inValues = preg_split( '/(?<!^)(?!$)/u', $list );
 		} else {
@@ -281,7 +282,7 @@ final class ListFunctions {
 	 * @param ?string $conj Delimiter used to separate the last 2 values, null to use the base delimiter.
 	 * @return string The output list.
 	 */
-	public static function implodeList( array $values, string $sep, ?string $conj = null ): string {
+	public static function implode( array $values, string $sep, ?string $conj = null ): string {
 		$list = end( $values );
 		if ( key( $values ) === null ) {
 			return '';
@@ -345,7 +346,7 @@ final class ListFunctions {
 	 * @param ?int $length Maximum number of elements to extract.
 	 * @return array A new sliced array.
 	 */
-	public static function arraySlice( array $values, int $offset = 0, ?int $length = null ): array {
+	public static function slice( array $values, int $offset = 0, ?int $length = null ): array {
 		if ( $offset > 0 ) {
 			$offset = $offset - 1;
 		}
@@ -369,12 +370,12 @@ final class ListFunctions {
 	 * @param int $index 1-based index of the array element to get, or a negative value to start from the end.
 	 * @return string The array element, or empty string if not found.
 	 */
-	public static function arrayElement( array $values, int $index ): string {
+	public static function get( array $values, int $index ): string {
 		if ( $index === 0 ) {
 			return '';
 		}
 
-		$outValues = self::arraySlice( $values, $index, 1 );
+		$outValues = self::slice( $values, $index, 1 );
 		return $outValues[0] ?? '';
 	}
 

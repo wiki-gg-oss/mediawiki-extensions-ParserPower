@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -26,8 +26,8 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = new ParameterParser( $frame, $params, [
-			ListFunctions::PARAM_OPTIONS['list'],
-			ListFunctions::PARAM_OPTIONS['insep'],
+			ListUtils::PARAM_OPTIONS['list'],
+			ListUtils::PARAM_OPTIONS['insep'],
 			[]
 		] );
 
@@ -38,9 +38,9 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 
 		$sep = $params->get( 1 );
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-		$csOption = ListFunctions::decodeCSOption( $params->get( 2 ) );
+		$csOption = ListUtils::decodeCSOption( $params->get( 2 ) );
 
-		$values = ListFunctions::explodeList( $sep, $inList );
+		$values = ListUtils::explode( $sep, $inList );
 		$values = $this->reduceToUniqueValues( $values, $csOption );
 		return (string)count( $values );
 	}

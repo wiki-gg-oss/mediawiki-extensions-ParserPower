@@ -4,8 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\ListSorter;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
@@ -29,12 +29,12 @@ final class LstMapTempFunction extends ListMapFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = new ParameterParser( $frame, $params, [
-			ListFunctions::PARAM_OPTIONS['list'],
-			ListFunctions::PARAM_OPTIONS['template'],
-			ListFunctions::PARAM_OPTIONS['insep'],
-			ListFunctions::PARAM_OPTIONS['outsep'],
+			ListUtils::PARAM_OPTIONS['list'],
+			ListUtils::PARAM_OPTIONS['template'],
+			ListUtils::PARAM_OPTIONS['insep'],
+			ListUtils::PARAM_OPTIONS['outsep'],
 			[],
-			ListFunctions::PARAM_OPTIONS['sortoptions']
+			ListUtils::PARAM_OPTIONS['sortoptions']
 		] );
 
 		$inList = $params->get( 0 );
@@ -47,21 +47,21 @@ final class LstMapTempFunction extends ListMapFunction {
 		$inSep = $params->get( 2 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$outSep = $params->get( 3 );
-		$sortMode = ListFunctions::decodeSortMode( $params->get( 4 ) );
-		$sortOptions = ListFunctions::decodeSortOptions( $params->get( 5 ) );
+		$sortMode = ListUtils::decodeSortMode( $params->get( 4 ) );
+		$sortOptions = ListUtils::decodeSortOptions( $params->get( 5 ) );
 
 		$sorter = new ListSorter( $sortOptions );
 
-		$inValues = ListFunctions::explodeList( $inSep, $inList );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $sortMode & ListFunctions::SORTMODE_PRE ) {
+		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
 		}
 
 		$operation = new TemplateOperation( $parser, $frame, $template );
 		$outValues = $this->mapList( $operation, true, $inValues, '' );
 
-		if ( $sortMode & ( ListFunctions::SORTMODE_POST | ListFunctions::SORTMODE_COMPAT ) ) {
+		if ( $sortMode & ( ListUtils::SORTMODE_POST | ListUtils::SORTMODE_COMPAT ) ) {
 			$outValues = $sorter->sort( $outValues );
 		}
 
@@ -69,6 +69,6 @@ final class LstMapTempFunction extends ListMapFunction {
 			return '';
 		}
 
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListFunctions::implodeList( $outValues, $outSep ) );
+		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $outValues, $outSep ) );
 	}
 }

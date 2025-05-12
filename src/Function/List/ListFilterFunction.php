@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
@@ -40,7 +40,7 @@ class ListFilterFunction implements ParserFunction {
 
 		$outValues = [];
 		foreach ( $inValues as $i => $inValue ) {
-			$result = $operation->apply( ListFunctions::explodeValue( $fieldSep, $inValue, $fieldLimit ), $i + 1 );
+			$result = $operation->apply( ListUtils::explodeValue( $fieldSep, $inValue, $fieldLimit ), $i + 1 );
 			if ( strtolower( $result ) !== 'remove' ) {
 				$outValues[] = $inValue;
 			}
@@ -54,17 +54,17 @@ class ListFilterFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = ParameterParser::arrange( $frame, $params );
-		$params = new ParameterParser( $frame, $params, ListFunctions::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
 		$keepValues = $params->get( 'keep' );
 		$keepSep = $params->get( 'keepsep' );
-		$keepCS = ListFunctions::decodeBool( $params->get( 'keepcs' ) );
+		$keepCS = ListUtils::decodeBool( $params->get( 'keepcs' ) );
 		$removeValues = $params->get( 'remove' );
 		$removeSep = $params->get( 'removesep' );
-		$removeCS = ListFunctions::decodeBool( $params->get( 'removecs' ) );
+		$removeCS = ListUtils::decodeBool( $params->get( 'removecs' ) );
 		$template = $params->get( 'template' );
 		$inSep = $params->get( 'insep' );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
@@ -83,11 +83,11 @@ class ListFilterFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$inValues = ListFunctions::explodeList( $inSep, $inList );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $keepValues !== '' ) {
 			if ( $keepSep !== '' ) {
-				$keepValues = ListFunctions::explodeList( $keepSep, $keepValues );
+				$keepValues = ListUtils::explode( $keepSep, $keepValues );
 			} else {
 				$keepValues = [ ParserPower::unescape( $keepValues ) ];
 			}
@@ -95,7 +95,7 @@ class ListFilterFunction implements ParserFunction {
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
 		} elseif ( $removeValues !== '' ) {
 			if ( $removeSep !== '' ) {
-				$removeValues = ListFunctions::explodeList( $removeSep, $removeValues );
+				$removeValues = ListUtils::explode( $removeSep, $removeValues );
 			} else {
 				$removeValues = [ ParserPower::unescape( $removeValues ) ];
 			}
@@ -105,7 +105,7 @@ class ListFilterFunction implements ParserFunction {
 			$operation = new TemplateOperation( $parser, $frame, $template );
 		} else {
 			if ( $fieldSep !== '' ) {
-				$tokens = ListFunctions::explodeToken( $tokenSep, $token );
+				$tokens = ListUtils::explodeToken( $tokenSep, $token );
 			} else {
 				$tokens = [ $token ];
 			}
@@ -120,8 +120,8 @@ class ListFilterFunction implements ParserFunction {
 		}
 
 		$count = count( $outValues );
-		$outList = ListFunctions::implodeList( $outValues, $outSep );
-		$outList = ListFunctions::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+		$outList = ListUtils::implode( $outValues, $outSep );
+		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}

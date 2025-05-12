@@ -4,8 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\ListSorter;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
@@ -41,7 +41,7 @@ class ListSortFunction implements ParserFunction {
 
 		$pairedValues = [];
 		foreach ( $values as $i => $value ) {
-			$key = $operation->apply( ListFunctions::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
+			$key = $operation->apply( ListUtils::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
 			$pairedValues[] = [ $key, $value ];
 		}
 
@@ -70,7 +70,7 @@ class ListSortFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = ParameterParser::arrange( $frame, $params );
-		$params = new ParameterParser( $frame, $params, ListFunctions::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
@@ -85,9 +85,9 @@ class ListSortFunction implements ParserFunction {
 		$pattern = $params->get( 'pattern' );
 		$outSep = $params->get( 'outsep' );
 		$sortOptions = $params->get( 'sortoptions' );
-		$subsort = ListFunctions::decodeBool( $params->get( 'subsort' ) );
-		$subsortOptions = ListFunctions::decodeSortOptions( $params->get( 'subsortoptions' ) );
-		$duplicates = ListFunctions::decodeDuplicates( $params->get( 'duplicates' ) );
+		$subsort = ListUtils::decodeBool( $params->get( 'subsort' ) );
+		$subsortOptions = ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) );
+		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
@@ -100,13 +100,13 @@ class ListSortFunction implements ParserFunction {
 			$subsortOptions = null;
 		}
 
-		$values = ListFunctions::explodeList( $inSep, $inList );
-		if ( $duplicates & ListFunctions::DUPLICATES_STRIP ) {
+		$values = ListUtils::explode( $inSep, $inList );
+		if ( $duplicates & ListUtils::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
 		}
 
 		if ( $template !== '' ) {
-			$sortOptions = ListFunctions::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+			$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
 			$sorter = new ListSorter( $sortOptions, $subsortOptions );
 			$operation = new TemplateOperation( $parser, $frame, $template );
 
@@ -115,12 +115,12 @@ class ListSortFunction implements ParserFunction {
 			$values = $this->discardSortKeys( $pairedValues );
 		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
 			if ( $fieldSep !== '' ) {
-				$tokens = ListFunctions::explodeToken( $tokenSep, $token );
+				$tokens = ListUtils::explodeToken( $tokenSep, $token );
 			} else {
 				$tokens = [ $token ];
 			}
 
-			$sortOptions = ListFunctions::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+			$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
 			$sorter = new ListSorter( $sortOptions, $subsortOptions );
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 
@@ -128,7 +128,7 @@ class ListSortFunction implements ParserFunction {
 			$sorter->sortPairs( $pairedValues );
 			$values = $this->discardSortKeys( $pairedValues );
 		} else {
-			$sortOptions = ListFunctions::decodeSortOptions( $sortOptions );
+			$sortOptions = ListUtils::decodeSortOptions( $sortOptions );
 			$sorter = new ListSorter( $sortOptions );
 			$values = $sorter->sort( $values );
 		}
@@ -138,8 +138,8 @@ class ListSortFunction implements ParserFunction {
 		}
 
 		$count = count( $values );
-		$outList = ListFunctions::implodeList( $values, $outSep );
-		$outList = ListFunctions::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+		$outList = ListUtils::implode( $values, $outSep );
+		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

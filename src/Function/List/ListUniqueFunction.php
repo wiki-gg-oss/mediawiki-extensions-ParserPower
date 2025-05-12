@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
@@ -59,7 +59,7 @@ class ListUniqueFunction implements ParserFunction {
 		$previousKeys = [];
 		$outValues = [];
 		foreach ( $inValues as $i => $value ) {
-			$key = $operation->apply( ListFunctions::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
+			$key = $operation->apply( ListUtils::explodeValue( $fieldSep, $value, $fieldLimit ), $i + 1 );
 			if ( !in_array( $key, $previousKeys ) ) {
 				$previousKeys[] = $key;
 				$outValues[] = $value;
@@ -74,12 +74,12 @@ class ListUniqueFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = ParameterParser::arrange( $frame, $params );
-		$params = new ParameterParser( $frame, $params, ListFunctions::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
 
-		$uniqueCS = ListFunctions::decodeBool( $params->get( 'uniquecs' ) );
+		$uniqueCS = ListUtils::decodeBool( $params->get( 'uniquecs' ) );
 		$template = $params->get( 'template' );
 		$inSep = $params->get( 'insep' );
 		$fieldSep = $params->get( 'fieldsep' );
@@ -96,10 +96,10 @@ class ListUniqueFunction implements ParserFunction {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
 		}
 
-		$inValues = ListFunctions::explodeList( $inSep, $inList );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $fieldSep !== '' ) {
-			$tokens = ListFunctions::explodeToken( $tokenSep, $token );
+			$tokens = ListUtils::explodeToken( $tokenSep, $token );
 		} else {
 			$tokens = [ $token ];
 		}
@@ -115,8 +115,8 @@ class ListUniqueFunction implements ParserFunction {
 		}
 
 		$count = count( $outValues );
-		$outList = ListFunctions::implodeList( $outValues, $outSep );
-		$outList = ListFunctions::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+		$outList = ListUtils::implode( $outValues, $outSep );
+		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

@@ -4,8 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\ListSorter;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
@@ -28,10 +28,10 @@ final class LstSrtFunction extends ListSortFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = new ParameterParser( $frame, $params, [
-			ListFunctions::PARAM_OPTIONS['list'],
-			ListFunctions::PARAM_OPTIONS['insep'],
-			ListFunctions::PARAM_OPTIONS['outsep'],
-			ListFunctions::PARAM_OPTIONS['sortoptions']
+			ListUtils::PARAM_OPTIONS['list'],
+			ListUtils::PARAM_OPTIONS['insep'],
+			ListUtils::PARAM_OPTIONS['outsep'],
+			ListUtils::PARAM_OPTIONS['sortoptions']
 		] );
 
 		$inList = $params->get( 0 );
@@ -44,11 +44,11 @@ final class LstSrtFunction extends ListSortFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$outSep = $params->get( 2 );
 
-		$sortOptions = ListFunctions::decodeSortOptions( $params->get( 3 ) );
+		$sortOptions = ListUtils::decodeSortOptions( $params->get( 3 ) );
 		$sorter = new ListSorter( $sortOptions );
 
-		$values = ListFunctions::explodeList( $inSep, $inList );
+		$values = ListUtils::explode( $inSep, $inList );
 		$values = $sorter->sort( $values );
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListFunctions::implodeList( $values, $outSep ) );
+		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $values, $outSep ) );
 	}
 }
