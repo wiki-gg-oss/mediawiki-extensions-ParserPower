@@ -41,6 +41,9 @@
 	"Hooks": {
 		"ParserFirstCallInit": "FunctionRegistration"
 	},
+	"ConfigRegistry": {
+		"ParserPower": "MediaWiki\\Extension\\ParserPower\\ParserPowerConfig::newInstance"
+	},
 	"config_prefix": "wgParserPower",
 	"config": {
 		"LstmapExpansionCompat": {
