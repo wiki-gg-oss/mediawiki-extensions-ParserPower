@@ -5,7 +5,6 @@
 namespace MediaWiki\Extension\ParserPower\Hooks;
 
 use MediaWiki\Extension\ParserPower\EscTag;
-use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Parser\Parser;
 use Wikimedia\ObjectFactory\ObjectFactory;
 use MediaWiki\Extension\ParserPower\Function\ArgMapFunction;
@@ -15,6 +14,7 @@ use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListFilterFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListMapFunction;
+use MediaWiki\Extension\ParserPower\Function\List\ListMergeFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListSortFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListUniqueFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstAppFunction;
@@ -50,7 +50,6 @@ use MediaWiki\Extension\ParserPower\Function\UeSwitchFunction;
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
 {
-	private readonly ListFunctions $listFunctions;
 	private array $functions;
 	private EscTag $escTag;
 
@@ -84,6 +83,7 @@ final class FunctionRegistrationHooks implements
 	private const LIST_FUNCTIONS = [
 		ListFilterFunction::class,
 		ListMapFunction::class,
+		ListMergeFunction::class,
 		ListSortFunction::class,
 		ListUniqueFunction::class,
 		LstAppFunction::class,
@@ -108,8 +108,6 @@ final class FunctionRegistrationHooks implements
 	];
 
 	public function __construct( private ObjectFactory $objectFactory ) {
-		$this->listFunctions = new ListFunctions();
-
 		$this->functions = [];
 		$this->addFunctions( self::SIMPLE_FUNCTIONS );
 		// Do not load if Page Forms is installed.
@@ -165,9 +163,5 @@ final class FunctionRegistrationHooks implements
 		foreach ( $this->escTag->getNames() as $escTagName ) {
 			$parser->setHook( $escTagName, [ $this->escTag, 'render' ] );
 		}
-
-		// List functions
-
-		$parser->setFunctionHook( 'listmerge', [ $this->listFunctions, 'listmergeRender' ], Parser::SFH_OBJECT_ARGS );
 	}
 }

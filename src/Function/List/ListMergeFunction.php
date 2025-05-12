@@ -1,0 +1,182 @@
+<?php
+
+/** @license GPL-2.0-or-later */
+
+namespace MediaWiki\Extension\ParserPower\Function\List;
+
+use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListSorter;
+use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
+use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
+use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
+use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\ParserPower;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Extension\ParserPower\Function\ParserFunction;
+
+/**
+ * Parser function for merging list values (#listmerge).
+ */
+class ListMergeFunction implements ParserFunction {
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getName(): string {
+		return 'listmerge';
+	}
+
+	/**
+	 * This function performs repeated merge passes until either the input array is merged to a single value, or until
+	 * a merge pass is completed that does not perform any further merges (pre- and post-pass array count is the same).
+	 * Each merge pass operates by performing a conditional on all possible pairings of items, immediately merging two
+	 * if the conditional indicates it should and reducing the possible pairings. The logic for the conditional and
+	 * the actual merge process is supplied through a user-defined function.
+	 *
+	 * @param WikitextOperation $matchOperation Operation to apply for the matching process.
+	 * @param WikitextOperation $mergeOperation Operation to apply for the merging process.
+	 * @param array $values Array with the input values.
+	 * @param string $fieldSep Separator between fields, if any.
+	 * @param ?int $fieldOffset Number of fields that the first value should cover.
+	 * @return array An array with the output values.
+	 */
+	private function iterativeListMerge(
+		WikitextOperation $matchOperation,
+		WikitextOperation $mergeOperation,
+		array $values,
+		string $fieldSep = '',
+		?int $fieldOffset = null
+	): array {
+		$checkedPairs = [];
+
+		do {
+			$preCount = $count = count( $values );
+
+			for ( $i1 = 0; $i1 < $count; ++$i1 ) {
+				$value1 = $values[$i1];
+				$shift = 0;
+
+				for ( $i2 = $i1 + 1; $i2 < $count; ++$i2 ) {
+					$value2 = $values[$i2];
+					unset( $values[$i2] );
+
+					$fields1 = ListFunctions::explodeValue( $fieldSep, $value1, $fieldOffset );
+					$offset = $fieldOffset ?? count( $fields1 );
+
+					if ( isset( $checkedPairs[$value1][$value2] ) ) {
+						$doMerge = $checkedPairs[$value1][$value2];
+					} else {
+						$fieldLimit = $matchOperation->getFieldLimit();
+						if ( $fieldLimit !== null ) {
+							$fieldLimit = $fieldLimit - $offset;
+						}
+
+						$fields = $fields1;
+						foreach ( ListFunctions::explodeValue( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
+							$fields[$offset + $i] = $field;
+						}
+
+						$doMerge = $matchOperation->apply( $fields );
+						$doMerge = ListFunctions::decodeBool( $doMerge );
+						$checkedPairs[$value1][$value2] = $doMerge;
+					}
+
+					if ( $doMerge ) {
+						$fieldLimit = $mergeOperation->getFieldLimit();
+						if ( $fieldLimit !== null ) {
+							$fieldLimit = $fieldLimit - $offset;
+						}
+
+						$fields = $fields1;
+						foreach ( ListFunctions::explodeValue( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
+							$fields[$offset + $i] = $field;
+						}
+
+						$value1 = $mergeOperation->apply( $fields );
+						$shift += 1;
+					} else {
+						$values[$i2 - $shift] = $value2;
+					}
+				}
+
+				$values[$i1] = $value1;
+				$count -= $shift;
+			}
+		} while ( $count < $preCount && $count > 1 );
+
+		return $values;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function render( Parser $parser, PPFrame $frame, array $params ): string {
+		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), ListFunctions::PARAM_OPTIONS );
+
+		$inList = $params->get( 'list' );
+		$default = $params->get( 'default' );
+
+		$matchTemplate = $params->get( 'matchtemplate' );
+		$mergeTemplate = $params->get( 'mergetemplate' );
+		$inSep = $params->get( 'insep' );
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$fieldSep = $params->get( 'fieldsep' );
+		$token1 = $params->get( 'token1' );
+		$token2 = $params->get( 'token2' );
+		$tokenSep = $params->get( 'tokensep' );
+		$matchPattern = $params->get( 'matchpattern' );
+		$mergePattern = $params->get( 'mergepattern' );
+		$outSep = $params->get( 'outsep' );
+		$sortMode = ListFunctions::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortOptions = ListFunctions::decodeSortOptions( $params->get( 'sortoptions' ) );
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
+
+		if ( $inList === '' ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
+		$sorter = new ListSorter( $sortOptions );
+
+		$inValues = ListFunctions::explodeList( $inSep, $inList );
+
+		if ( $sortMode & ListFunctions::SORTMODE_PRE ) {
+			$inValues = $sorter->sort( $inValues );
+		}
+
+		if ( $matchTemplate !== '' && $mergeTemplate !== '' ) {
+			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
+			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
+		} else {
+			if ( $fieldSep !== '' ) {
+				$tokens1 = ListFunctions::explodeToken( $tokenSep, $token1 );
+				$tokens2 = ListFunctions::explodeToken( $tokenSep, $token2 );
+			} else {
+				$tokens1 = [ $token1 ];
+				$tokens2 = [ $token2 ];
+			}
+			$tokens = [ ...$tokens1, ...$tokens2 ];
+			$fieldOffset = count( $tokens1 );
+
+			$matchOperation = new PatternOperation( $parser, $frame, $matchPattern, $tokens );
+			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, $tokens );
+
+		}
+
+		$outValues = $this->iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, $fieldOffset ?? null );
+
+		if ( $sortMode & ( ListFunctions::SORTMODE_POST | ListFunctions::SORTMODE_COMPAT ) ) {
+			$outValues = $sorter->sort( $outValues );
+		}
+
+		if ( count( $outValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		}
+
+		$count = count( $outValues );
+		$outList = ListFunctions::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+	}
+}
