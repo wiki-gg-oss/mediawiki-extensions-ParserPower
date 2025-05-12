@@ -37,6 +37,12 @@ Template:Argmap
 {{{x}}}!{{{x|}}}!{{{y}}}!{{{y|}}}
 !! endarticle
 
+!! article
+Template:Iargmap
+!! text
+{{{1}}}!{{{1|}}}!{{{2}}}!{{{2|}}}
+!! endarticle
+
 # NOTE: we use the following strings (concatenated) as parameter values below for testing some unescaping behaviors:
 #  - wikitext is not unescaped:          "\0"      -> "\0"
 #  - wikitext is unescaped only once:    "\\0"     -> "\0"
@@ -417,5 +423,44 @@ Target#X Target Target#Section
 ""
 ""
 "0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+</p>
+!! end
+
+!! test
+{{#iargmap}} args
+!! wikitext
+"{{uesc | v = <esc>{{#iargmap: }}</esc> }}" "{{uesc | v = <esc>{{#iargmap: iargmap }}</esc> }}"
+"{{uesc | v = <esc>{{#iargmap: | }}</esc> }}" "{{uesc | v = <esc>{{#iargmap: iargmap | }}</esc> }}"
+"{{uesc | v = <esc>{{#iargmap: | }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: | 1x }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 1x }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: | 1 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 1 }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: | 2 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 2 }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: | 3 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 3 }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: | 4 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 4 }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: | 5 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 5 }}</esc> | a | b | c | d }}"
+!! html/php
+<p>"<strong class="error">iargmap error: The parameter "n" is required.</strong>" "<strong class="error">iargmap error: The parameter "n" is required.</strong>"
+"<strong class="error">iargmap error: No formatter arguments were given.</strong>" "<strong class="error">iargmap error: No formatter arguments were given.</strong>"
+"<strong class="error">iargmap error: "n" must be an integer.</strong>" "<strong class="error">iargmap error: "n" must be an integer.</strong>"
+"<strong class="error">iargmap error: "n" must be an integer.</strong>" "<strong class="error">iargmap error: "n" must be an integer.</strong>"
+"{{|a}}, {{|b}}, {{|c}}, {{|d}}" "a!a!{{{2}}}!, b!b!{{{2}}}!, c!c!{{{2}}}!, d!d!{{{2}}}!"
+"{{|a|b}}, {{|c|d}}" "a!a!b!b, c!c!d!d"
+"<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>" "<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>"
+"{{|a|b|c|d}}" "a!a!b!b"
+"<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>" "<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>"
+</p>
+!! end
+
+!! test
+{{#iargmap}} glue
+!! wikitext
+"{{uesc | v = <esc>{{#iargmap: iargmap | 2 | }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: iargmap | 2 | , }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: iargmap | 2 | ,\n }}</esc> | a | b | c | d }}"
+!! html/php
+<p>"a!a!b!bc!c!d!d"
+"a!a!b!b,c!c!d!d"
+"a!a!b!b,
+c!c!d!d"
 </p>
 !! end
