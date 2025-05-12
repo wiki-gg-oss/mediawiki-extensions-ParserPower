@@ -4,7 +4,6 @@
 
 namespace MediaWiki\Extension\ParserPower\Hooks;
 
-use MediaWiki\Config\Config;
 use MediaWiki\Extension\ParserPower\EscTag;
 use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Parser\Parser;
@@ -15,6 +14,7 @@ use MediaWiki\Extension\ParserPower\Function\IArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListFilterFunction;
+use MediaWiki\Extension\ParserPower\Function\List\ListMapFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListSortFunction;
 use MediaWiki\Extension\ParserPower\Function\List\ListUniqueFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstAppFunction;
@@ -25,6 +25,8 @@ use MediaWiki\Extension\ParserPower\Function\List\LstFltrFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstFndFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstIndFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstJoinFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstMapFunction;
+use MediaWiki\Extension\ParserPower\Function\List\LstMapTempFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstPrepFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstRmFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstSepFunction;
@@ -81,6 +83,7 @@ final class FunctionRegistrationHooks implements
 
 	private const LIST_FUNCTIONS = [
 		ListFilterFunction::class,
+		ListMapFunction::class,
 		ListSortFunction::class,
 		ListUniqueFunction::class,
 		LstAppFunction::class,
@@ -91,6 +94,11 @@ final class FunctionRegistrationHooks implements
 		LstFndFunction::class,
 		LstIndFunction::class,
 		LstJoinFunction::class,
+		[
+			'class' => LstMapFunction::class,
+			'services' => [ 'ParserPower.Config' ]
+		],
+		LstMapTempFunction::class,
 		LstPrepFunction::class,
 		LstRmFunction::class,
 		LstSepFunction::class,
@@ -99,13 +107,8 @@ final class FunctionRegistrationHooks implements
 		LstUniqFunction::class
 	];
 
-	public function __construct(
-		Config $config,
-		private ObjectFactory $objectFactory
-	) {
-		$this->listFunctions = new ListFunctions(
-			$config->get( 'ParserPowerLstmapExpansionCompat' )
-		);
+	public function __construct( private ObjectFactory $objectFactory ) {
+		$this->listFunctions = new ListFunctions();
 
 		$this->functions = [];
 		$this->addFunctions( self::SIMPLE_FUNCTIONS );
@@ -165,9 +168,6 @@ final class FunctionRegistrationHooks implements
 
 		// List functions
 
-		$parser->setFunctionHook( 'listmap', [ $this->listFunctions, 'listmapRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstmap', [ $this->listFunctions, 'lstmapRender' ], Parser::SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'lstmaptemp', [ $this->listFunctions, 'lstmaptempRender' ], Parser::SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'listmerge', [ $this->listFunctions, 'listmergeRender' ], Parser::SFH_OBJECT_ARGS );
 	}
 }
