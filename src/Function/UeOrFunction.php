@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -24,8 +25,10 @@ final class UeOrFunction implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		foreach ( $params as $param ) {
-			$inValue = ParserPower::expand( $frame, $param );
+		$params = new ParameterParser( $frame, $params );
+
+		for ( $i = 0; $params->isDefined( $i ); ++$i ) {
+			$inValue = $params->get( $i );
 
 			if ( $inValue !== '' ) {
 				$inValue = ParserPower::unescape( $inValue );
