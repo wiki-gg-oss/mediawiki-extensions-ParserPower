@@ -33,6 +33,16 @@ final class ParameterParser {
 	}
 
 	/**
+	 * Check whether a parameter is defined, without evaluating it.
+	 *
+	 * @param int|string $key Parameter index or name.
+	 * @return bool True if the parameter is defined, false otherwise.
+	 */
+	public function isDefined( int|string $key ): bool {
+		return isset( $this->params[$key] );
+	}
+
+	/**
 	 * Get the expanded value of a parameter.
 	 *
 	 * @param int|string $key Parameter index or name.
