@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -27,8 +27,8 @@ final class LstCntFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = new ParameterParser( $frame, $params, [
-			ListFunctions::PARAM_OPTIONS['list'],
-			ListFunctions::PARAM_OPTIONS['insep']
+			ListUtils::PARAM_OPTIONS['list'],
+			ListUtils::PARAM_OPTIONS['insep']
 		] );
 
 		$list = $params->get( 0 );
@@ -39,6 +39,6 @@ final class LstCntFunction implements ParserFunction {
 		$sep = $params->get( 1 );
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
-		return (string)count( ListFunctions::explodeList( $sep, $list ) );
+		return (string)count( ListUtils::explode( $sep, $list ) );
 	}
 }

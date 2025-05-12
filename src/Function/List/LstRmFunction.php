@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
@@ -29,9 +29,9 @@ final class LstRmFunction extends ListFilterFunction {
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = new ParameterParser( $frame, $params, [
 			[ 'unescape' => true ],
-			ListFunctions::PARAM_OPTIONS['list'],
-			ListFunctions::PARAM_OPTIONS['insep'],
-			ListFunctions::PARAM_OPTIONS['outsep'],
+			ListUtils::PARAM_OPTIONS['list'],
+			ListUtils::PARAM_OPTIONS['insep'],
+			ListUtils::PARAM_OPTIONS['outsep'],
 			[]
 		] );
 
@@ -45,15 +45,15 @@ final class LstRmFunction extends ListFilterFunction {
 		$inSep = $params->get( 2 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$outSep = $params->get( 3 );
-		$csOption = ListFunctions::decodeCSOption( $params->get( 4 ) );
+		$csOption = ListUtils::decodeCSOption( $params->get( 4 ) );
 
-		$inValues = ListFunctions::explodeList( $inSep, $inList );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
 		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
 		$outValues = $this->filterList( $operation, $inValues );
 
 		if ( count( $outValues ) > 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, ListFunctions::implodeList( $outValues, $outSep ) );
+			return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $outValues, $outSep ) );
 		} else {
 			return '';
 		}

@@ -4,8 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\ListSorter;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
@@ -46,7 +46,7 @@ class ListMapFunction implements ParserFunction {
 
 		$outValues = [];
 		foreach ( $inValues as $i => $inValue ) {
-			$outValue = $operation->apply( ListFunctions::explodeValue( $fieldSep, $inValue, $fieldLimit ), $i + 1 );
+			$outValue = $operation->apply( ListUtils::explodeValue( $fieldSep, $inValue, $fieldLimit ), $i + 1 );
 			if ( $outValue !== '' || $keepEmpty ) {
 				$outValues[] = $outValue;
 			}
@@ -60,7 +60,7 @@ class ListMapFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = ParameterParser::arrange( $frame, $params );
-		$params = new ParameterParser( $frame, $params, ListFunctions::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
@@ -75,9 +75,9 @@ class ListMapFunction implements ParserFunction {
 		$pattern = $params->get( 'pattern' );
 		$outSep = $params->get( 'outsep' );
 		$outConj = $params->get( 'outconj', [ 'default' => $outSep ] );
-		$sortMode = ListFunctions::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = ListFunctions::decodeSortOptions( $params->get( 'sortoptions' ) );
-		$duplicates = ListFunctions::decodeDuplicates( $params->get( 'duplicates' ) );
+		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
+		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
@@ -88,33 +88,33 @@ class ListMapFunction implements ParserFunction {
 
 		$sorter = new ListSorter( $sortOptions );
 
-		$inValues = ListFunctions::explodeList( $inSep, $inList );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $duplicates & ListFunctions::DUPLICATES_PRESTRIP ) {
+		if ( $duplicates & ListUtils::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
 		}
 
 		if ( $template !== '' ) {
-			if ( $sortMode & ListFunctions::SORTMODE_PRE ) {
+			if ( $sortMode & ListUtils::SORTMODE_PRE ) {
 				$inValues = $sorter->sort( $inValues );
 			}
 
 			$operation = new TemplateOperation( $parser, $frame, $template );
 			$outValues = $this->mapList( $operation, true, $inValues, $fieldSep );
 
-			if ( $sortMode & ( ListFunctions::SORTMODE_POST | ListFunctions::SORTMODE_COMPAT ) ) {
+			if ( $sortMode & ( ListUtils::SORTMODE_POST | ListUtils::SORTMODE_COMPAT ) ) {
 				$outValues = $sorter->sort( $outValues );
 			}
 		} else {
 			if (
-				( $indexToken !== '' && $sortMode & ListFunctions::SORTMODE_COMPAT ) ||
-				$sortMode & ListFunctions::SORTMODE_PRE
+				( $indexToken !== '' && $sortMode & ListUtils::SORTMODE_COMPAT ) ||
+				$sortMode & ListUtils::SORTMODE_PRE
 			) {
 				$inValues = $sorter->sort( $inValues );
 			}
 
 			if ( $fieldSep !== '' ) {
-				$tokens = ListFunctions::explodeToken( $tokenSep, $token );
+				$tokens = ListUtils::explodeToken( $tokenSep, $token );
 			} else {
 				$tokens = [ $token ];
 			}
@@ -123,14 +123,14 @@ class ListMapFunction implements ParserFunction {
 			$outValues = $this->mapList( $operation, false, $inValues, $fieldSep );
 
 			if (
-				( $indexToken === '' && $sortMode & ListFunctions::SORTMODE_COMPAT ) ||
-				$sortMode & ListFunctions::SORTMODE_POST
+				( $indexToken === '' && $sortMode & ListUtils::SORTMODE_COMPAT ) ||
+				$sortMode & ListUtils::SORTMODE_POST
 			) {
 				$outValues = $sorter->sort( $outValues );
 			}
 		}
 
-		if ( $duplicates & ListFunctions::DUPLICATES_POSTSTRIP ) {
+		if ( $duplicates & ListUtils::DUPLICATES_POSTSTRIP ) {
 			$outValues = array_unique( $outValues );
 		}
 
@@ -143,8 +143,8 @@ class ListMapFunction implements ParserFunction {
 			$outConj = ' ' . trim( $outConj ) . ' ';
 		}
 
-		$outList = ListFunctions::implodeList( $outValues, $outSep, $outConj );
-		$outList = ListFunctions::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+		$outList = ListUtils::implode( $outValues, $outSep, $outConj );
+		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

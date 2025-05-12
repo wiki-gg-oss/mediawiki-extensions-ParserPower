@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
@@ -28,11 +28,11 @@ final class LstFltrFunction extends ListFilterFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = new ParameterParser( $frame, $params, [
-			ListFunctions::PARAM_OPTIONS['keep'],
-			ListFunctions::PARAM_OPTIONS['keepsep'],
-			ListFunctions::PARAM_OPTIONS['list'],
-			ListFunctions::PARAM_OPTIONS['insep'],
-			ListFunctions::PARAM_OPTIONS['outsep'],
+			ListUtils::PARAM_OPTIONS['keep'],
+			ListUtils::PARAM_OPTIONS['keepsep'],
+			ListUtils::PARAM_OPTIONS['list'],
+			ListUtils::PARAM_OPTIONS['insep'],
+			ListUtils::PARAM_OPTIONS['outsep'],
 			[]
 		] );
 
@@ -47,12 +47,12 @@ final class LstFltrFunction extends ListFilterFunction {
 		$inSep = $params->get( 3 );
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$outSep = $params->get( 4 );
-		$csOption = ListFunctions::decodeCSOption( $params->get( 5 ) );
+		$csOption = ListUtils::decodeCSOption( $params->get( 5 ) );
 
-		$inValues = ListFunctions::explodeList( $inSep, $inList );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $valueSep !== '' ) {
-			$values = ListFunctions::explodeList( $valueSep, $values );
+			$values = ListUtils::explode( $valueSep, $values );
 		} else {
 			$values = [ ParserPower::unescape( $values ) ];
 		}
@@ -61,7 +61,7 @@ final class LstFltrFunction extends ListFilterFunction {
 		$outValues = $this->filterList( $operation, $inValues );
 
 		if ( count( $outValues ) > 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, ListFunctions::implodeList( $outValues, $outSep ) );
+			return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $outValues, $outSep ) );
 		} else {
 			return '';
 		}

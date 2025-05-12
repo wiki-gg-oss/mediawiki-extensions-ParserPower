@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -28,8 +28,8 @@ final class LstIndFunction implements ParserFunction {
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$params = new ParameterParser( $frame, $params, [
 			[ 'unescape' => true ],
-			ListFunctions::PARAM_OPTIONS['list'],
-			ListFunctions::PARAM_OPTIONS['insep'],
+			ListUtils::PARAM_OPTIONS['list'],
+			ListUtils::PARAM_OPTIONS['insep'],
 			[]
 		] );
 
@@ -42,35 +42,35 @@ final class LstIndFunction implements ParserFunction {
 		$item = $params->get( 0 );
 		$sep = $params->get( 2 );
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-		$options = ListFunctions::decodeIndexOptions( $params->get( 3 ) );
+		$options = ListUtils::decodeIndexOptions( $params->get( 3 ) );
 
-		$values = ListFunctions::explodeList( $sep, $list );
+		$values = ListUtils::explode( $sep, $list );
 		$count = ( is_array( $values ) || $values instanceof Countable ) ? count( $values ) : 0;
-		if ( $options & ListFunctions::INDEX_DESC ) {
-			if ( $options & ListFunctions::INDEX_CS ) {
+		if ( $options & ListUtils::INDEX_DESC ) {
+			if ( $options & ListUtils::INDEX_CS ) {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( $values[$index] === $item ) {
-						return (string)( ( $options & ListFunctions::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			} else {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return (string)( ( $options & ListFunctions::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			}
 		} else {
-			if ( $options & ListFunctions::INDEX_CS ) {
+			if ( $options & ListUtils::INDEX_CS ) {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( $values[$index] === $item ) {
-						return (string)( ( $options & ListFunctions::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			} else {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return (string)( ( $options & ListFunctions::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			}

@@ -4,8 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListFunctions;
 use MediaWiki\Extension\ParserPower\ListSorter;
+use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
@@ -61,7 +61,7 @@ class ListMergeFunction implements ParserFunction {
 					$value2 = $values[$i2];
 					unset( $values[$i2] );
 
-					$fields1 = ListFunctions::explodeValue( $fieldSep, $value1, $fieldOffset );
+					$fields1 = ListUtils::explodeValue( $fieldSep, $value1, $fieldOffset );
 					$offset = $fieldOffset ?? count( $fields1 );
 
 					if ( isset( $checkedPairs[$value1][$value2] ) ) {
@@ -73,12 +73,12 @@ class ListMergeFunction implements ParserFunction {
 						}
 
 						$fields = $fields1;
-						foreach ( ListFunctions::explodeValue( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
+						foreach ( ListUtils::explodeValue( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
 							$fields[$offset + $i] = $field;
 						}
 
 						$doMerge = $matchOperation->apply( $fields );
-						$doMerge = ListFunctions::decodeBool( $doMerge );
+						$doMerge = ListUtils::decodeBool( $doMerge );
 						$checkedPairs[$value1][$value2] = $doMerge;
 					}
 
@@ -89,7 +89,7 @@ class ListMergeFunction implements ParserFunction {
 						}
 
 						$fields = $fields1;
-						foreach ( ListFunctions::explodeValue( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
+						foreach ( ListUtils::explodeValue( $fieldSep, $value2, $fieldLimit ) as $i => $field ) {
 							$fields[$offset + $i] = $field;
 						}
 
@@ -112,7 +112,7 @@ class ListMergeFunction implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), ListFunctions::PARAM_OPTIONS );
+		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
 		$default = $params->get( 'default' );
@@ -128,8 +128,8 @@ class ListMergeFunction implements ParserFunction {
 		$matchPattern = $params->get( 'matchpattern' );
 		$mergePattern = $params->get( 'mergepattern' );
 		$outSep = $params->get( 'outsep' );
-		$sortMode = ListFunctions::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = ListFunctions::decodeSortOptions( $params->get( 'sortoptions' ) );
+		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
 		$outro = $params->get( 'outro' );
@@ -140,9 +140,9 @@ class ListMergeFunction implements ParserFunction {
 
 		$sorter = new ListSorter( $sortOptions );
 
-		$inValues = ListFunctions::explodeList( $inSep, $inList );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $sortMode & ListFunctions::SORTMODE_PRE ) {
+		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
 		}
 
@@ -151,8 +151,8 @@ class ListMergeFunction implements ParserFunction {
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
 		} else {
 			if ( $fieldSep !== '' ) {
-				$tokens1 = ListFunctions::explodeToken( $tokenSep, $token1 );
-				$tokens2 = ListFunctions::explodeToken( $tokenSep, $token2 );
+				$tokens1 = ListUtils::explodeToken( $tokenSep, $token1 );
+				$tokens2 = ListUtils::explodeToken( $tokenSep, $token2 );
 			} else {
 				$tokens1 = [ $token1 ];
 				$tokens2 = [ $token2 ];
@@ -167,7 +167,7 @@ class ListMergeFunction implements ParserFunction {
 
 		$outValues = $this->iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, $fieldOffset ?? null );
 
-		if ( $sortMode & ( ListFunctions::SORTMODE_POST | ListFunctions::SORTMODE_COMPAT ) ) {
+		if ( $sortMode & ( ListUtils::SORTMODE_POST | ListUtils::SORTMODE_COMPAT ) ) {
 			$outValues = $sorter->sort( $outValues );
 		}
 
@@ -176,7 +176,7 @@ class ListMergeFunction implements ParserFunction {
 		}
 
 		$count = count( $outValues );
-		$outList = ListFunctions::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
+		$outList = ListUtils::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
