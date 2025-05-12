@@ -25,6 +25,18 @@ Target
 1
 !! endarticle
 
+!! article
+Template:Uesc
+!! text
+{{#uesc: {{{v|{{{1}}}}}} }}
+!! endarticle
+
+!! article
+Template:Argmap
+!! text
+{{{x}}}!{{{x|}}}!{{{y}}}!{{{y|}}}
+!! endarticle
+
 # NOTE: we use the following strings (concatenated) as parameter values below for testing some unescaping behaviors:
 #  - wikitext is not unescaped:          "\0"      -> "\0"
 #  - wikitext is unescaped only once:    "\\0"     -> "\0"
@@ -298,5 +310,112 @@ Target#X Target Target#Section
 " |\0\y\y"
 " |\0z"
 " |\0\y\y"
+</p>
+!! end
+
+!! test
+{{#argmap}} args
+!! wikitext
+"{{uesc | <esc>{{#argmap: }}</esc> }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | x1 = }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | x1 = a }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | y1 = }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | y1 = a }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = a }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | x1 = a | y1 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | y1 = b }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | y1 = a | x1 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = a | x1 = b }}"
+!! html/php
+<p>"" ""
+"{{|x=}}" "!!{{{y}}}!"
+"{{|x=a}}" "a!a!{{{y}}}!"
+"{{|y=}}" "{{{x}}}!!!"
+"{{|y=a}}" "{{{x}}}!!a!a"
+"{{|x=a|y=b}}" "a!a!b!b"
+"{{|y=a|x=b}}" "b!b!a!a"
+</p>
+!! end
+
+!! test
+{{#argmap}} position
+!! wikitext
+"{{uesc | <esc>{{#argmap: }}</esc> | x = a | x = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x = a | x = b }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | x1 = a | x2 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | x2 = b }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | x1 = a | 2x = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | 2x = b }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | 1x = a | 2x = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | 1x = a | 2x = b }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | x2 = a | x1 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x2 = a | x1 = b }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | 2x = a | x1 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | 2x = a | x1 = b }}"
+"{{uesc | <esc>{{#argmap: }}</esc> | 2x = a | 1x = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | 2x = a | 1x = b }}"
+!! html/php
+<p>"" ""
+"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
+"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
+"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
+"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
+"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
+"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
+</p>
+!! end
+
+!! test
+{{#argmap}} numbering
+!! wikitext
+"{{uesc | <esc>{{#argmap: }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+!! html/php
+<p>"{{|x=0}}, {{|x=1}}, {{|x=2}}, {{|x=1000}}"
+"0!0!{{{y}}}!, 1!1!{{{y}}}!, 2!2!{{{y}}}!, 1000!1000!{{{y}}}!"
+</p>
+!! end
+
+!! test
+{{#argmap}} glue
+!! wikitext
+"{{uesc | <esc>{{#argmap: argmap | }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | ,\n }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+!! html/php
+<p>"0!0!{{{y}}}!1!1!{{{y}}}!2!2!{{{y}}}!1000!1000!{{{y}}}!"
+"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+"0!0!{{{y}}}!,
+1!1!{{{y}}}!,
+2!2!{{{y}}}!,
+1000!1000!{{{y}}}!"
+</p>
+!! end
+
+!! test
+{{#argmap}} mustcontain
+!! wikitext
+"{{uesc | <esc>{{#argmap: argmap | , | }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | x }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | x, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | y, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | x,y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+!! html/php
+<p>"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+""
+""
+""
+""
+</p>
+!! end
+
+!! test
+{{#argmap}} onlyshow
+!! wikitext
+"{{uesc | <esc>{{#argmap: argmap | , | | }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | | x }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | | x, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | | y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | | y, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+"{{uesc | <esc>{{#argmap: argmap | , | | x,y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+!! html/php
+<p>"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+""
+""
+"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
 </p>
 !! end
