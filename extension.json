@@ -29,6 +29,9 @@
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\ParserPower\\": "src/"
 	},
+	"ServiceWiringFiles": [
+		"src/ServiceWiring.php"
+	],
 	"HookHandlers": {
 		"FunctionRegistration": {
 			"class": "MediaWiki\\Extension\\ParserPower\\Hooks\\FunctionRegistrationHooks",
