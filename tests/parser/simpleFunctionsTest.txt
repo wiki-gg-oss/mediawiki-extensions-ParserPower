@@ -43,6 +43,12 @@ Template:Iargmap
 {{{1}}}!{{{1|}}}!{{{2}}}!{{{2|}}}
 !! endarticle
 
+!! article
+Template:Id
+!! text
+{{{1}}}
+!! endarticle
+
 # NOTE: we use the following strings (concatenated) as parameter values below for testing some unescaping behaviors:
 #  - wikitext is not unescaped:          "\0"      -> "\0"
 #  - wikitext is unescaped only once:    "\\0"     -> "\0"
@@ -462,5 +468,23 @@ Target#X Target Target#Section
 "a!a!b!b,c!c!d!d"
 "a!a!b!b,
 c!c!d!d"
+</p>
+!! end
+
+!! test
+{{#arraymap}}
+!! wikitext
+"{{#arraymap:a,b,c|,|x|(xx)|!|?}}"
+!! html/php
+<p>"(aa)!(bb)&#160;? (cc)"
+</p>
+!! end
+
+!! test
+{{#arraymaptemplate}}
+!! wikitext
+"{{#arraymaptemplate:a,b,c|id|,|!}}"
+!! html/php
+<p>"a!b!c"
 </p>
 !! end
