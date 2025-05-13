@@ -34,12 +34,7 @@ final class LstElemFunction implements ParserFunction {
 		] );
 
 		$inList = $params->get( 0 );
-
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$inSep = $params->get( 1 );
+		$inSep = $inList !== '' ? $params->get( 1 ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 

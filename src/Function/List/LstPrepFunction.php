@@ -35,12 +35,7 @@ final class LstPrepFunction implements ParserFunction {
 
 		$value = $params->get( 0 );
 		$list = $params->get( 2 );
-
-		if ( $list === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $value );
-		}
-
-		$sep = $params->get( 1 );
+		$sep = $list !== '' ? $params->get( 1 ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $list );
 

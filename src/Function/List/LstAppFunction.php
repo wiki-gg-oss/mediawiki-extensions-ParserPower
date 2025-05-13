@@ -34,14 +34,9 @@ final class LstAppFunction implements ParserFunction {
 		] );
 
 		$list = $params->get( 0 );
-		$value = $params->get( 2 );
-
-		if ( $list === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $value );
-		}
-
-		$sep = $params->get( 1 );
+		$sep = $list !== '' ? $params->get( 1 ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
+		$value = $params->get( 2 );
 		$values = ListUtils::explode( $sep, $list );
 
 		if ( $value !== '' ) {

@@ -36,12 +36,7 @@ final class LstRmFunction extends ListFilterFunction {
 		] );
 
 		$inList = $params->get( 1 );
-
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$inSep = $params->get( 2 );
+		$inSep = $inList !== '' ? $params->get( 2 ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 

@@ -35,12 +35,7 @@ final class LstSrtFunction extends ListSortFunction {
 		] );
 
 		$inList = $params->get( 0 );
-
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$inSep = $params->get( 1 );
+		$inSep = $inList !== '' ? $params->get( 1 ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$values = ListUtils::explode( $inSep, $inList );
 
