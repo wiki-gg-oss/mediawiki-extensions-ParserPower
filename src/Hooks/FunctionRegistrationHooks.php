@@ -7,18 +7,18 @@ namespace MediaWiki\Extension\ParserPower\Hooks;
 use MediaWiki\Extension\ParserPower\EscTag;
 use MediaWiki\Extension\ParserPower\ParserVariableRegistry;
 use MediaWiki\Parser\Parser;
-use Wikimedia\ObjectFactory\ObjectFactory;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
 use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
 {
-	private ParserVariableRegistry $parserVariableRegistry;
 	private EscTag $escTag;
 
-	public function __construct( private ObjectFactory $objectFactory ) {
-		$this->parserVariableRegistry = new ParserVariableRegistry( $objectFactory );
+	/**
+	 * @param ParserVariableRegistry $parserVariableRegistry
+	 */
+	public function __construct( private ParserVariableRegistry $parserVariableRegistry ) {
 		$this->escTag = new EscTag();
 	}
 
