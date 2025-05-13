@@ -12,7 +12,7 @@ use MediaWiki\Parser\PPFrame;
 /**
  * Parser function for #or with unescaped parameters (#ueor).
  */
-final class UeOrFunction implements ParserFunction {
+final class UeOrFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -24,9 +24,14 @@ final class UeOrFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params );
+	public function getDefaultSpec(): array {
+		return [];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		for ( $i = 0; $params->isDefined( $i ); ++$i ) {
 			$inValue = $params->get( $i );
 

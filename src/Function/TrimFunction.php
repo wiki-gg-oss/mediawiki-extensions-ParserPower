@@ -11,7 +11,7 @@ use MediaWiki\Parser\PPFrame;
 /**
  * Parser function for trimming a value (#trim).
  */
-final class TrimFunction implements ParserFunction {
+final class TrimFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -23,11 +23,16 @@ final class TrimFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => []
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		return $params->get( 0 );
 	}
 }
