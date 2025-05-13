@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\LinkUtils;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -12,21 +13,6 @@ use MediaWiki\Parser\PPFrame;
  * Parser function for replacing links with their appropriate link text (#linktext).
  */
 final class LinkTextFunction implements ParserFunction {
-
-	/**
-	 * Replace links with their appropriate link text.
-	 *
-	 * @param array $matches The parameters and values together, not yet exploded or trimmed.
-	 * @return string The function output.
-	 */
-	private static function replace( array $matches ): string {
-		$parts = explode( '|', $matches[1], 2 );
-		if ( count( $parts ) == 2 ) {
-			return $parts[1];
-		} else {
-			return $parts[0];
-		}
-	}
 
 	/**
 	 * @inheritDoc
@@ -43,29 +29,8 @@ final class LinkTextFunction implements ParserFunction {
 			0 => []
 		] );
 
-		return preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'replace' ], $params->get( 0 ) );
-	}
-
-	/**
-	 * Perform the delinking operations for the linkpage tag.
-	 *
-	 * @param ?string $text The text within the tag function.
-	 * @param array $attribs Attributes values of the tag function. Ignored.
-	 * @param Parser $parser The parser object.
-	 * @param PPFrame $frame The parser frame object.
-	 * @return array The function output.
-	 */
-	public static function tagRender( ?string $text, array $attribs, Parser $parser, PPFrame $frame ): array {
-		if ( $text === null ) {
-			return [ '', 'markerType' => 'none' ];
-		}
-
-		$text = $parser->replaceVariables( $text, $frame );
-
-		if ( $text !== '' ) {
-			$text = preg_replace_callback( '/\[\[(.*?)\]\]/', [ __CLASS__, 'replace' ], $text );
-		}
-
-		return [ $text, 'markerType' => 'none' ];
+		return LinkUtils::replace( $params->get( 0 ), static function ( $page, $text ) {
+			return $text ?? $page;
+		} );
 	}
 }

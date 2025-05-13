@@ -36,7 +36,7 @@
 		"FunctionRegistration": {
 			"class": "MediaWiki\\Extension\\ParserPower\\Hooks\\FunctionRegistrationHooks",
 			"services": [
-				"ObjectFactory"
+				"ParserPower.ParserVariableRegistry"
 			]
 		}
 	},
