@@ -1,0 +1,64 @@
+<?php
+
+/** @license GPL-2.0-or-later */
+
+namespace MediaWiki\Extension\ParserPower\Function;
+
+use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+
+/**
+ * Parser function, using a ParameterParser to manage its parameters.
+ */
+abstract class ParserFunctionBase implements ParserFunction {
+
+	/**
+	 * Whether named parameters are recognized, along with numbered parameters.
+	 *
+	 * @return bool
+	 */
+	public function allowsNamedParams(): bool {
+		return false;
+	}
+
+	/**
+	 * Get the list of parameter-specific parsing and post-processing options.
+	 *
+	 * @return array The list of parameter specifications.
+	 */
+	public function getParamSpec(): array {
+		return [];
+	}
+
+	/**
+	 * Get the parsing and post-processing options to use with unknown parameters.
+	 *
+	 * @return array A parameter specification.
+	 */
+	public function getDefaultSpec(): array {
+		return [];
+	}
+
+	/**
+	 * Perform the operations of the function, based on what parameter values are provided.
+	 *
+	 * @param Parser $parser Parser object.
+	 * @param PPFrame $frame Parser frame object.
+	 * @param ParameterParser $params Arranged function parameters.
+	 * @return string The function output.
+	 */
+	abstract public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string;
+
+	/**
+	 * @inheritDoc
+	 */
+	public function render( Parser $parser, PPFrame $frame, array $params ): string {
+		if ( $this->allowsNamedParams() ) {
+			$params = ParameterParser::arrange( $frame, $params );
+		}
+
+		$params = new ParameterParser( $frame, $params, $this->getParamSpec(), $this->getDefaultSpec() );
+		return $this->execute( $parser, $frame, $params );
+	}
+}
