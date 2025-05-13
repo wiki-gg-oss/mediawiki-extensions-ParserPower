@@ -33,7 +33,12 @@ final class FunctionRegistrationHooks implements
 			$parser->setFunctionHook( $function->getName(), [ $function, 'render' ], Parser::SFH_OBJECT_ARGS );
 		}
 
-		// Tags
+		foreach ( $this->parserVariableRegistry->getTags() as $tag ) {
+			foreach ( $tag->getNames() as $name ) {
+				$parser->setHook( $name, [ $tag, 'render' ] );
+			}
+		}
+
 		$parser->setHook( 'linkpage', [ LinkPageFunction::class, 'tagRender' ] );
 		$parser->setHook( 'linktext', [ LinkTextFunction::class, 'tagRender' ] );
 		foreach ( $this->escTag->getNames() as $escTagName ) {
