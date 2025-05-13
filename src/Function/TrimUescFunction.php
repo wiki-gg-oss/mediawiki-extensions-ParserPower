@@ -13,7 +13,7 @@ use MediaWiki\Parser\PPFrame;
  * Parser function for unescaping then trimming a value (#trimuesc),
  * so any leading or trailing whitespace is trimmed no matter how it got there.
  */
-final class TrimUescFunction implements ParserFunction {
+final class TrimUescFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -25,11 +25,16 @@ final class TrimUescFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => [ 'unescape' => true ]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$text = trim( $params->get( 0 ) );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $text );

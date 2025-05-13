@@ -40,9 +40,16 @@ final class LstMapFunction extends ListMapFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
+	public function allowsNamedParams(): bool {
+		return false;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getParamSpec(): array {
 		$legacyExpansionFlags = $this->useLegacyExpansion ? [ 'novars' => true ] : [];
-		$params = new ParameterParser( $frame, $params, [
+		return [
 			ListUtils::PARAM_OPTIONS['list'],
 			ListUtils::PARAM_OPTIONS['insep'],
 			array_merge( ListUtils::PARAM_OPTIONS['token'], [ 'default' => 'x' ], $legacyExpansionFlags ),
@@ -50,8 +57,13 @@ final class LstMapFunction extends ListMapFunction {
 			ListUtils::PARAM_OPTIONS['outsep'],
 			[],
 			ListUtils::PARAM_OPTIONS['sortoptions']
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inList = $params->get( 0 );
 		$inSep = $inList !== '' ? $params->get( 1 ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );

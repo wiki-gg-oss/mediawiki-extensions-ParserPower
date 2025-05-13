@@ -24,13 +24,25 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function allowsNamedParams(): bool {
+		return false;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getParamSpec(): array {
+		return [
 			ListUtils::PARAM_OPTIONS['list'],
 			ListUtils::PARAM_OPTIONS['insep'],
 			[]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inList = $params->get( 0 );
 		$sep = $inList !== '' ? $params->get( 1 ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );

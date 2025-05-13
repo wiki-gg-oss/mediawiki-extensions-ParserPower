@@ -9,12 +9,12 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunction;
+use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for searching a list value (#lstfnd).
  */
-final class LstFndFunction implements ParserFunction {
+final class LstFndFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -26,14 +26,19 @@ final class LstFndFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			[ 'unescape' => true ],
 			ListUtils::PARAM_OPTIONS['list'],
 			ListUtils::PARAM_OPTIONS['insep'],
 			[]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$list = $params->get( 1 );
 		$sep = $list !== '' ? $params->get( 2 ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );

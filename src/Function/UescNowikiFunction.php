@@ -13,7 +13,7 @@ use MediaWiki\Parser\PPFrame;
  * Parser function for unescaping then wrapping in <nowiki> tags a value (#uescnowiki),
  * so that it isn't parsed.
  */
-final class UescNowikiFunction implements ParserFunction {
+final class UescNowikiFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -25,11 +25,16 @@ final class UescNowikiFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => [ 'unescape' => true ]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		return ParserPower::evaluateUnescaped( $parser, $frame, '<nowiki>' . $params->get( 0 ) . '</nowiki>' );
 	}
 }
