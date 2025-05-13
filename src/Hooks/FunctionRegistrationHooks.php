@@ -6,8 +6,6 @@ namespace MediaWiki\Extension\ParserPower\Hooks;
 
 use MediaWiki\Extension\ParserPower\ParserVariableRegistry;
 use MediaWiki\Parser\Parser;
-use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
-use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
@@ -35,8 +33,5 @@ final class FunctionRegistrationHooks implements
 				$parser->setHook( $name, [ $tag, 'render' ] );
 			}
 		}
-
-		$parser->setHook( 'linkpage', [ LinkPageFunction::class, 'tagRender' ] );
-		$parser->setHook( 'linktext', [ LinkTextFunction::class, 'tagRender' ] );
 	}
 }
