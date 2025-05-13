@@ -9,12 +9,12 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunction;
+use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for prepending a value to a list (#lstprep).
  */
-final class LstPrepFunction implements ParserFunction {
+final class LstPrepFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -26,13 +26,18 @@ final class LstPrepFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			[ 'unescape' => true ],
 			ListUtils::PARAM_OPTIONS['insep'],
 			ListUtils::PARAM_OPTIONS['list']
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$value = $params->get( 0 );
 		$list = $params->get( 2 );
 		$sep = $list !== '' ? $params->get( 1 ) : '';

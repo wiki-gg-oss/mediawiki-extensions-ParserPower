@@ -9,12 +9,12 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunction;
+use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for joining two lists (#lstjoin).
  */
-final class LstJoinFunction implements ParserFunction {
+final class LstJoinFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -26,15 +26,20 @@ final class LstJoinFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			ListUtils::PARAM_OPTIONS['list'],
 			ListUtils::PARAM_OPTIONS['insep'],
 			ListUtils::PARAM_OPTIONS['list'],
 			ListUtils::PARAM_OPTIONS['insep'],
 			ListUtils::PARAM_OPTIONS['outsep']
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inList1 = $params->get( 0 );
 		$inSep1 = $inList1 !== '' ? $params->get( 1 ) : '';
 		$inSep1 = $parser->getStripState()->unstripNoWiki( $inSep1 );

@@ -12,7 +12,7 @@ use MediaWiki\Parser\PPFrame;
 /**
  * Parser function for replacing links with their appropriate link text (#linktext).
  */
-final class LinkTextFunction implements ParserFunction {
+final class LinkTextFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -24,11 +24,16 @@ final class LinkTextFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => []
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		return LinkUtils::replace( $params->get( 0 ), static function ( $page, $text ) {
 			return $text ?? $page;
 		} );

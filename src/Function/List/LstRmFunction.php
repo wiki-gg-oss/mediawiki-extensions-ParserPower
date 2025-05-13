@@ -26,15 +26,27 @@ final class LstRmFunction extends ListFilterFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function allowsNamedParams(): bool {
+		return false;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getParamSpec(): array {
+		return [
 			[ 'unescape' => true ],
 			ListUtils::PARAM_OPTIONS['list'],
 			ListUtils::PARAM_OPTIONS['insep'],
 			ListUtils::PARAM_OPTIONS['outsep'],
 			[]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inList = $params->get( 1 );
 		$inSep = $inList !== '' ? $params->get( 2 ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );

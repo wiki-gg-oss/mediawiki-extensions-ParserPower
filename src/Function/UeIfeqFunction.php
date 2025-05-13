@@ -12,7 +12,7 @@ use MediaWiki\Parser\PPFrame;
 /**
  * Parser function for #ifeq with unescaped parameters (#ueifeq).
  */
-final class UeIfeqFunction implements ParserFunction {
+final class UeIfeqFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -24,14 +24,19 @@ final class UeIfeqFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => [ 'unescape' => true ],
 			1 => [ 'unescape' => true ],
 			2 => [ 'unescape' => true ],
 			3 => [ 'unescape' => true ]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		if ( $params->get( 0 ) === $params->get( 1 ) ) {
 			$value = $params->get( 2 );
 		} else {

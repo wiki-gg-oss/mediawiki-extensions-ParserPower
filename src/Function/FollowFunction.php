@@ -13,7 +13,7 @@ use MediaWiki\Title\Title;
 /**
  * Parser function for following page redirects (#follow).
  */
-final class FollowFunction implements ParserFunction {
+final class FollowFunction extends ParserFunctionBase {
 
 	/**
 	 * @param RedirectLookup $redirectLookup
@@ -33,11 +33,16 @@ final class FollowFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => [ 'unescape' => true ]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$text = trim( $params->get( 0 ) );
 
 		$title = Title::newFromText( $text );

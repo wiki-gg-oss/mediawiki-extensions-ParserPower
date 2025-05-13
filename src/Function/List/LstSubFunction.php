@@ -9,12 +9,12 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunction;
+use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for subdividing a list (#lstsub).
  */
-final class LstSubFunction implements ParserFunction {
+final class LstSubFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -26,15 +26,20 @@ final class LstSubFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			ListUtils::PARAM_OPTIONS['list'],
 			ListUtils::PARAM_OPTIONS['insep'],
 			ListUtils::PARAM_OPTIONS['outsep'],
 			[ 'unescape' => true ],
 			[ 'unescape' => true ]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inList = $params->get( 0 );
 		$inSep = $inList !== '' ? $params->get( 1 ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );

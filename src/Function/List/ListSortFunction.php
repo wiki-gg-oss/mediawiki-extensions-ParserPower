@@ -13,18 +13,32 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunction;
+use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for sorting list values (#listsort).
  */
-class ListSortFunction implements ParserFunction {
+class ListSortFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getName(): string {
 		return 'listsort';
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function allowsNamedParams(): bool {
+		return true;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getParamSpec(): array {
+		return ListUtils::PARAM_OPTIONS;
 	}
 
 	/**
@@ -68,10 +82,7 @@ class ListSortFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = ParameterParser::arrange( $frame, $params );
-		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
-
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inList = $params->get( 'list' );
 		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );

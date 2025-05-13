@@ -13,18 +13,32 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunction;
+use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for merging list values (#listmerge).
  */
-class ListMergeFunction implements ParserFunction {
+class ListMergeFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getName(): string {
 		return 'listmerge';
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function allowsNamedParams(): bool {
+		return true;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getParamSpec(): array {
+		return ListUtils::PARAM_OPTIONS;
 	}
 
 	/**
@@ -111,9 +125,7 @@ class ListMergeFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), ListUtils::PARAM_OPTIONS );
-
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inList = $params->get( 'list' );
 		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );

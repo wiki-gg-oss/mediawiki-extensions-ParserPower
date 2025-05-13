@@ -12,7 +12,7 @@ use MediaWiki\Parser\PPFrame;
 /**
  * Parser function for #if with unescaped parameters (#ueif).
  */
-final class UeIfFunction implements ParserFunction {
+final class UeIfFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -24,13 +24,18 @@ final class UeIfFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => [],
 			1 => [ 'unescape' => true ],
 			2 => [ 'unescape' => true ]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		if ( $params->get( 0 ) !== '' ) {
 			$value = $params->get( 1 );
 		} else {
