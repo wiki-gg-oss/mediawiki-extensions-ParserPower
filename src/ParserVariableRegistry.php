@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
+use MediaWiki\Extension\ParserPower\Tag\EscTag;
 use Wikimedia\ObjectFactory\ObjectFactory;
 use MediaWiki\Extension\ParserPower\Function\ArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\FollowFunction;
@@ -81,6 +82,10 @@ final class ParserVariableRegistry {
 		UeSwitchFunction::class
 	];
 
+	private const SIMPLE_TAGS = [
+		EscTag::class
+	];
+
 	private const PAGE_FORMS_FUNCTIONS = [
 		ArrayMapFunction::class,
 		ArrayMapTemplateFunction::class
@@ -118,6 +123,7 @@ final class ParserVariableRegistry {
 		$this->tags = [];
 
 		$this->addFunctions( self::SIMPLE_FUNCTIONS );
+		$this->addTags( self::SIMPLE_TAGS );
 
 		if ( !defined( 'PF_VERSION' ) ) {
 			$this->addFunctions( self::PAGE_FORMS_FUNCTIONS );
