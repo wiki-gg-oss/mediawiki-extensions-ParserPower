@@ -4,7 +4,6 @@
 
 namespace MediaWiki\Extension\ParserPower\Hooks;
 
-use MediaWiki\Extension\ParserPower\EscTag;
 use MediaWiki\Extension\ParserPower\ParserVariableRegistry;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Extension\ParserPower\Function\LinkPageFunction;
@@ -13,13 +12,11 @@ use MediaWiki\Extension\ParserPower\Function\LinkTextFunction;
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
 {
-	private EscTag $escTag;
 
 	/**
 	 * @param ParserVariableRegistry $parserVariableRegistry
 	 */
 	public function __construct( private ParserVariableRegistry $parserVariableRegistry ) {
-		$this->escTag = new EscTag();
 	}
 
 	/**
@@ -41,8 +38,5 @@ final class FunctionRegistrationHooks implements
 
 		$parser->setHook( 'linkpage', [ LinkPageFunction::class, 'tagRender' ] );
 		$parser->setHook( 'linktext', [ LinkTextFunction::class, 'tagRender' ] );
-		foreach ( $this->escTag->getNames() as $escTagName ) {
-			$parser->setHook( $escTagName, [ $this->escTag, 'render' ] );
-		}
 	}
 }
