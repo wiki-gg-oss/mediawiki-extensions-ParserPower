@@ -11,7 +11,7 @@ use MediaWiki\Parser\PPFrame;
 /**
  * Parser function for returning the 1st non-empty value (#or).
  */
-final class OrFunction implements ParserFunction {
+final class OrFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -23,9 +23,14 @@ final class OrFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params );
+	public function getDefaultSpec(): array {
+		return [];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		for ( $i = 0; $params->isDefined( $i ); ++$i ) {
 			$inValue = $params->get( $i );
 

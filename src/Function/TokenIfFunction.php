@@ -12,7 +12,7 @@ use MediaWiki\Parser\PPFrame;
 /**
  * Parser function for nesting #token in #if (#tokenif).
  */
-final class TokenIfFunction implements ParserFunction {
+final class TokenIfFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -24,14 +24,19 @@ final class TokenIfFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => [],
 			1 => [ 'default' => 'x', 'unescape' => true ],
 			2 => [ 'default' => 'x', 'novars' => true ],
 			3 => [ 'unescape' => true ]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inValue = $params->get( 0 );
 		if ( $inValue === '' ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 3 ) );

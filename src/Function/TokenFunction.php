@@ -12,7 +12,7 @@ use MediaWiki\Parser\PPFrame;
 /**
  * Parser function for replacing a token in a pattern (#token).
  */
-final class TokenFunction implements ParserFunction {
+final class TokenFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -24,13 +24,18 @@ final class TokenFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = new ParameterParser( $frame, $params, [
+	public function getParamSpec(): array {
+		return [
 			0 => [],
 			1 => [ 'default' => 'x', 'unescape' => true ],
 			2 => [ 'default' => 'x', 'novars' => true ]
-		] );
+		];
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$outValue = ParserPower::applyPattern( $params->get( 0 ), $params->get( 1 ), $params->get( 2 ) );
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
 		$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
