@@ -5,6 +5,8 @@
 namespace MediaWiki\Extension\ParserPower;
 
 use MediaWiki\Extension\ParserPower\Tag\EscTag;
+use MediaWiki\Extension\ParserPower\Tag\LinkPageTag;
+use MediaWiki\Extension\ParserPower\Tag\LinkTextTag;
 use Wikimedia\ObjectFactory\ObjectFactory;
 use MediaWiki\Extension\ParserPower\Function\ArgMapFunction;
 use MediaWiki\Extension\ParserPower\Function\FollowFunction;
@@ -83,7 +85,9 @@ final class ParserVariableRegistry {
 	];
 
 	private const SIMPLE_TAGS = [
-		EscTag::class
+		EscTag::class,
+		LinkPageTag::class,
+		LinkTextTag::class
 	];
 
 	private const PAGE_FORMS_FUNCTIONS = [
