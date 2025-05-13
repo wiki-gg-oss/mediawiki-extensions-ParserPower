@@ -32,12 +32,7 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 		] );
 
 		$inList = $params->get( 0 );
-
-		if ( $inList === '' ) {
-			return '0';
-		}
-
-		$sep = $params->get( 1 );
+		$sep = $inList !== '' ? $params->get( 1 ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $inList );
 

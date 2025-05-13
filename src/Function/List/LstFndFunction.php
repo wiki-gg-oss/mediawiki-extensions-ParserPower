@@ -35,12 +35,7 @@ final class LstFndFunction implements ParserFunction {
 		] );
 
 		$list = $params->get( 1 );
-
-		if ( $list === '' ) {
-			return '';
-		}
-
-		$sep = $params->get( 2 );
+		$sep = $list !== '' ? $params->get( 2 ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $list );
 

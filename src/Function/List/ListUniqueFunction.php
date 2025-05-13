@@ -77,12 +77,7 @@ class ListUniqueFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
-		}
-
-		$inSep = $params->get( 'insep' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( count( $inValues ) === 0 ) {

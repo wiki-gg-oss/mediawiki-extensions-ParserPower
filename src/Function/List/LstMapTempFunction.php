@@ -38,12 +38,7 @@ final class LstMapTempFunction extends ListMapFunction {
 		] );
 
 		$inList = $params->get( 0 );
-
-		if ( $inList === '' ) {
-			return '';
-		}
-
-		$inSep = $params->get( 2 );
+		$inSep = $inList !== '' ? $params->get( 2 ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
