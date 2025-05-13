@@ -34,18 +34,18 @@ final class LstIndFunction implements ParserFunction {
 		] );
 
 		$list = $params->get( 1 );
+		$sep = $list !== '' ? $params->get( 2 ) : '';
+		$sep = $parser->getStripState()->unstripNoWiki( $sep );
+		$values = ListUtils::explode( $sep, $list );
 
-		if ( $list === '' ) {
+		$count = count( $values );
+		if ( $count === 0 ) {
 			return '';
 		}
 
 		$item = $params->get( 0 );
-		$sep = $params->get( 2 );
-		$sep = $parser->getStripState()->unstripNoWiki( $sep );
-		$options = ListUtils::decodeIndexOptions( $params->get( 3 ) );
 
-		$values = ListUtils::explode( $sep, $list );
-		$count = ( is_array( $values ) || $values instanceof Countable ) ? count( $values ) : 0;
+		$options = ListUtils::decodeIndexOptions( $params->get( 3 ) );
 		if ( $options & ListUtils::INDEX_DESC ) {
 			if ( $options & ListUtils::INDEX_CS ) {
 				for ( $index = $count - 1; $index > -1; --$index ) {

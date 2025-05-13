@@ -34,17 +34,17 @@ final class LstElemFunction implements ParserFunction {
 		] );
 
 		$inList = $params->get( 0 );
+		$inSep = $inList !== '' ? $params->get( 1 ) : '';
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $inList === '' ) {
+		if ( count( $inValues ) === 0 ) {
 			return '';
 		}
 
-		$inSep = $params->get( 1 );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$index = $params->get( 2 );
 		$index = is_numeric( $index ) ? intval( $index ) : 1;
-
-		$value = ListUtils::get( ListUtils::explode( $inSep, $inList ), $index );
+		$value = ListUtils::get( $inValues, $index );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $value );
 	}

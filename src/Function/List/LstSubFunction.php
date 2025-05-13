@@ -36,25 +36,24 @@ final class LstSubFunction implements ParserFunction {
 		] );
 
 		$inList = $params->get( 0 );
+		$inSep = $inList !== '' ? $params->get( 1 ) : '';
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $inList === '' ) {
+		$inCount = count( $inValues );
+		if ( $inCount === 0 ) {
 			return '';
 		}
 
-		$inSep = $params->get( 1 );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$outSep = $params->get( 2 );
 		$offset = $params->get( 3 );
 		$offset = is_numeric( $offset ) ? intval( $offset ) : 0;
-		$length = $params->get( 4 );
+		$length = $offset < $inCount ? $params->get( 4 ) : '';
 		$length = is_numeric( $length ) ? intval( $length ) : null;
+		$outValues = ListUtils::slice( $inValues, $offset, $length );
 
-		$values = ListUtils::slice( ListUtils::explode( $inSep, $inList ), $offset, $length );
+		$outSep = count( $outValues ) > 1 ? $params->get( 2 ) : '';
+		$outList = ListUtils::implode( $outValues, $outSep );
 
-		if ( count( $values ) > 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $values, $outSep ) );
-		} else {
-			return '';
-		}
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

@@ -53,22 +53,20 @@ final class LstMapFunction extends ListMapFunction {
 		] );
 
 		$inList = $params->get( 0 );
+		$inSep = $inList !== '' ? $params->get( 1 ) : '';
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $inList === '' ) {
+		if ( count( $inValues ) === 0 ) {
 			return '';
 		}
 
-		$inSep = $params->get( 1 );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$token = $params->get( 2 );
 		$pattern = $params->get( 3 );
-		$outSep = $params->get( 4 );
+
 		$sortMode = ListUtils::decodeSortMode( $params->get( 5 ) );
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 6 ) );
-
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 6 ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
-
-		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
@@ -81,10 +79,9 @@ final class LstMapFunction extends ListMapFunction {
 			$outValues = $sorter->sort( $outValues );
 		}
 
-		if ( count( $outValues ) === 0 ) {
-			return '';
-		}
+		$outSep = count( $outValues ) > 1 ? $params->get( 4 ) : '';
+		$outList = ListUtils::implode( $outValues, $outSep );
 
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $outValues, $outSep ) );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

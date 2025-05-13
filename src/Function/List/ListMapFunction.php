@@ -63,32 +63,22 @@ class ListMapFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
-
-		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
-		$outConj = $params->get( 'outconj', [ 'default' => $outSep ] );
-		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
-		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
+		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		if ( count( $inValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
+		$template = $params->get( 'template' );
+		$fieldSep = $params->get( 'fieldsep' );
+
+		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
-		$inValues = ListUtils::explode( $inSep, $inList );
+		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
 
 		if ( $duplicates & ListUtils::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
@@ -106,17 +96,16 @@ class ListMapFunction implements ParserFunction {
 				$outValues = $sorter->sort( $outValues );
 			}
 		} else {
+			$indexToken = $params->get( 'indextoken' );
+			$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+			$tokens = ListUtils::explodeToken( $tokenSep, $params->get( 'token' ) );
+			$pattern = $params->get( 'pattern' );
+
 			if (
 				( $indexToken !== '' && $sortMode & ListUtils::SORTMODE_COMPAT ) ||
 				$sortMode & ListUtils::SORTMODE_PRE
 			) {
 				$inValues = $sorter->sort( $inValues );
-			}
-
-			if ( $fieldSep !== '' ) {
-				$tokens = ListUtils::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
 			}
 
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
@@ -136,15 +125,21 @@ class ListMapFunction implements ParserFunction {
 
 		$count = count( $outValues );
 		if ( $count === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
+		$outSep = $count > 2 ? $params->get( 'outsep' ) : '';
+		$outConj = $count > 1 ? $params->get( $params->isDefined( 'outconj' ) ? 'outconj' : 'outsep' ) : '';
 		if ( $outConj !== $outSep ) {
 			$outConj = ' ' . trim( $outConj ) . ' ';
 		}
-
 		$outList = ListUtils::implode( $outValues, $outSep, $outConj );
+
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

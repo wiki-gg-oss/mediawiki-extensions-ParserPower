@@ -32,16 +32,17 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 		] );
 
 		$inList = $params->get( 0 );
-		if ( $inList === '' ) {
+		$sep = $inList !== '' ? $params->get( 1 ) : '';
+		$sep = $parser->getStripState()->unstripNoWiki( $sep );
+		$values = ListUtils::explode( $sep, $inList );
+
+		if ( count( $values ) === 0 ) {
 			return '0';
 		}
 
-		$sep = $params->get( 1 );
-		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$csOption = ListUtils::decodeCSOption( $params->get( 2 ) );
-
-		$values = ListUtils::explode( $sep, $inList );
 		$values = $this->reduceToUniqueValues( $values, $csOption );
+
 		return (string)count( $values );
 	}
 }

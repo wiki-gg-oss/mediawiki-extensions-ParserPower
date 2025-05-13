@@ -73,39 +73,26 @@ class ListSortFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$values = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $values ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		}
 
 		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep' );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
 		$sortOptions = $params->get( 'sortoptions' );
 		$subsort = ListUtils::decodeBool( $params->get( 'subsort' ) );
-		$subsortOptions = ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) );
+		$subsortOptions = $subsort ? ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) ) : null;
 		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
 
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
-		if ( !$subsort ) {
-			$subsortOptions = null;
-		}
-
-		$values = ListUtils::explode( $inSep, $inList );
 		if ( $duplicates & ListUtils::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
 		}
 
 		if ( $template !== '' ) {
+			$fieldSep = $params->get( 'fieldsep' );
 			$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
 			$sorter = new ListSorter( $sortOptions, $subsortOptions );
 			$operation = new TemplateOperation( $parser, $frame, $template );
@@ -113,33 +100,42 @@ class ListSortFunction implements ParserFunction {
 			$pairedValues = $this->generateSortKeys( $operation, $values, $fieldSep );
 			$sorter->sortPairs( $pairedValues );
 			$values = $this->discardSortKeys( $pairedValues );
-		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
-			if ( $fieldSep !== '' ) {
-				$tokens = ListUtils::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
-			}
-
-			$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
-			$sorter = new ListSorter( $sortOptions, $subsortOptions );
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-
-			$pairedValues = $this->generateSortKeys( $operation, $values, $fieldSep );
-			$sorter->sortPairs( $pairedValues );
-			$values = $this->discardSortKeys( $pairedValues );
 		} else {
-			$sortOptions = ListUtils::decodeSortOptions( $sortOptions );
-			$sorter = new ListSorter( $sortOptions );
-			$values = $sorter->sort( $values );
+			$indexToken = $params->get( 'indextoken' );
+			$token = $params->get( 'token' );
+			$pattern = $params->get( 'pattern' );
+
+			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+				$fieldSep = $params->get( 'fieldsep' );
+				$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+				$tokens = ListUtils::explodeToken( $tokenSep, $token );
+				$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+				$sorter = new ListSorter( $sortOptions, $subsortOptions );
+				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+
+				$pairedValues = $this->generateSortKeys( $operation, $values, $fieldSep );
+				$sorter->sortPairs( $pairedValues );
+				$values = $this->discardSortKeys( $pairedValues );
+			} else {
+				$sortOptions = ListUtils::decodeSortOptions( $sortOptions );
+				$sorter = new ListSorter( $sortOptions );
+				$values = $sorter->sort( $values );
+			}
 		}
 
 		if ( count( $values ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$count = count( $values );
+		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $values, $outSep );
+
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

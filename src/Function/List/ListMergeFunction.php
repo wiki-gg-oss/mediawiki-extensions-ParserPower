@@ -115,32 +115,21 @@ class ListMergeFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, ParameterParser::arrange( $frame, $params ), ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
+		$inValues = ListUtils::explode( $inSep, $inList );
+
+		if ( count( $inValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		}
 
 		$matchTemplate = $params->get( 'matchtemplate' );
 		$mergeTemplate = $params->get( 'mergetemplate' );
-		$inSep = $params->get( 'insep' );
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$fieldSep = $params->get( 'fieldsep' );
-		$token1 = $params->get( 'token1' );
-		$token2 = $params->get( 'token2' );
-		$tokenSep = $params->get( 'tokensep' );
-		$matchPattern = $params->get( 'matchpattern' );
-		$mergePattern = $params->get( 'mergepattern' );
-		$outSep = $params->get( 'outsep' );
+
 		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
-
-		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
@@ -150,16 +139,14 @@ class ListMergeFunction implements ParserFunction {
 			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
 			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
 		} else {
-			if ( $fieldSep !== '' ) {
-				$tokens1 = ListUtils::explodeToken( $tokenSep, $token1 );
-				$tokens2 = ListUtils::explodeToken( $tokenSep, $token2 );
-			} else {
-				$tokens1 = [ $token1 ];
-				$tokens2 = [ $token2 ];
-			}
+			$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+			$tokens1 = ListUtils::explodeToken( $tokenSep, $params->get( 'token1' ) );
+			$tokens2 = ListUtils::explodeToken( $tokenSep, $params->get( 'token2' ) );
 			$tokens = [ ...$tokens1, ...$tokens2 ];
 			$fieldOffset = count( $tokens1 );
 
+			$matchPattern = $params->get( 'matchpattern' );
+			$mergePattern = $params->get( 'mergepattern' );
 			$matchOperation = new PatternOperation( $parser, $frame, $matchPattern, $tokens );
 			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, $tokens );
 
@@ -171,12 +158,19 @@ class ListMergeFunction implements ParserFunction {
 			$outValues = $sorter->sort( $outValues );
 		}
 
-		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+		$count = count( $outValues );
+		if ( $count === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
-		$count = count( $outValues );
-		$outList = ListUtils::applyIntroAndOutro( $intro, implode( $outSep, $outValues ), $outro, $countToken, $count );
+		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
+		$outList = ListUtils::implode( $outValues, $outSep );
+
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
+		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

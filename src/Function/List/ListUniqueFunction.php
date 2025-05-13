@@ -77,46 +77,45 @@ class ListUniqueFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
-
-		$uniqueCS = ListUtils::decodeBool( $params->get( 'uniquecs' ) );
-		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep' );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $fieldSep !== '' ) {
-			$tokens = ListUtils::explodeToken( $tokenSep, $token );
-		} else {
-			$tokens = [ $token ];
+		if ( count( $inValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
+		$template = $params->get( 'template' );
+
 		if ( $template !== '' ) {
+			$fieldSep = $params->get( 'fieldsep' );
 			$operation = new TemplateOperation( $parser, $frame, $template );
 			$outValues = $this->reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
-		} elseif ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
-			$outValues = $this->reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
 		} else {
-			$outValues = $this->reduceToUniqueValues( $inValues, $uniqueCS );
+			$indexToken = $params->get( 'indextoken' );
+			$token = $params->get( 'token' );
+			$pattern = $params->get( 'pattern' );
+
+			if ( ( $indexToken !== '' || $token !== '' ) && $pattern !== '' ) {
+				$fieldSep = $params->get( 'fieldsep' );
+				$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+				$tokens = ListUtils::explodeToken( $tokenSep, $token );
+				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+				$outValues = $this->reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
+			} else {
+				$uniqueCS = ListUtils::decodeBool( $params->get( 'uniquecs' ) );
+				$outValues = $this->reduceToUniqueValues( $inValues, $uniqueCS );
+			}
 		}
 
 		$count = count( $outValues );
+		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
+
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
+
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

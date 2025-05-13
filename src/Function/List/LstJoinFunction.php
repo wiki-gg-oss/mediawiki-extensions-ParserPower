@@ -36,30 +36,20 @@ final class LstJoinFunction implements ParserFunction {
 		] );
 
 		$inList1 = $params->get( 0 );
+		$inSep1 = $inList1 !== '' ? $params->get( 1 ) : '';
+		$inSep1 = $parser->getStripState()->unstripNoWiki( $inSep1 );
+		$values1 = ListUtils::explode( $inSep1, $inList1 );
+
 		$inList2 = $params->get( 2 );
-		if ( $inList1 === '' && $inList2 === '' ) {
-			return '';
-		}
-
-		if ( $inList1 === '' ) {
-			$values1 = [];
-		} else {
-			$inSep1 = $params->get( 1 );
-			$inSep1 = $parser->getStripState()->unstripNoWiki( $inSep1 );
-			$values1 = ListUtils::explode( $inSep1, $inList1 );
-		}
-
-		if ( $inList2 === '' ) {
-			$values2 = [];
-		} else {
-			$inSep2 = $params->get( 3 );
-			$inSep2 = $parser->getStripState()->unstripNoWiki( $inSep2 );
-			$values2 = ListUtils::explode( $inSep2, $inList2 );
-		}
-
-		$outSep = $params->get( 4 );
+		$inSep2 = $inList2 !== '' ? $params->get( 3 ) : '';
+		$inSep2 = $parser->getStripState()->unstripNoWiki( $inSep2 );
+		$values2 = ListUtils::explode( $inSep2, $inList2 );
 
 		$values = array_merge( $values1, $values2 );
-		return ParserPower::evaluateUnescaped( $parser, $frame, ListUtils::implode( $values, $outSep ) );
+
+		$outSep = count( $values ) > 1 ? $params->get( 4 ) : '';
+		$outList = ListUtils::implode( $values, $outSep );
+
+		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

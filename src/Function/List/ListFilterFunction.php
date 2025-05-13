@@ -57,70 +57,69 @@ class ListFilterFunction implements ParserFunction {
 		$params = new ParameterParser( $frame, $params, ListUtils::PARAM_OPTIONS );
 
 		$inList = $params->get( 'list' );
-		$default = $params->get( 'default' );
-
-		$keepValues = $params->get( 'keep' );
-		$keepSep = $params->get( 'keepsep' );
-		$keepCS = ListUtils::decodeBool( $params->get( 'keepcs' ) );
-		$removeValues = $params->get( 'remove' );
-		$removeSep = $params->get( 'removesep' );
-		$removeCS = ListUtils::decodeBool( $params->get( 'removecs' ) );
-		$template = $params->get( 'template' );
-		$inSep = $params->get( 'insep' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$fieldSep = $params->get( 'fieldsep' );
-		$indexToken = $params->get( 'indextoken' );
-		$token = $params->get( 'token' );
-		$tokenSep = $params->get( 'tokensep' );
-		$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
-		$pattern = $params->get( 'pattern' );
-		$outSep = $params->get( 'outsep' );
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
-
-		if ( $inList === '' ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
-		}
-
 		$inValues = ListUtils::explode( $inSep, $inList );
 
+		if ( count( $inValues ) === 0 ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		}
+
+		$keepValues = $params->get( 'keep' );
+
 		if ( $keepValues !== '' ) {
+			$keepSep = $params->get( 'keepsep' );
 			if ( $keepSep !== '' ) {
 				$keepValues = ListUtils::explode( $keepSep, $keepValues );
 			} else {
 				$keepValues = [ ParserPower::unescape( $keepValues ) ];
 			}
 
+			$keepCS = ListUtils::decodeBool( $params->get( 'keepcs' ) );
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
-		} elseif ( $removeValues !== '' ) {
-			if ( $removeSep !== '' ) {
-				$removeValues = ListUtils::explode( $removeSep, $removeValues );
-			} else {
-				$removeValues = [ ParserPower::unescape( $removeValues ) ];
-			}
-
-			$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
-		} elseif ( $template !== '' ) {
-			$operation = new TemplateOperation( $parser, $frame, $template );
 		} else {
-			if ( $fieldSep !== '' ) {
-				$tokens = ListUtils::explodeToken( $tokenSep, $token );
-			} else {
-				$tokens = [ $token ];
-			}
+			$removeValues = $params->get( 'remove' );
 
-			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+			if ( $removeValues !== '' ) {
+				$removeSep = $params->get( 'removesep' );
+				if ( $removeSep !== '' ) {
+					$removeValues = ListUtils::explode( $removeSep, $removeValues );
+				} else {
+					$removeValues = [ ParserPower::unescape( $removeValues ) ];
+				}
+
+				$removeCS = ListUtils::decodeBool( $params->get( 'removecs' ) );
+				$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
+			} else {
+				$template = $params->get( 'template' );
+				$fieldSep = $params->get( 'fieldsep' );
+
+				if ( $template !== '' ) {
+					$operation = new TemplateOperation( $parser, $frame, $template );
+				} else {
+					$indexToken = $params->get( 'indextoken' );
+					$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
+					$tokenSep = $parser->getStripState()->unstripNoWiki( $tokenSep );
+					$tokens = ListUtils::explodeToken( $tokenSep, $params->get( 'token' ) );
+					$pattern = $params->get( 'pattern' );
+					$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
+				}
+			}
 		}
 
-		$outValues = $this->filterList( $operation, $inValues, $fieldSep );
+		$outValues = $this->filterList( $operation, $inValues, $fieldSep ?? '' );
 
 		if ( count( $outValues ) === 0 ) {
-			return ParserPower::evaluateUnescaped( $parser, $frame, $default );
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
 		$count = count( $outValues );
+		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
+
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
 		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
