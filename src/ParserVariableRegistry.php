@@ -54,6 +54,10 @@ final class ParserVariableRegistry {
 	 * @var array Parser functions.
 	 */
 	private array $functions;
+	/**
+	 * @var array Parser tags.
+	 */
+	private array $tags;
 
 	private const SIMPLE_FUNCTIONS = [
 		ArgMapFunction::class,
@@ -111,11 +115,14 @@ final class ParserVariableRegistry {
 
 	public function __construct( private ObjectFactory $objectFactory ) {
 		$this->functions = [];
+		$this->tags = [];
 
 		$this->addFunctions( self::SIMPLE_FUNCTIONS );
+
 		if ( !defined( 'PF_VERSION' ) ) {
 			$this->addFunctions( self::PAGE_FORMS_FUNCTIONS );
 		}
+
 		$this->addFunctions( self::LIST_FUNCTIONS );
 	}
 
@@ -147,9 +154,43 @@ final class ParserVariableRegistry {
 	}
 
 	/**
+	 * Add a list of parser tags.
+	 *
+	 * @param array $tagSpecs List of parser tag class names or specifications.
+	 */
+	public function addTags( array $tagSpecs ) {
+		foreach ( $tagSpecs as $tagSpec ) {
+			$this->addTag( $tagSpec );
+		}
+	}
+
+	/**
+	 * Add a parser tag.
+	 *
+	 * @param string|array $tagSpec Parser tag class name or specification.
+	 */
+	public function addTag( string|array $tagSpec ) {
+		if ( is_string( $tagSpec ) ) {
+			$tagSpec = [ 'class' => $tagSpec ];
+		}
+
+		$this->tags[] = $this->objectFactory->createObject(
+			$tagSpec,
+			[ 'assertClass' => $tagSpec['class'] ]
+		);
+	}
+
+	/**
 	 * Get the list of ParserPower parser functions.
 	 */
 	public function getFunctions(): array {
 		return $this->functions;
+	}
+
+	/**
+	 * Get the list of ParserPower parser tags.
+	 */
+	public function getTags(): array {
+		return $this->tags;
 	}
 }
