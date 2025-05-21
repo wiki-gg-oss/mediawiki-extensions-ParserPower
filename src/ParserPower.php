@@ -236,12 +236,14 @@ class ParserPower {
 	/**
 	 * Returns a ParserPower error message formatted as wikitext (with variables replaced).
 	 *
+	 * @param string $origin Error origin, basically a parser function or tag name.
 	 * @param string $key Error message key, without its "error-" prefix.
 	 * @param mixed ...$params Error message parameters.
 	 * @return string The formatted message text.
 	 */
-	public static function errorMessage( string $key, ...$params ): string {
-		$message = ParserPower::newMessage( 'error-' . $key, ...$params );
-		return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+	public static function errorMessage( string $origin, string $key, ...$params ): string {
+		$innerMessage = ParserPower::newMessage( 'error-' . $key, $params );
+		$outerMessage = ParserPower::newMessage( 'error', $origin, $innerMessage );
+		return '<strong class="error">' . $outerMessage->inContentLanguage()->text() . '</strong>';
 	}
 }
