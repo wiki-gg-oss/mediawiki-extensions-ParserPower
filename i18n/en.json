@@ -5,5 +5,9 @@
 		]
 	},
 	"parserpower": "The name of the extension's entry in Special:SpecialPages",
-	"parserpower-desc": "A collection of extended parser functions for MediaWiki, particularly including functions for dealing with lists of values separated by a dynamically-specified delimiter."
+	"parserpower-desc": "A collection of extended parser functions for MediaWiki, particularly including functions for dealing with lists of values separated by a dynamically-specified delimiter.",
+	"parserpower-error-invalid-argument-number": "$1 error: The number of given formatter arguments must be divisible by \"$2\".",
+	"parserpower-error-invalid-integer": "$1 error: \"$2\" must be an integer.",
+	"parserpower-error-missing-parameter": "$1 error: The parameter \"$2\" is required.",
+	"parserpower-error-no-arguments": "$1 error: No formatter arguments were given."
 }

@@ -4,12 +4,14 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
+use MediaWiki\Message\Message;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode;
 use MediaWiki\Parser\Preprocessor;
 
 class ParserPower {
+
 	/**
 	 * expand() flag for not expanding variables.
 	 */
@@ -218,5 +220,16 @@ class ParserPower {
 		} else {
 			return str_replace( $token, $value, $pattern );
 		}
+	}
+
+	/**
+	 * Create a ParserPower-specific message.
+	 * 
+	 * @param string $key Message key.
+	 * @param mixed ...$params Message parameters.
+	 * @return Message The ParserPower message.
+	 */
+	public static function newMessage( string $key, ...$params ): Message {
+		return wfMessage( 'parserpower-' . $key, ...$params );
 	}
 }

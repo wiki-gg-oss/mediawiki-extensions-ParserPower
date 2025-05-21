@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
@@ -22,10 +23,12 @@ final class IArgMapFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $args ): string {
 		if ( !isset( $args[0] ) ) {
-			return '<strong class="error">iargmap error: The parameter "formatter" is required.</strong>';
+			$message = ParserPower::newMessage( 'error-missing-parameter', 'iargmap', 'formatter' );
+			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
 		}
 		if ( !isset( $args[1] ) ) {
-			return '<strong class="error">iargmap error: The parameter "n" is required.</strong>';
+			$message = ParserPower::newMessage( 'error-missing-parameter', 'iargmap', 'n' );
+			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
 		}
 
 		// set parameters
@@ -36,20 +39,24 @@ final class IArgMapFunction implements ParserFunction {
 
 		// check against bad entries
 		if ( count( $allFormatterArgs ) == 0 ) {
-			return '<strong class="error">iargmap error: No formatter arguments were given.</strong>';
+			$message = ParserPower::newMessage( 'error-no-arguments', 'iargmap' );
+			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
 		}
 		if ( !is_numeric( $numberOfArgumentsPerFormatter ) ) {
-			return '<strong class="error">iargmap error: "n" must be an integer.</strong>';
+			$message = ParserPower::newMessage( 'error-invalid-integer', 'iargmap', 'n' );
+			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
 		}
 
 		if ( intval( $numberOfArgumentsPerFormatter ) != floatval( $numberOfArgumentsPerFormatter ) ) {
-			return '<strong class="error">iargmap error: "n" must be an integer.</strong>';
+			$message = ParserPower::newMessage( 'error-invalid-integer', 'iargmap', 'n' );
+			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
 		}
 
 		$imax = count( $allFormatterArgs ) / intval( $numberOfArgumentsPerFormatter );
 
 		if ( !is_int( $imax ) ) {
-			return '<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>';
+			$message = ParserPower::newMessage( 'error-invalid-argument-number', 'iargmap', 'n' );
+			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
 		}
 
 		// write formatter calls
