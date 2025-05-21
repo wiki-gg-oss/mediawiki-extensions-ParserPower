@@ -23,12 +23,10 @@ final class IArgMapFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $args ): string {
 		if ( !isset( $args[0] ) ) {
-			$message = ParserPower::newMessage( 'error-missing-parameter', 'iargmap', 'formatter' );
-			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+			return ParserPower::errorMessage( 'missing-parameter', 'iargmap', 'formatter' );
 		}
 		if ( !isset( $args[1] ) ) {
-			$message = ParserPower::newMessage( 'error-missing-parameter', 'iargmap', 'n' );
-			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+			return ParserPower::errorMessage( 'missing-parameter', 'iargmap', 'n' );
 		}
 
 		// set parameters
@@ -39,24 +37,20 @@ final class IArgMapFunction implements ParserFunction {
 
 		// check against bad entries
 		if ( count( $allFormatterArgs ) == 0 ) {
-			$message = ParserPower::newMessage( 'error-no-arguments', 'iargmap' );
-			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+			return ParserPower::errorMessage( 'no-arguments', 'iargmap', 'n' );
 		}
 		if ( !is_numeric( $numberOfArgumentsPerFormatter ) ) {
-			$message = ParserPower::newMessage( 'error-invalid-integer', 'iargmap', 'n' );
-			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+			return ParserPower::errorMessage( 'invalid-integer', 'iargmap', 'n' );
 		}
 
 		if ( intval( $numberOfArgumentsPerFormatter ) != floatval( $numberOfArgumentsPerFormatter ) ) {
-			$message = ParserPower::newMessage( 'error-invalid-integer', 'iargmap', 'n' );
-			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+			return ParserPower::errorMessage( 'invalid-integer', 'iargmap', 'n' );
 		}
 
 		$imax = count( $allFormatterArgs ) / intval( $numberOfArgumentsPerFormatter );
 
 		if ( !is_int( $imax ) ) {
-			$message = ParserPower::newMessage( 'error-invalid-argument-number', 'iargmap', 'n' );
-			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+			return ParserPower::errorMessage( 'invalid-argument-number', 'iargmap', 'n' );
 		}
 
 		// write formatter calls

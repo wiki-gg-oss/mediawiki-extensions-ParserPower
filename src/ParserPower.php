@@ -232,4 +232,16 @@ class ParserPower {
 	public static function newMessage( string $key, ...$params ): Message {
 		return wfMessage( 'parserpower-' . $key, ...$params );
 	}
+
+	/**
+	 * Returns a ParserPower error message formatted as wikitext (with variables replaced).
+	 *
+	 * @param string $key Error message key, without its "error-" prefix.
+	 * @param mixed ...$params Error message parameters.
+	 * @return string The formatted message text.
+	 */
+	public static function errorMessage( string $key, ...$params ): string {
+		$message = ParserPower::newMessage( 'error-' . $key, ...$params );
+		return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+	}
 }
