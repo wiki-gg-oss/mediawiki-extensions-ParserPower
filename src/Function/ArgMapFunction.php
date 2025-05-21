@@ -23,8 +23,7 @@ final class ArgMapFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $args ): string {
 		if ( !isset( $args[0] ) ) {
-			$message = ParserPower::newMessage( 'error-missing-parameter', 'argmap', 'formatter' );
-			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
+			return ParserPower::errorMessage( 'missing-parameter', 'argmap', 'formatter' );
 		}
 
 		// set parameters
