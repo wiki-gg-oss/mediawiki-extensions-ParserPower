@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
@@ -22,7 +23,8 @@ final class ArgMapFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $args ): string {
 		if ( !isset( $args[0] ) ) {
-			return '<strong class="error">argmap error: The parameter "formatter" is required.</strong>';
+			$message = ParserPower::newMessage( 'error-missing-parameter', 'argmap', 'formatter' );
+			return '<strong class="error">' . $message->inContentLanguage()->text() . '</strong>';
 		}
 
 		// set parameters
