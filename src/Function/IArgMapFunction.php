@@ -23,10 +23,10 @@ final class IArgMapFunction implements ParserFunction {
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $args ): string {
 		if ( !isset( $args[0] ) ) {
-			return ParserPower::errorMessage( 'missing-parameter', 'iargmap', 'formatter' );
+			return ParserPower::errorMessage( 'iargmap', 'missing-parameter', 'formatter' );
 		}
 		if ( !isset( $args[1] ) ) {
-			return ParserPower::errorMessage( 'missing-parameter', 'iargmap', 'n' );
+			return ParserPower::errorMessage( 'iargmap', 'missing-parameter', 'n' );
 		}
 
 		// set parameters
@@ -37,20 +37,20 @@ final class IArgMapFunction implements ParserFunction {
 
 		// check against bad entries
 		if ( count( $allFormatterArgs ) == 0 ) {
-			return ParserPower::errorMessage( 'no-arguments', 'iargmap', 'n' );
+			return ParserPower::errorMessage( 'iargmap', 'no-arguments', 'n' );
 		}
 		if ( !is_numeric( $numberOfArgumentsPerFormatter ) ) {
-			return ParserPower::errorMessage( 'invalid-integer', 'iargmap', 'n' );
+			return ParserPower::errorMessage( 'iargmap', 'invalid-integer', 'n' );
 		}
 
 		if ( intval( $numberOfArgumentsPerFormatter ) != floatval( $numberOfArgumentsPerFormatter ) ) {
-			return ParserPower::errorMessage( 'invalid-integer', 'iargmap', 'n' );
+			return ParserPower::errorMessage( 'iargmap', 'invalid-integer', 'n' );
 		}
 
 		$imax = count( $allFormatterArgs ) / intval( $numberOfArgumentsPerFormatter );
 
 		if ( !is_int( $imax ) ) {
-			return ParserPower::errorMessage( 'invalid-argument-number', 'iargmap', 'n' );
+			return ParserPower::errorMessage( 'iargmap', 'invalid-argument-number', 'n' );
 		}
 
 		// write formatter calls
