@@ -147,21 +147,26 @@ class ListMergeFunction extends ParserFunctionBase {
 			$inValues = $sorter->sort( $inValues );
 		}
 
-		if ( $matchTemplate !== '' && $mergeTemplate !== '' ) {
-			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
-			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
-		} else {
+		if ( $matchTemplate === '' || $mergeTemplate === '' ) {
 			$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
 			$tokens1 = ListUtils::explodeToken( $tokenSep, $params->get( 'token1' ) );
 			$tokens2 = ListUtils::explodeToken( $tokenSep, $params->get( 'token2' ) );
 			$tokens = [ ...$tokens1, ...$tokens2 ];
 			$fieldOffset = count( $tokens1 );
+		}
 
+		if ( $matchTemplate !== '' ) {
+			$matchOperation = new TemplateOperation( $parser, $frame, $matchTemplate );
+		} else {
 			$matchPattern = $params->get( 'matchpattern' );
-			$mergePattern = $params->get( 'mergepattern' );
 			$matchOperation = new PatternOperation( $parser, $frame, $matchPattern, $tokens );
-			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, $tokens );
+		}
 
+		if ( $mergeTemplate !== '' ) {
+			$mergeOperation = new TemplateOperation( $parser, $frame, $mergeTemplate );
+		} else {
+			$mergePattern = $params->get( 'mergepattern' );
+			$mergeOperation = new PatternOperation( $parser, $frame, $mergePattern, $tokens );
 		}
 
 		$outValues = $this->iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, $fieldOffset ?? null );
