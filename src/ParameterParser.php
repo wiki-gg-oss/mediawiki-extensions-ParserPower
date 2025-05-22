@@ -32,6 +32,7 @@ final class ParameterParser {
 	 * @param array $rawParams Unexpanded parameters.
 	 * @param array $paramOptions Parsing and post-processing options for all parameters.
 	 * @param array $defaultOptions Parsing and post-processing options for unknown parameters.
+	 * @param int $flags Parameter parser flags.
 	 */
 	public function __construct(
 		private readonly PPFrame $frame,
@@ -40,10 +41,31 @@ final class ParameterParser {
 		private array $defaultOptions = [],
 		int $flags = 0
 	) {
-		if ( $flags & self::ALLOWS_NAMED ) {
-			$this->params = self::arrange( $frame, $rawParams );
-		} else {
-			$this->params = $rawParams;
+		$numberedCount = 0;
+
+		foreach ( $rawParams as $rawParam ) {
+			if ( $flags & self::ALLOWS_NAMED ) {
+				if ( is_string( $rawParam ) ) {
+					$pair = explode( '=', $rawParam, 2 );
+					$key = isset( $pair[1] ) ? array_shift( $pair ) : null;
+					$value = $pair[0];
+				} else {
+					$bits = $rawParam->splitArg();
+					$key = $bits['index'] === '' ? $bits['name'] : null;
+					$value = $bits['value'];
+				}
+			} else {
+				$key = null;
+				$value = $rawParam;
+			}
+
+			if ( $key !== null ) {
+				$key = ParserPower::expand( $frame, $key );
+			} else {
+				$key = $numberedCount++;
+			}
+
+			$this->params[$key] = $value;
 		}
 	}
 
@@ -87,39 +109,5 @@ final class ParameterParser {
 
 		$this->expandedParams[$key] = $value;
 		return $value;
-	}
-
-	/**
-	 * Arranges parser function parameters, separating named from numbered parameters.
-	 *
-	 * @param PPFrame $frame Parser frame object.
-	 * @param array $params Unexpanded parameters.
-	 * @return array Parameters with separated keys and values.
-	 */
-	private static function arrange( PPFrame $frame, array $params ): array {
-		$arrangedParams = [];
-		$numberedCount = 0;
-
-		foreach ( $params as $param ) {
-			if ( is_string( $param ) ) {
-				$pair = explode( '=', $param, 2 );
-				if ( isset( $pair[1] ) ) {
-					$key = array_shift( $pair );
-				}
-				$value = $pair[0];
-			} else {
-				$bits = $param->splitArg();
-				if ( $bits['index'] === '' ) {
-					$key = $bits['name'];
-				}
-				$value = $bits['value'];
-			}
-
-			$key = isset( $key ) ? ParserPower::expand( $frame, $key ) : $numberedCount++;
-
-			$arrangedParams[$key] = $value;
-		}
-
-		return $arrangedParams;
 	}
 }
