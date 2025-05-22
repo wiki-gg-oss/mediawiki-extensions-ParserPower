@@ -14,22 +14,37 @@ use MediaWiki\Parser\PPFrame;
 final class ParameterParser {
 
 	/**
+	 * Flag for whether named arguments are allowed, and should be split from numbered arguments.
+	 */
+	public const ALLOWS_NAMED = 1;
+
+	/**
+	 * @var array Unexpanded parameters.
+	 */
+	private array $params = [];
+	/**
 	 * @var array Expanded (and post-processed) parameters.
 	 */
 	private array $expandedParams = [];
 
 	/**
 	 * @param PPFrame $frame Parser frame object.
-	 * @param array $params Unexpanded parameters.
+	 * @param array $rawParams Unexpanded parameters.
 	 * @param array $paramOptions Parsing and post-processing options for all parameters.
 	 * @param array $defaultOptions Parsing and post-processing options for unknown parameters.
 	 */
 	public function __construct(
 		private readonly PPFrame $frame,
-		private array $params,
+		private array $rawParams,
 		private array $paramOptions = [],
-		private array $defaultOptions = []
+		private array $defaultOptions = [],
+		int $flags = 0
 	) {
+		if ( $flags & self::ALLOWS_NAMED ) {
+			$this->params = self::arrange( $frame, $rawParams );
+		} else {
+			$this->params = $rawParams;
+		}
 	}
 
 	/**
@@ -81,7 +96,7 @@ final class ParameterParser {
 	 * @param array $params Unexpanded parameters.
 	 * @return array Parameters with separated keys and values.
 	 */
-	public static function arrange( PPFrame $frame, array $params ): array {
+	private static function arrange( PPFrame $frame, array $params ): array {
 		$arrangedParams = [];
 		$numberedCount = 0;
 
