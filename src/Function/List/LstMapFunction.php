@@ -65,8 +65,8 @@ final class LstMapFunction extends ListMapFunction {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 0 );
-		$inSep = $inList !== '' ? $params->get( 1 ) : '';
+		$inList = $params->get( 'list' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
@@ -74,11 +74,11 @@ final class LstMapFunction extends ListMapFunction {
 			return '';
 		}
 
-		$token = $params->get( 2 );
-		$pattern = $params->get( 3 );
+		$token = $params->get( 'token' );
+		$pattern = $params->get( 'pattern' );
 
-		$sortMode = ListUtils::decodeSortMode( $params->get( 5 ) );
-		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 6 ) ) : 0;
+		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
@@ -92,7 +92,7 @@ final class LstMapFunction extends ListMapFunction {
 			$outValues = $sorter->sort( $outValues );
 		}
 
-		$outSep = count( $outValues ) > 1 ? $params->get( 4 ) : '';
+		$outSep = count( $outValues ) > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

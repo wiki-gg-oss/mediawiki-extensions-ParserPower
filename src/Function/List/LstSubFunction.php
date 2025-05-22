@@ -41,8 +41,8 @@ final class LstSubFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 0 );
-		$inSep = $inList !== '' ? $params->get( 1 ) : '';
+		$inList = $params->get( 'list' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
@@ -51,13 +51,13 @@ final class LstSubFunction extends ParserFunctionBase {
 			return '';
 		}
 
-		$offset = $params->get( 3 );
+		$offset = $params->get( 'index' );
 		$offset = is_numeric( $offset ) ? intval( $offset ) : 0;
-		$length = $offset < $inCount ? $params->get( 4 ) : '';
+		$length = $offset < $inCount ? $params->get( 'length' ) : '';
 		$length = is_numeric( $length ) ? intval( $length ) : null;
 		$outValues = ListUtils::slice( $inValues, $offset, $length );
 
-		$outSep = count( $outValues ) > 1 ? $params->get( 2 ) : '';
+		$outSep = count( $outValues ) > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

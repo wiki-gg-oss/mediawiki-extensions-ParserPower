@@ -40,8 +40,8 @@ final class LstFndFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$list = $params->get( 1 );
-		$sep = $list !== '' ? $params->get( 2 ) : '';
+		$list = $params->get( 'list' );
+		$sep = $list !== '' ? $params->get( 'insep' ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $list );
 
@@ -49,9 +49,9 @@ final class LstFndFunction extends ParserFunctionBase {
 			return '';
 		}
 
-		$item = $params->get( 0 );
+		$item = $params->get( 'value' );
 
-		$csOption = $params->get( 3 );
+		$csOption = $params->get( 'csoption' );
 		$csOption = ListUtils::decodeCSOption( $csOption );
 		if ( $csOption ) {
 			foreach ( $values as $value ) {

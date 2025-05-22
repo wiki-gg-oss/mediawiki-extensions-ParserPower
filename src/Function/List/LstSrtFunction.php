@@ -47,8 +47,8 @@ final class LstSrtFunction extends ListSortFunction {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 0 );
-		$inSep = $inList !== '' ? $params->get( 1 ) : '';
+		$inList = $params->get( 'list' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$values = ListUtils::explode( $inSep, $inList );
 
@@ -56,11 +56,11 @@ final class LstSrtFunction extends ListSortFunction {
 			return '';
 		}
 
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 3 ) );
+		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
 		$sorter = new ListSorter( $sortOptions );
 		$values = $sorter->sort( $values );
 
-		$outSep = count( $values ) > 1 ? $params->get( 2 ) : '';
+		$outSep = count( $values ) > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $values, $outSep );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
