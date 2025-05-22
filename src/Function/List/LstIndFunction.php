@@ -39,8 +39,8 @@ final class LstIndFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$list = $params->get( 1 );
-		$sep = $list !== '' ? $params->get( 2 ) : '';
+		$list = $params->get( 'list' );
+		$sep = $list !== '' ? $params->get( 'insep' ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $list );
 
@@ -49,9 +49,9 @@ final class LstIndFunction extends ParserFunctionBase {
 			return '';
 		}
 
-		$item = $params->get( 0 );
+		$item = $params->get( 'value' );
 
-		$options = ListUtils::decodeIndexOptions( $params->get( 3 ) );
+		$options = ListUtils::decodeIndexOptions( $params->get( 'indexoptions' ) );
 		if ( $options & ListUtils::INDEX_DESC ) {
 			if ( $options & ListUtils::INDEX_CS ) {
 				for ( $index = $count - 1; $index > -1; --$index ) {

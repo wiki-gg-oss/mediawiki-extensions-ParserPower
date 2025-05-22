@@ -48,8 +48,8 @@ final class LstRmFunction extends ListFilterFunction {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 1 );
-		$inSep = $inList !== '' ? $params->get( 2 ) : '';
+		$inList = $params->get( 'list' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
@@ -57,12 +57,12 @@ final class LstRmFunction extends ListFilterFunction {
 			return '';
 		}
 
-		$value = $params->get( 0 );
-		$csOption = ListUtils::decodeCSOption( $params->get( 4 ) );
+		$value = $params->get( 'value' );
+		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
 		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
 		$outValues = $this->filterList( $operation, $inValues );
 
-		$outSep = count( $outValues ) > 1 ? $params->get( 3 ) : '';
+		$outSep = count( $outValues ) > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

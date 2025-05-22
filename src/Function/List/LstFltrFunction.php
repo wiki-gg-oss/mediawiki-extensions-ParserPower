@@ -49,8 +49,8 @@ final class LstFltrFunction extends ListFilterFunction {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 2 );
-		$inSep = $inList !== '' ? $params->get( 3 ) : '';
+		$inList = $params->get( 'list' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
@@ -58,9 +58,9 @@ final class LstFltrFunction extends ListFilterFunction {
 			return '';
 		}
 
-		$values = $params->get( 0 );
-		$valueSep = $params->get( 1 );
-		$csOption = ListUtils::decodeCSOption( $params->get( 5 ) );
+		$values = $params->get( 'keep' );
+		$valueSep = $params->get( 'keepsep' );
+		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
 
 		if ( $valueSep !== '' ) {
 			$values = ListUtils::explode( $valueSep, $values );
@@ -71,7 +71,7 @@ final class LstFltrFunction extends ListFilterFunction {
 		$operation = new ListInclusionOperation( $values, '', 'remove', $csOption );
 		$outValues = $this->filterList( $operation, $inValues );
 
-		$outSep = count( $outValues ) > 1 ? $params->get( 4 ) : '';
+		$outSep = count( $outValues ) > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

@@ -46,8 +46,8 @@ final class LstUniqFunction extends ListUniqueFunction {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 0 );
-		$inSep = $inList !== '' ? $params->get( 1 ) : '';
+		$inList = $params->get( 'list' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$values = ListUtils::explode( $inSep, $inList );
 
@@ -55,10 +55,10 @@ final class LstUniqFunction extends ListUniqueFunction {
 			return '';
 		}
 
-		$csOption = ListUtils::decodeCSOption( $params->get( 3 ) );
+		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
 		$values = $this->reduceToUniqueValues( $values, $csOption );
 
-		$outSep = count( $values ) > 1 ? $params->get( 2 ) : '';
+		$outSep = count( $values ) > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $values, $outSep );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

@@ -44,8 +44,8 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 0 );
-		$sep = $inList !== '' ? $params->get( 1 ) : '';
+		$inList = $params->get( 'list' );
+		$sep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $inList );
 
@@ -53,7 +53,7 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 			return '0';
 		}
 
-		$csOption = ListUtils::decodeCSOption( $params->get( 2 ) );
+		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
 		$values = $this->reduceToUniqueValues( $values, $csOption );
 
 		return (string)count( $values );
