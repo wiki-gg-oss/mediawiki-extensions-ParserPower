@@ -2081,10 +2081,10 @@ numeric desc: "6!6!4!4!3!3!3!2!1!1"
 "a, b, c, d, e, f, g, h, i, j"
 "a, b, c, d, e, f, g, h, i, j"
 "a, b, c, d, e, f, g, h, i, j"
-"a, b, c, d, e, f, g, h, i, j"
+"a"
 ""
 "x y"
-"a, b, c, d, e, f, g, h, i, j"
+"a"
 "ab, cd, ef, gh, ij"
 </p>
 !! end
