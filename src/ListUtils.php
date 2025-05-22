@@ -51,17 +51,21 @@ final class ListUtils {
 
 	public const PARAM_OPTIONS = [
 		'counttoken' => [ 'unescape' => true ],
+		'csoption' => [],
 		'default' => [ 'unescape' => true ],
 		'duplicates' => [],
 		'fieldsep' => [ 'unescape' => true ],
 		'keep' => [],
 		'keepcs' => [],
 		'keepsep' => [ 'default' => ',' ],
+		'index' => [ 'unescape' => true ],
+		'indexoptions' => [],
 		'indextoken' => [ 'unescape' => true ],
 		'insep' => [ 'unescape' => true, 'default' => ',' ],
 		'insep1' => [ 'unescape' => true, 'default' => ',' ],
 		'insep2' => [ 'unescape' => true, 'default' => ',' ],
 		'intro' => [ 'unescape' => true ],
+		'length' => [ 'unescape' => true ],
 		'list' => [],
 		'list1' => [],
 		'list2' => [],
@@ -77,6 +81,7 @@ final class ListUtils {
 		'removecs' => [],
 		'removesep' => [ 'default' => ',' ],
 		'removecs' => [],
+		'sortmode' => [],
 		'sortoptions' => [],
 		'subsort' => [],
 		'subsortoptions' => [],
@@ -86,6 +91,7 @@ final class ListUtils {
 		'token2' => [ 'unescape' => true ],
 		'tokensep' => [ 'unescape' => true, 'default' => ',' ],
 		'uniquecs' => [],
+		'value' => [ 'unescape' => true ]
 	];
 
 	/**

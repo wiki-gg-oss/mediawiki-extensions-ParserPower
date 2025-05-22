@@ -32,8 +32,8 @@ final class LstSubFunction extends ParserFunctionBase {
 			0 => 'list',
 			1 => 'insep',
 			2 => 'outsep',
-			3 => [ 'unescape' => true ],
-			4 => [ 'unescape' => true ]
+			3 => 'index',
+			4 => 'length'
 		];
 	}
 

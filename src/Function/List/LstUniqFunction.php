@@ -38,7 +38,7 @@ final class LstUniqFunction extends ListUniqueFunction {
 			0 => 'list',
 			1 => 'insep',
 			2 => 'outsep',
-			3 => []
+			3 => 'csoption'
 		];
 	}
 

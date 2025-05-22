@@ -29,10 +29,10 @@ final class LstFndFunction extends ParserFunctionBase {
 	public function getParamSpec(): array {
 		return [
 			...ListUtils::PARAM_OPTIONS,
-			0 => [ 'unescape' => true ],
+			0 => 'value',
 			1 => 'list',
 			2 => 'insep',
-			3 => []
+			3 => 'csoption'
 		];
 	}
 
