@@ -131,23 +131,25 @@ final class ParameterParser {
 
 		if ( !isset( $this->params[$key] ) ) {
 			$value = $options['default'] ?? '';
-		} else {
-			$value = $this->params[$key];
-			if ( is_array( $value ) ) {
-				$value = $this->params[$value['alias']];
-			}
-
-			$flags = 0;
-			if ( $options['unescape'] ?? false ) {
-				$flags |= ParserPower::UNESCAPE;
-			}
-			if ( $options['novars'] ?? false ) {
-				$flags |= ParserPower::NO_VARS;
-			}
-
-			$value = ParserPower::expand( $this->frame, $value, $flags );
+			$this->expandedParams[$key] = $value;
+			return $value;
 		}
 
+		$value = $this->params[$key];
+		if ( is_array( $value ) ) {
+			$options = $this->getOptions( $value['alias'], $extraOptions );
+			$value = $this->params[$value['alias']];
+		}
+
+		$flags = 0;
+		if ( $options['unescape'] ?? false ) {
+			$flags |= ParserPower::UNESCAPE;
+		}
+		if ( $options['novars'] ?? false ) {
+			$flags |= ParserPower::NO_VARS;
+		}
+
+		$value = ParserPower::expand( $this->frame, $value, $flags );
 		$this->expandedParams[$key] = $value;
 		return $value;
 	}
