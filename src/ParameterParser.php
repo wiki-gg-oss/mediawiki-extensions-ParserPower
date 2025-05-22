@@ -104,6 +104,11 @@ final class ParameterParser {
 	 */
 	private function getOptions( int|string $key, array $extraOptions = [] ): array {
 		$options = $this->paramOptions[$key] ?? $this->defaultOptions;
+
+		if ( is_string( $options ) ) {
+			$options = [ 'alias' => $options, ...$this->paramOptions[$options] ];
+		}
+
 		return array_merge( $options, $extraOptions );
 	}
 
