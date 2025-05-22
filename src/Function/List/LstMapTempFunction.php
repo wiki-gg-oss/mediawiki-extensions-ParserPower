@@ -41,7 +41,7 @@ final class LstMapTempFunction extends ListMapFunction {
 			1 => 'template',
 			2 => 'insep',
 			3 => 'outsep',
-			4 => [],
+			4 => 'sortmode',
 			5 => 'sortoptions'
 		];
 	}

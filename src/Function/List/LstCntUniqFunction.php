@@ -36,7 +36,7 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 			...ListUtils::PARAM_OPTIONS,
 			0 => 'list',
 			1 => 'insep',
-			2 => []
+			2 => 'csoption'
 		];
 	}
 

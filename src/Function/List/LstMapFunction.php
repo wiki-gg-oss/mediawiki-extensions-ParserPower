@@ -56,7 +56,7 @@ final class LstMapFunction extends ListMapFunction {
 			2 => [ ...ListUtils::PARAM_OPTIONS['token'], 'alias' => 'token', 'default' => 'x', ...$legacyExpansionFlags ],
 			3 => [ ...ListUtils::PARAM_OPTIONS['pattern'], 'alias' => 'pattern', 'default' => 'x', ...$legacyExpansionFlags ],
 			4 => 'outsep',
-			5 => [],
+			5 => 'sortmode',
 			6 => 'sortoptions'
 		];
 	}

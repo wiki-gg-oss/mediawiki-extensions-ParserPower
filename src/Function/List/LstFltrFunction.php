@@ -41,7 +41,7 @@ final class LstFltrFunction extends ListFilterFunction {
 			2 => 'list',
 			3 => 'insep',
 			4 => 'outsep',
-			5 => []
+			5 => 'csoption'
 		];
 	}
 

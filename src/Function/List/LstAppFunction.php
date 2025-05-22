@@ -31,7 +31,7 @@ final class LstAppFunction extends ParserFunctionBase {
 			...ListUtils::PARAM_OPTIONS,
 			0 => 'list',
 			1 => 'insep',
-			2 => [ 'unescape' => true ]
+			2 => 'value'
 		];
 	}
 

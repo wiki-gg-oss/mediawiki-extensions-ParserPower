@@ -29,7 +29,7 @@ final class LstPrepFunction extends ParserFunctionBase {
 	public function getParamSpec(): array {
 		return [
 			...ListUtils::PARAM_OPTIONS,
-			0 => [ 'unescape' => true ],
+			0 => 'value',
 			1 => 'insep',
 			2 => 'list'
 		];
