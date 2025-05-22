@@ -54,11 +54,12 @@ abstract class ParserFunctionBase implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
+		$paramFlags = 0;
 		if ( $this->allowsNamedParams() ) {
-			$params = ParameterParser::arrange( $frame, $params );
+			$paramFlags |= ParameterParser::ALLOWS_NAMED;
 		}
 
-		$params = new ParameterParser( $frame, $params, $this->getParamSpec(), $this->getDefaultSpec() );
+		$params = new ParameterParser( $frame, $params, $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
 		return $this->execute( $parser, $frame, $params );
 	}
 }

@@ -36,12 +36,13 @@ final class LstMapTempFunction extends ListMapFunction {
 	 */
 	public function getParamSpec(): array {
 		return [
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['template'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['outsep'],
-			[],
-			ListUtils::PARAM_OPTIONS['sortoptions']
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'list',
+			1 => 'template',
+			2 => 'insep',
+			3 => 'outsep',
+			4 => 'sortmode',
+			5 => 'sortoptions'
 		];
 	}
 
@@ -49,8 +50,8 @@ final class LstMapTempFunction extends ListMapFunction {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 0 );
-		$inSep = $inList !== '' ? $params->get( 2 ) : '';
+		$inList = $params->get( 'list' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
@@ -58,10 +59,10 @@ final class LstMapTempFunction extends ListMapFunction {
 			return '';
 		}
 
-		$template = $params->get( 1 );
+		$template = $params->get( 'template' );
 
-		$sortMode = ListUtils::decodeSortMode( $params->get( 4 ) );
-		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 5 ) ) : 0;
+		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
 		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
@@ -75,7 +76,7 @@ final class LstMapTempFunction extends ListMapFunction {
 			$outValues = $sorter->sort( $outValues );
 		}
 
-		$outSep = count( $outValues ) > 1 ? $params->get( 3 ) : '';
+		$outSep = count( $outValues ) > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $outValues, $outSep );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

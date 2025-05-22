@@ -27,8 +27,9 @@ final class LstCntFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep']
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'list',
+			1 => 'insep'
 		];
 	}
 
@@ -36,8 +37,8 @@ final class LstCntFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$list = $params->get( 0 );
-		$sep = $list !== '' ? $params->get( 1 ) : '';
+		$list = $params->get( 'list' );
+		$sep = $list !== '' ? $params->get( 'insep' ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 
 		return (string)count( ListUtils::explode( $sep, $list ) );

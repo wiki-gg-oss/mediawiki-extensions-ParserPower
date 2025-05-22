@@ -28,9 +28,10 @@ final class LstSepFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['outsep']
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'list',
+			1 => 'insep',
+			2 => 'outsep'
 		];
 	}
 
@@ -38,12 +39,12 @@ final class LstSepFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 0 );
-		$inSep = $inList !== '' ? $params->get( 1 ) : '';
+		$inList = $params->get( 'list' );
+		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$values = ListUtils::explode( $inSep, $inList );
 
-		$outSep = count( $values ) > 1 ? $params->get( 2 ) : '';
+		$outSep = count( $values ) > 1 ? $params->get( 'outsep' ) : '';
 		$outList = ListUtils::implode( $values, $outSep );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );

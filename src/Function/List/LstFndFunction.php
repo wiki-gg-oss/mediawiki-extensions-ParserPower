@@ -28,10 +28,11 @@ final class LstFndFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			[ 'unescape' => true ],
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			[]
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'value',
+			1 => 'list',
+			2 => 'insep',
+			3 => 'csoption'
 		];
 	}
 
@@ -39,8 +40,8 @@ final class LstFndFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$list = $params->get( 1 );
-		$sep = $list !== '' ? $params->get( 2 ) : '';
+		$list = $params->get( 'list' );
+		$sep = $list !== '' ? $params->get( 'insep' ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $list );
 
@@ -48,9 +49,9 @@ final class LstFndFunction extends ParserFunctionBase {
 			return '';
 		}
 
-		$item = $params->get( 0 );
+		$item = $params->get( 'value' );
 
-		$csOption = $params->get( 3 );
+		$csOption = $params->get( 'csoption' );
 		$csOption = ListUtils::decodeCSOption( $csOption );
 		if ( $csOption ) {
 			foreach ( $values as $value ) {

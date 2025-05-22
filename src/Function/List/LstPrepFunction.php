@@ -28,9 +28,10 @@ final class LstPrepFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			[ 'unescape' => true ],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['list']
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'value',
+			1 => 'insep',
+			2 => 'list'
 		];
 	}
 
@@ -38,9 +39,9 @@ final class LstPrepFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$value = $params->get( 0 );
-		$list = $params->get( 2 );
-		$sep = $list !== '' ? $params->get( 1 ) : '';
+		$value = $params->get( 'value' );
+		$list = $params->get( 'list' );
+		$sep = $list !== '' ? $params->get( 'insep' ) : '';
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $list );
 
