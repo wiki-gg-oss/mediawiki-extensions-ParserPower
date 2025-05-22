@@ -50,13 +50,14 @@ final class LstMapFunction extends ListMapFunction {
 	public function getParamSpec(): array {
 		$legacyExpansionFlags = $this->useLegacyExpansion ? [ 'novars' => true ] : [];
 		return [
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			array_merge( ListUtils::PARAM_OPTIONS['token'], [ 'default' => 'x' ], $legacyExpansionFlags ),
-			array_merge( ListUtils::PARAM_OPTIONS['pattern'], [ 'default' => 'x' ], $legacyExpansionFlags ),
-			ListUtils::PARAM_OPTIONS['outsep'],
-			[],
-			ListUtils::PARAM_OPTIONS['sortoptions']
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'list',
+			1 => 'insep',
+			2 => [ ...ListUtils::PARAM_OPTIONS['token'], 'alias' => 'token', 'default' => 'x', ...$legacyExpansionFlags ],
+			3 => [ ...ListUtils::PARAM_OPTIONS['pattern'], 'alias' => 'pattern', 'default' => 'x', ...$legacyExpansionFlags ],
+			4 => 'outsep',
+			5 => [],
+			6 => 'sortoptions'
 		];
 	}
 

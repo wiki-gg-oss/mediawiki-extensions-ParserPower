@@ -28,11 +28,12 @@ final class LstSubFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['outsep'],
-			[ 'unescape' => true ],
-			[ 'unescape' => true ]
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'list',
+			1 => 'insep',
+			2 => 'outsep',
+			3 => [ 'unescape' => true ],
+			4 => [ 'unescape' => true ]
 		];
 	}
 
