@@ -35,12 +35,13 @@ final class LstFltrFunction extends ListFilterFunction {
 	 */
 	public function getParamSpec(): array {
 		return [
-			ListUtils::PARAM_OPTIONS['keep'],
-			ListUtils::PARAM_OPTIONS['keepsep'],
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['outsep'],
-			[]
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'keep',
+			1 => 'keepsep',
+			2 => 'list',
+			3 => 'insep',
+			4 => 'outsep',
+			5 => []
 		];
 	}
 

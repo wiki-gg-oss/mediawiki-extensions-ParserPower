@@ -35,11 +35,12 @@ final class LstRmFunction extends ListFilterFunction {
 	 */
 	public function getParamSpec(): array {
 		return [
-			[ 'unescape' => true ],
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['outsep'],
-			[]
+			...ListUtils::PARAM_OPTIONS,
+			0 => [ 'unescape' => true ],
+			1 => 'list',
+			2 => 'insep',
+			3 => 'outsep',
+			4 => []
 		];
 	}
 

@@ -127,7 +127,6 @@ final class ParameterParser {
 		$options = $this->getOptions( $key, $extraOptions );
 		if ( isset( $options['alias'] ) ) {
 			$key = $options['alias'];
-			$options = $this->getOptions( $options['alias'], $extraOptions );
 		}
 
 		if ( !isset( $this->params[$key] ) ) {

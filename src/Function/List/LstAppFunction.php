@@ -28,9 +28,10 @@ final class LstAppFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			[ 'unescape' => true ]
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'list',
+			1 => 'insep',
+			2 => [ 'unescape' => true ]
 		];
 	}
 

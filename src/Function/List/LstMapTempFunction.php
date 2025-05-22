@@ -36,12 +36,13 @@ final class LstMapTempFunction extends ListMapFunction {
 	 */
 	public function getParamSpec(): array {
 		return [
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['template'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['outsep'],
-			[],
-			ListUtils::PARAM_OPTIONS['sortoptions']
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'list',
+			1 => 'template',
+			2 => 'insep',
+			3 => 'outsep',
+			4 => [],
+			5 => 'sortoptions'
 		];
 	}
 

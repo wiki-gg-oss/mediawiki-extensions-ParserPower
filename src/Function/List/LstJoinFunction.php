@@ -28,11 +28,12 @@ final class LstJoinFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['list'],
-			ListUtils::PARAM_OPTIONS['insep'],
-			ListUtils::PARAM_OPTIONS['outsep']
+			...ListUtils::PARAM_OPTIONS,
+			0 => 'list1',
+			1 => 'insep1',
+			2 => 'list2',
+			3 => 'insep2',
+			4 => 'outsep'
 		];
 	}
 
