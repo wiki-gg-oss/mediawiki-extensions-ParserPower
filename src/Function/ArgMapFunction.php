@@ -4,12 +4,24 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
 
-final class ArgMapFunction implements ParserFunction {
+final class ArgMapFunction extends ParserFunctionBase {
+
+	/**
+	 * Parsing and post-processing options for #argmap-based function parameters.
+	 */
+	public const PARAM_OPTIONS = [
+		'formatter' => [],
+		'glue' => [ 'default' => ', ' ],
+		'mustcontain' => [],
+		'n' => [],
+		'onlyshow' => []
+	];
 
 	/**
 	 * @inheritDoc
@@ -21,16 +33,29 @@ final class ArgMapFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $args ): string {
-		if ( !isset( $args[0] ) ) {
+	public function getParamSpec(): array {
+		return [
+			...self::PARAM_OPTIONS,
+			0 => 'formatter',
+			1 => 'glue',
+			2 => 'mustcontain',
+			3 => 'onlyshow'
+		];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
+		if ( !$params->isDefined( 'formatter' ) ) {
 			return ParserPower::errorMessage( 'argmap', 'missing-parameter', 'formatter' );
 		}
 
 		// set parameters
-		$formatter = trim( $frame->expand( $args[0] ) );
-		$glue = isset( $args[1] ) ? trim( $frame->expand( $args[1] ) ) : ', ';
-		$mustContainString = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
-		$onlyShowString = isset( $args[3] ) ? trim( $frame->expand( $args[3] ) ) : '';
+		$formatter = $params->get( 'formatter' );
+		$glue = $params->get( 'glue' );
+		$mustContainString = $params->get( 'mustcontain' );
+		$onlyShowString = $params->get( 'onlyshow' );
 		$formatterArgs = $frame->getNamedArguments();
 
 		// make arrays

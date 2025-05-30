@@ -4,12 +4,13 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode_Hash_Array;
 
-final class IArgMapFunction implements ParserFunction {
+final class IArgMapFunction extends ParserFunctionBase {
 
 	/**
 	 * @inheritDoc
@@ -21,18 +22,30 @@ final class IArgMapFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $args ): string {
-		if ( !isset( $args[0] ) ) {
+	public function getParamSpec(): array {
+		return [
+			...ArgMapFunction::PARAM_OPTIONS,
+			0 => 'formatter',
+			1 => 'n',
+			2 => 'glue'
+		];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
+		if ( !$params->isDefined( 'formatter' ) ) {
 			return ParserPower::errorMessage( 'iargmap', 'missing-parameter', 'formatter' );
 		}
-		if ( !isset( $args[1] ) ) {
+		if ( !$params->isDefined( 'n' ) ) {
 			return ParserPower::errorMessage( 'iargmap', 'missing-parameter', 'n' );
 		}
 
 		// set parameters
-		$formatter = trim( $frame->expand( $args[0] ) );
-		$numberOfArgumentsPerFormatter = trim( $frame->expand( $args[1] ) );
-		$glue = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : ', ';
+		$formatter = $params->get( 'formatter' );
+		$numberOfArgumentsPerFormatter = $params->get( 'n' );
+		$glue = $params->get( 'glue' );
 		$allFormatterArgs = $frame->getNumberedArguments();
 
 		// check against bad entries
