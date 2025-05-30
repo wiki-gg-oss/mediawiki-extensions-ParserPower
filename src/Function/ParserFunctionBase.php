@@ -69,7 +69,7 @@ abstract class ParserFunctionBase implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = $this->paramsFactory->newParameterParser( $frame, $params );
+		$params = $this->paramsFactory->newParameterParser( $parser, $frame, $params );
 		return $this->execute( $parser, $frame, $params );
 	}
 }

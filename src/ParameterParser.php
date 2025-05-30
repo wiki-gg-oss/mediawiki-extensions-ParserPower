@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
+use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
 /**
@@ -36,6 +37,7 @@ final class ParameterParser {
 	private array $expandedParams = [];
 
 	/**
+	 * @param Parser $parser Parser object.
 	 * @param PPFrame $frame Parser frame object.
 	 * @param array $rawParams Unexpanded parameters.
 	 * @param array $paramOptions Parsing and post-processing options for all parameters.
@@ -43,6 +45,7 @@ final class ParameterParser {
 	 * @param int $flags Parameter parser flags.
 	 */
 	public function __construct(
+		private readonly Parser $parser,
 		private readonly PPFrame $frame,
 		private array $rawParams,
 		private array $paramOptions = [],

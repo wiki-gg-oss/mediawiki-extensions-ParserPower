@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
+use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
 /**
@@ -38,11 +39,12 @@ final class ParameterParserFactory {
 	/**
 	 * Create a parameter parser.
 	 *
+	 * @param Parser $parser Parser object.
 	 * @param PPFrame $frame Parser frame object.
 	 * @param array $rawParams Unexpanded parameters.
 	 * @return ParameterParser A parameter parser.
 	 */
-	public function newParameterParser( PPFrame $frame, array $rawParams ): ParameterParser {
-		return new ParameterParser( $frame, $rawParams, $this->paramOptions, $this->defaultOptions, $this->flags );
+	public function newParameterParser( Parser $parser, PPFrame $frame, array $rawParams ): ParameterParser {
+		return new ParameterParser( $parser, $frame, $rawParams, $this->paramOptions, $this->defaultOptions, $this->flags );
 	}
 }
