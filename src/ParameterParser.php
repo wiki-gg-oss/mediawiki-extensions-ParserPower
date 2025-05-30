@@ -84,6 +84,10 @@ final class ParameterParser {
 				$key = $options['alias'];
 			}
 
+			if ( isset( $this->params[$key] ) ) {
+				$parser->addTrackingCategory( 'parserpower-duplicate-args-category' );
+			}
+
 			$this->params[$key] = $value;
 		}
 	}
