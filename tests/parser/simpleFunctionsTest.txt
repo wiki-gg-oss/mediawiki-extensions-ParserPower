@@ -326,55 +326,66 @@ Target#X Target Target#Section
 !! end
 
 !! test
+{{#argmap}} formatter
+!! wikitext
+"{{uesc | <esc>{{#argmap: | x1 = a }}</esc> }}"
+"{{uesc | <esc>{{#argmap: unknown | x1 = a }}</esc> }}"
+"{{uesc | <esc>{{#argmap: argmap | x1 = a }}</esc> }}"
+!! html/php
+<p>""
+""
+""
+</p>
+!! end
+
+!! test
 {{#argmap}} args
 !! wikitext
-"{{uesc | <esc>{{#argmap: }}</esc> }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | x1 = }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | x1 = a }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | y1 = }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | y1 = a }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = a }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | x1 = a | y1 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | y1 = b }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | y1 = a | x1 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = a | x1 = b }}"
+"{{uesc | <esc>{{#argmap: argmap }}</esc> }}"
+x1=: "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = }}"
+x1=a: "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a }}"
+y1=: "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = }}"
+y1=a: "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = a }}"
+x1=a|y1=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | y1 = b }}"
+y1=a|x1=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | y1 = a | x1 = b }}"
 !! html/php
-<p>"" ""
-"{{|x=}}" "!!{{{y}}}!"
-"{{|x=a}}" "a!a!{{{y}}}!"
-"{{|y=}}" "{{{x}}}!!!"
-"{{|y=a}}" "{{{x}}}!!a!a"
-"{{|x=a|y=b}}" "a!a!b!b"
-"{{|y=a|x=b}}" "b!b!a!a"
+<p>""
+x1=: "!!{{{y}}}!"
+x1=a: "a!a!{{{y}}}!"
+y1=: "{{{x}}}!!!"
+y1=a: "{{{x}}}!!a!a"
+x1=a|y1=b: "a!a!b!b"
+y1=a|x1=b: "b!b!a!a"
 </p>
 !! end
 
 !! test
 {{#argmap}} position
 !! wikitext
-"{{uesc | <esc>{{#argmap: }}</esc> | x = a | x = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x = a | x = b }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | x1 = a | x2 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | x2 = b }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | x1 = a | 2x = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | 2x = b }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | 1x = a | 2x = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | 1x = a | 2x = b }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | x2 = a | x1 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | x2 = a | x1 = b }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | 2x = a | x1 = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | 2x = a | x1 = b }}"
-"{{uesc | <esc>{{#argmap: }}</esc> | 2x = a | 1x = b }}" "{{uesc | <esc>{{#argmap: argmap }}</esc> | 2x = a | 1x = b }}"
+x=a|x=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | x = a | x = b }}"
+x1=a|x2=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | x2 = b }}"
+x1=a|2x=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | x1 = a | 2x = b }}"
+1x=a|2x=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | 1x = a | 2x = b }}"
+x2=a|x1=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | x2 = a | x1 = b }}"
+2x=a|x1=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | 2x = a | x1 = b }}"
+2x=a|1x=b: "{{uesc | <esc>{{#argmap: argmap }}</esc> | 2x = a | 1x = b }}"
 !! html/php
-<p>"" ""
-"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
-"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
-"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
-"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
-"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
-"{{|x=a}}, {{|x=b}}" "a!a!{{{y}}}!, b!b!{{{y}}}!"
+<p>x=a|x=b: ""
+x1=a|x2=b: "a!a!{{{y}}}!, b!b!{{{y}}}!"
+x1=a|2x=b: "a!a!{{{y}}}!, b!b!{{{y}}}!"
+1x=a|2x=b: "a!a!{{{y}}}!, b!b!{{{y}}}!"
+x2=a|x1=b: "a!a!{{{y}}}!, b!b!{{{y}}}!"
+2x=a|x1=b: "a!a!{{{y}}}!, b!b!{{{y}}}!"
+2x=a|1x=b: "a!a!{{{y}}}!, b!b!{{{y}}}!"
 </p>
 !! end
 
 !! test
 {{#argmap}} numbering
 !! wikitext
-"{{uesc | <esc>{{#argmap: }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
 "{{uesc | <esc>{{#argmap: argmap }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
 !! html/php
-<p>"{{|x=0}}, {{|x=1}}, {{|x=2}}, {{|x=1000}}"
-"0!0!{{{y}}}!, 1!1!{{{y}}}!, 2!2!{{{y}}}!, 1000!1000!{{{y}}}!"
+<p>"0!0!{{{y}}}!, 1!1!{{{y}}}!, 2!2!{{{y}}}!, 1000!1000!{{{y}}}!"
 </p>
 !! end
 
@@ -398,18 +409,18 @@ Target#X Target Target#Section
 {{#argmap}} mustcontain
 !! wikitext
 "{{uesc | <esc>{{#argmap: argmap | , | }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | x }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | x, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | y, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | x,y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+x: "{{uesc | <esc>{{#argmap: argmap | , | x }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+x,: "{{uesc | <esc>{{#argmap: argmap | , | x, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+y: "{{uesc | <esc>{{#argmap: argmap | , | y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+y,: "{{uesc | <esc>{{#argmap: argmap | , | y, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+x,y: "{{uesc | <esc>{{#argmap: argmap | , | x,y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
 !! html/php
 <p>"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
-"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
-""
-""
-""
-""
+x: "0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+x,: ""
+y: ""
+y,: ""
+x,y: ""
 </p>
 !! end
 
@@ -417,43 +428,43 @@ Target#X Target Target#Section
 {{#argmap}} onlyshow
 !! wikitext
 "{{uesc | <esc>{{#argmap: argmap | , | | }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | | x }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | | x, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | | y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | | y, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
-"{{uesc | <esc>{{#argmap: argmap | , | | x,y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+x: "{{uesc | <esc>{{#argmap: argmap | , | | x }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+x,: "{{uesc | <esc>{{#argmap: argmap | , | | x, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+y: "{{uesc | <esc>{{#argmap: argmap | , | | y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+y,: "{{uesc | <esc>{{#argmap: argmap | , | | y, }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
+x,y: "{{uesc | <esc>{{#argmap: argmap | , | | x,y }}</esc> | x0 = 0 | x1 = 1 | x2 = 2 | x1000 = 1000 }}"
 !! html/php
 <p>"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
-"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
-"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
-""
-""
-"0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+x: "0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+x,: "0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
+y: ""
+y,: ""
+x,y: "0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
 </p>
 !! end
 
 !! test
 {{#iargmap}} args
 !! wikitext
-"{{uesc | v = <esc>{{#iargmap: }}</esc> }}" "{{uesc | v = <esc>{{#iargmap: iargmap }}</esc> }}"
-"{{uesc | v = <esc>{{#iargmap: | }}</esc> }}" "{{uesc | v = <esc>{{#iargmap: iargmap | }}</esc> }}"
-"{{uesc | v = <esc>{{#iargmap: | }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | }}</esc> | a | b | c | d }}"
-"{{uesc | v = <esc>{{#iargmap: | 1x }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 1x }}</esc> | a | b | c | d }}"
-"{{uesc | v = <esc>{{#iargmap: | 1 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 1 }}</esc> | a | b | c | d }}"
-"{{uesc | v = <esc>{{#iargmap: | 2 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 2 }}</esc> | a | b | c | d }}"
-"{{uesc | v = <esc>{{#iargmap: | 3 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 3 }}</esc> | a | b | c | d }}"
-"{{uesc | v = <esc>{{#iargmap: | 4 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 4 }}</esc> | a | b | c | d }}"
-"{{uesc | v = <esc>{{#iargmap: | 5 }}</esc> | a | b | c | d }}" "{{uesc | v = <esc>{{#iargmap: iargmap | 5 }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: iargmap }}</esc> }}"
+"{{uesc | v = <esc>{{#iargmap: iargmap | }}</esc> }}"
+"{{uesc | v = <esc>{{#iargmap: iargmap | }}</esc> | a | b | c | d }}"
+"{{uesc | v = <esc>{{#iargmap: iargmap | 1x }}</esc> | a | b | c | d }}"
+1: "{{uesc | v = <esc>{{#iargmap: iargmap | 1 }}</esc> | a | b | c | d }}"
+2: "{{uesc | v = <esc>{{#iargmap: iargmap | 2 }}</esc> | a | b | c | d }}"
+3: "{{uesc | v = <esc>{{#iargmap: iargmap | 3 }}</esc> | a | b | c | d }}"
+4: "{{uesc | v = <esc>{{#iargmap: iargmap | 4 }}</esc> | a | b | c | d }}"
+5: "{{uesc | v = <esc>{{#iargmap: iargmap | 5 }}</esc> | a | b | c | d }}"
 !! html/php
-<p>"<strong class="error">iargmap error: The parameter "n" is required.</strong>" "<strong class="error">iargmap error: The parameter "n" is required.</strong>"
-"<strong class="error">iargmap error: No formatter arguments were given.</strong>" "<strong class="error">iargmap error: No formatter arguments were given.</strong>"
-"<strong class="error">iargmap error: "n" must be an integer.</strong>" "<strong class="error">iargmap error: "n" must be an integer.</strong>"
-"<strong class="error">iargmap error: "n" must be an integer.</strong>" "<strong class="error">iargmap error: "n" must be an integer.</strong>"
-"{{|a}}, {{|b}}, {{|c}}, {{|d}}" "a!a!{{{2}}}!, b!b!{{{2}}}!, c!c!{{{2}}}!, d!d!{{{2}}}!"
-"{{|a|b}}, {{|c|d}}" "a!a!b!b, c!c!d!d"
-"<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>" "<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>"
-"{{|a|b|c|d}}" "a!a!b!b"
-"<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>" "<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>"
+<p>"<strong class="error">iargmap error: The parameter "n" is required.</strong>"
+"<strong class="error">iargmap error: "n" must be an integer.</strong>"
+"<strong class="error">iargmap error: "n" must be an integer.</strong>"
+"<strong class="error">iargmap error: "n" must be an integer.</strong>"
+1: "a!a!{{{2}}}!, b!b!{{{2}}}!, c!c!{{{2}}}!, d!d!{{{2}}}!"
+2: "a!a!b!b, c!c!d!d"
+3: "<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>"
+4: "a!a!b!b"
+5: "<strong class="error">iargmap error: The number of given formatter arguments must be divisible by "n".</strong>"
 </p>
 !! end
 
