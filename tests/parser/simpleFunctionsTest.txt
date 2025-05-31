@@ -332,7 +332,7 @@ Target#X Target Target#Section
 "{{uesc | <esc>{{#argmap: unknown | x1 = a }}</esc> }}"
 "{{uesc | <esc>{{#argmap: argmap | x1 = a }}</esc> }}"
 !! html/php
-<p>""
+<p>"<strong class="error">argmap error: The parameter "formatter" is required.</strong>"
 ""
 ""
 </p>
@@ -457,8 +457,8 @@ x,y: "0!0!{{{y}}}!,1!1!{{{y}}}!,2!2!{{{y}}}!,1000!1000!{{{y}}}!"
 5: "{{uesc | v = <esc>{{#iargmap: iargmap | 5 }}</esc> | a | b | c | d }}"
 !! html/php
 <p>"<strong class="error">iargmap error: The parameter "n" is required.</strong>"
-"<strong class="error">iargmap error: "n" must be an integer.</strong>"
-"<strong class="error">iargmap error: "n" must be an integer.</strong>"
+"<strong class="error">iargmap error: The parameter "n" is required.</strong>"
+"<strong class="error">iargmap error: The parameter "n" is required.</strong>"
 "<strong class="error">iargmap error: "n" must be an integer.</strong>"
 1: "a!a!{{{2}}}!, b!b!{{{2}}}!, c!c!{{{2}}}!, d!d!{{{2}}}!"
 2: "a!a!b!b, c!c!d!d"

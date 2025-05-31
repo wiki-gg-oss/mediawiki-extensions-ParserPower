@@ -47,26 +47,21 @@ final class ArgMapFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		if ( !$params->isDefined( 'formatter' ) ) {
+		// set parameters
+		$formatter = $params->get( 'formatter' );
+		if ( $formatter === '' ) {
 			return ParserPower::errorMessage( 'argmap', 'missing-parameter', 'formatter' );
 		}
 
-		// set parameters
-		$formatter = $params->get( 'formatter' );
 		$glue = $params->get( 'glue' );
-		$mustContainString = $params->get( 'mustcontain' );
-		$onlyShowString = $params->get( 'onlyshow' );
-		$formatterArgs = $frame->getNamedArguments();
 
-		// make arrays
-		$mustContain = [];
-		$onlyShow = [];
-		if ( $mustContainString !== '' ) {
-			$mustContain = explode( ',', $mustContainString );
-		}
-		if ( $onlyShowString !== '' ) {
-			$onlyShow = explode( ',', $onlyShowString );
-		}
+		$mustContainString = $params->get( 'mustcontain' );
+		$mustContain = $mustContainString !== '' ? explode( ',', $mustContainString ) : [];
+
+		$onlyShowString = $params->get( 'onlyshow' );
+		$onlyShow = $onlyShowString !== '' ? explode( ',', $onlyShowString ) : [];
+
+		$formatterArgs = $frame->getNamedArguments();
 
 		// group formatter arguments to groupedFormatterArgs array, if viable
 		$groupedFormatterArgs = [];
