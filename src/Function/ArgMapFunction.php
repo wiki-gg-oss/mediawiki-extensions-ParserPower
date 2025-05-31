@@ -4,12 +4,24 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Parser\PPNode_Hash_Array;
 
-final class ArgMapFunction implements ParserFunction {
+final class ArgMapFunction extends ParserFunctionBase {
+
+	/**
+	 * Parsing and post-processing options for #argmap-based function parameters.
+	 */
+	public const PARAM_OPTIONS = [
+		'formatter' => [],
+		'glue' => [ 'default' => ', ' ],
+		'mustcontain' => [],
+		'n' => [],
+		'onlyshow' => []
+	];
 
 	/**
 	 * @inheritDoc
@@ -21,27 +33,35 @@ final class ArgMapFunction implements ParserFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function render( Parser $parser, PPFrame $frame, array $args ): string {
-		if ( !isset( $args[0] ) ) {
+	public function getParamSpec(): array {
+		return [
+			...self::PARAM_OPTIONS,
+			0 => 'formatter',
+			1 => 'glue',
+			2 => 'mustcontain',
+			3 => 'onlyshow'
+		];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
+		// set parameters
+		$formatter = $params->get( 'formatter' );
+		if ( $formatter === '' ) {
 			return ParserPower::errorMessage( 'argmap', 'missing-parameter', 'formatter' );
 		}
 
-		// set parameters
-		$formatter = trim( $frame->expand( $args[0] ) );
-		$glue = isset( $args[1] ) ? trim( $frame->expand( $args[1] ) ) : ', ';
-		$mustContainString = isset( $args[2] ) ? trim( $frame->expand( $args[2] ) ) : '';
-		$onlyShowString = isset( $args[3] ) ? trim( $frame->expand( $args[3] ) ) : '';
-		$formatterArgs = $frame->getNamedArguments();
+		$glue = $params->get( 'glue' );
 
-		// make arrays
-		$mustContain = [];
-		$onlyShow = [];
-		if ( $mustContainString !== '' ) {
-			$mustContain = explode( ',', $mustContainString );
-		}
-		if ( $onlyShowString !== '' ) {
-			$onlyShow = explode( ',', $onlyShowString );
-		}
+		$mustContainString = $params->get( 'mustcontain' );
+		$mustContain = $mustContainString !== '' ? explode( ',', $mustContainString ) : [];
+
+		$onlyShowString = $params->get( 'onlyshow' );
+		$onlyShow = $onlyShowString !== '' ? explode( ',', $onlyShowString ) : [];
+
+		$formatterArgs = $frame->getNamedArguments();
 
 		// group formatter arguments to groupedFormatterArgs array, if viable
 		$groupedFormatterArgs = [];
@@ -59,37 +79,27 @@ final class ArgMapFunction implements ParserFunction {
 		}
 
 		// write formatter calls, if viable
+		$operation = new TemplateOperation( $parser, $frame, $formatter );
 		$formatterCalls = [];
-		foreach ( $groupedFormatterArgs as $formatterArg ) {
+		foreach ( $groupedFormatterArgs as $formatterArgs ) {
 			// check if there are missing arguments
-			$missingArgs = array_diff( $mustContain, array_keys( $formatterArg ) );
+			$missingArgs = array_diff( $mustContain, array_keys( $formatterArgs ) );
 			if ( !empty( $missingArgs ) ) {
 				continue;
 			}
 
 			// process individual args and filter for onlyShow
-			$processedFormatterArg = [];
-			foreach ( $formatterArg as $key => $value ) {
-				if ( empty( $onlyShow ) || in_array( $key, $onlyShow ) ) {
-					$processedFormatterArg[] = "$key=$value";
-				}
+			if ( !empty( $onlyShow ) ) {
+				$formatterArgs = array_filter( $formatterArgs, fn ( $k ) => in_array( $k, $onlyShow ), ARRAY_FILTER_USE_KEY );
 			}
 
 			// discard if nothing remains
-			if ( empty( $processedFormatterArg ) ) {
+			if ( empty( $formatterArgs ) ) {
 				continue;
 			}
 
-			// construct final formatter call
-			$val = implode( '|', $processedFormatterArg );
-			$formatterCall = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
-			if ( $formatterCall instanceof PPNode_Hash_Array ) {
-				$formatterCall = $formatterCall->value;
-			}
-			$formatterCall = implode( '', $formatterCall );
-
 			// parse formatter call
-			$formatterCalls[] = trim( $parser->replaceVariables( $formatterCall, $frame ) );
+			$formatterCalls[] = trim( $operation->apply( $formatterArgs ) );
 		}
 
 		// proper '\n' handling

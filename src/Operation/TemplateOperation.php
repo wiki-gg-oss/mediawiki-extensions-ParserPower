@@ -7,9 +7,10 @@ namespace MediaWiki\Extension\ParserPower\Operation;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
+use MediaWiki\Parser\PPNode;
 
 /**
- * List value operation that transcludes a template, passing the list value fields as indexed parameters.
+ * List value operation that transcludes a template, passing the list value fields as parameters.
  */
 final class TemplateOperation implements WikitextOperation {
 
@@ -30,12 +31,16 @@ final class TemplateOperation implements WikitextOperation {
 	 */
 	public function apply( array $fields, ?int $index = null ): string {
 		if ( $this->template === '' ) {
-			return $fields[0];
+			return $fields[0] ?? '';
 		}
 
 		$result = '{{' . $this->template;
 		foreach ( $fields as $i => $value ) {
-			$result .= '|' . ( $i + 1 ) . '=' . $value;
+			$key = is_int( $i ) ? (string)( $i + 1 ) : $i;
+			if ( $value instanceof PPNode ) {
+				$value = $this->frame->expand( $value, PPFrame::RECOVER_ORIG );
+			}
+			$result .= '|' . $key . '=' . $value;
 		}
 		if ( $index !== null ) {
 			$result .= '|index=' . $index;
