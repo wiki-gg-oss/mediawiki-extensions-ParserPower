@@ -4,11 +4,11 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Parser\PPNode_Hash_Array;
 
 final class IArgMapFunction extends ParserFunctionBase {
 
@@ -65,22 +65,16 @@ final class IArgMapFunction extends ParserFunctionBase {
 		$glue = $params->get( 'glue' );
 
 		// write formatter calls
+		$operation = new TemplateOperation( $parser, $frame, $formatter );
 		$formatterCalls = [];
 		for ( $i = 0; $i < $imax; $i++ ) {
 			$formatterArgs = [];
 			for ( $n = 0; $n < $numberOfArgumentsPerFormatter; $n++ ) {
-				$formatterArgs[] = trim( $frame->expand( $allFormatterArgs[ $i * $numberOfArgumentsPerFormatter + $n + 1] ) );
+				$formatterArgs[] = $allFormatterArgs[$i * $numberOfArgumentsPerFormatter + $n + 1];
 			}
-
-			$val = implode( '|', $formatterArgs );
-			$formatterCall = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
-			if ( $formatterCall instanceof PPNode_Hash_Array ) {
-				$formatterCall = $formatterCall->value;
-			}
-			$formatterCall = implode( '', $formatterCall );
 
 			// parse formatter call
-			$formatterCalls[] = trim( $parser->replaceVariables( $formatterCall, $frame ) );
+			$formatterCalls[] = trim( $operation->apply( $formatterArgs ) );
 		}
 
 		// proper '\n' handling

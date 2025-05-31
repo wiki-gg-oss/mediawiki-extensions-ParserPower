@@ -4,11 +4,11 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Parser\PPNode_Hash_Array;
 
 final class ArgMapFunction extends ParserFunctionBase {
 
@@ -79,37 +79,27 @@ final class ArgMapFunction extends ParserFunctionBase {
 		}
 
 		// write formatter calls, if viable
+		$operation = new TemplateOperation( $parser, $frame, $formatter );
 		$formatterCalls = [];
-		foreach ( $groupedFormatterArgs as $formatterArg ) {
+		foreach ( $groupedFormatterArgs as $formatterArgs ) {
 			// check if there are missing arguments
-			$missingArgs = array_diff( $mustContain, array_keys( $formatterArg ) );
+			$missingArgs = array_diff( $mustContain, array_keys( $formatterArgs ) );
 			if ( !empty( $missingArgs ) ) {
 				continue;
 			}
 
 			// process individual args and filter for onlyShow
-			$processedFormatterArg = [];
-			foreach ( $formatterArg as $key => $value ) {
-				if ( empty( $onlyShow ) || in_array( $key, $onlyShow ) ) {
-					$processedFormatterArg[] = "$key=$value";
-				}
+			if ( !empty( $onlyShow ) ) {
+				$formatterArgs = array_filter( $formatterArgs, fn ( $k ) => in_array( $k, $onlyShow ), ARRAY_FILTER_USE_KEY );
 			}
 
 			// discard if nothing remains
-			if ( empty( $processedFormatterArg ) ) {
+			if ( empty( $formatterArgs ) ) {
 				continue;
 			}
 
-			// construct final formatter call
-			$val = implode( '|', $processedFormatterArg );
-			$formatterCall = $frame->virtualBracketedImplode( '{{', '|', '}}', $formatter, $val );
-			if ( $formatterCall instanceof PPNode_Hash_Array ) {
-				$formatterCall = $formatterCall->value;
-			}
-			$formatterCall = implode( '', $formatterCall );
-
 			// parse formatter call
-			$formatterCalls[] = trim( $parser->replaceVariables( $formatterCall, $frame ) );
+			$formatterCalls[] = trim( $operation->apply( $formatterArgs ) );
 		}
 
 		// proper '\n' handling
