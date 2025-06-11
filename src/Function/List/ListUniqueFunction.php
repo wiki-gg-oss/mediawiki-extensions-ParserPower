@@ -89,6 +89,7 @@ class ListUniqueFunction extends ParserFunctionBase {
 	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
 		$inList = $params->get( 'list' );
 		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
+		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
 		if ( count( $inValues ) === 0 ) {
