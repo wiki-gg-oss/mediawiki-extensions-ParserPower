@@ -23,8 +23,7 @@ abstract class ParserFunctionBase implements ParserFunction {
 			$paramFlags |= ParameterParser::ALLOWS_NAMED;
 		}
 
-		$this->paramsFactory = MediaWikiServices::getInstance()->getService( 'ParserPower.ParameterParserFactory' )
-			->withOptions( $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
+		$this->paramsFactory = new ParameterParserFactory( $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
 	}
 
 	/**

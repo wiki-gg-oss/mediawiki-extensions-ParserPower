@@ -25,18 +25,6 @@ final class ParameterParserFactory {
 	}
 
 	/**
-	 * Returns a new factory using different options.
-	 *
-	 * @param array $paramOptions Parsing and post-processing options for all parameters.
-	 * @param array $defaultOptions Parsing and post-processing options for unknown parameters.
-	 * @param int $flags Parameter parser flags.
-	 * @return ParameterParserFactory The new factory.
-	 */
-	public function withOptions( array $paramOptions, array $defaultOptions = [], int $flags = 0 ): ParameterParserFactory {
-		return new ParameterParserFactory( $paramOptions, $defaultOptions, $flags );
-	}
-
-	/**
 	 * Create a parameter parser.
 	 *
 	 * @param Parser $parser Parser object.
