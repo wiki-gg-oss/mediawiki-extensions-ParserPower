@@ -15,17 +15,16 @@ use MediaWiki\Parser\PPFrame;
  */
 abstract class ParserFunctionBase implements ParserFunction {
 
-	private ParameterParserFactory $paramsFactory;
+	private readonly ParameterParserFactory $paramsFactory;
 
 	public function __construct() {
-		$this->paramsFactory = MediaWikiServices::getInstance()->getService( 'ParserPower.ParameterParserFactory' );
-
 		$paramFlags = 0;
 		if ( $this->allowsNamedParams() ) {
 			$paramFlags |= ParameterParser::ALLOWS_NAMED;
 		}
 
-		$this->paramsFactory = $this->paramsFactory->withOptions( $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
+		$this->paramsFactory = MediaWikiServices::getInstance()->getService( 'ParserPower.ParameterParserFactory' )
+			->withOptions( $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
 	}
 
 	/**
