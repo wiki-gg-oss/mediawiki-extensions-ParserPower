@@ -20,6 +20,10 @@ Add new entries to the top of the 1.x.x-NEXT section.
 * List functions now evaluate most of their parameters lazily. Parameter evaluation order may have changed, and side effects may no longer be applied inside unused parameters.
 * `#listmerge` no longer ignores `mergetemplate` or `matchtemplate` if the other one is unspecified.
 * Added `parserpower-duplicate-args-category` system message. It defines a tracking category added to pages using ParserPower parser functions with a same numbered and/or named parameter defined multiple times.
+* `#listunique` now removes `nowiki` strip markers from its `insep` parameter.
+* Added `parserpower-error` system message for parser function error message formatting, along with one sub-message per error type.
+* `#argmap` and `#iargmap` now return an error if their formatter or n parameter is specified but empty.
+* Fixed `#argmap` and `#iargmap` evaluating frame arguments twice before passing them to the formatter.
 * …
 
 ### 1.6.1 (2025-04-27)

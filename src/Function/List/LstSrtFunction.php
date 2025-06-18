@@ -42,27 +42,4 @@ final class LstSrtFunction extends ListSortFunction {
 			3 => 'sortoptions'
 		];
 	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 'list' );
-		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$values = ListUtils::explode( $inSep, $inList );
-
-		if ( count( $values ) === 0 ) {
-			return '';
-		}
-
-		$sortOptions = ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) );
-		$sorter = new ListSorter( $sortOptions );
-		$values = $sorter->sort( $values );
-
-		$outSep = count( $values ) > 1 ? $params->get( 'outsep' ) : '';
-		$outList = ListUtils::implode( $values, $outSep );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
-	}
 }

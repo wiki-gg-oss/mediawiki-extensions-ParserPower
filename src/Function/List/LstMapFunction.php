@@ -66,41 +66,4 @@ final class LstMapFunction extends ListMapFunction {
 
 		return $paramSpec;
 	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
-		$inList = $params->get( 'list' );
-		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$inValues = ListUtils::explode( $inSep, $inList );
-
-		if ( count( $inValues ) === 0 ) {
-			return '';
-		}
-
-		$token = $params->get( 'token' );
-		$pattern = $params->get( 'pattern' );
-
-		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
-		$sorter = new ListSorter( $sortOptions );
-
-		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
-			$inValues = $sorter->sort( $inValues );
-		}
-
-		$operation = new PatternOperation( $parser, $frame, $pattern, [ $token ] );
-		$outValues = $this->mapList( $operation, false, $inValues, '' );
-
-		if ( $sortMode & ( ListUtils::SORTMODE_COMPAT | ListUtils::SORTMODE_POST ) ) {
-			$outValues = $sorter->sort( $outValues );
-		}
-
-		$outSep = count( $outValues ) > 1 ? $params->get( 'outsep' ) : '';
-		$outList = ListUtils::implode( $outValues, $outSep );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
-	}
 }
