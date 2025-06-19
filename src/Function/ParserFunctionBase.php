@@ -5,6 +5,8 @@
 namespace MediaWiki\Extension\ParserPower\Function;
 
 use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\ParameterParserFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
@@ -12,6 +14,17 @@ use MediaWiki\Parser\PPFrame;
  * Parser function, using a ParameterParser to manage its parameters.
  */
 abstract class ParserFunctionBase implements ParserFunction {
+
+	private readonly ParameterParserFactory $paramsFactory;
+
+	public function __construct() {
+		$paramFlags = 0;
+		if ( $this->allowsNamedParams() ) {
+			$paramFlags |= ParameterParser::ALLOWS_NAMED;
+		}
+
+		$this->paramsFactory = new ParameterParserFactory( $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
+	}
 
 	/**
 	 * Whether named parameters are recognized, along with numbered parameters.
@@ -54,12 +67,7 @@ abstract class ParserFunctionBase implements ParserFunction {
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$paramFlags = 0;
-		if ( $this->allowsNamedParams() ) {
-			$paramFlags |= ParameterParser::ALLOWS_NAMED;
-		}
-
-		$params = new ParameterParser( $frame, $params, $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
+		$params = $this->paramsFactory->newParameterParser( $parser, $frame, $params );
 		return $this->execute( $parser, $frame, $params );
 	}
 }

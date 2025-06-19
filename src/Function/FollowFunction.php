@@ -21,6 +21,7 @@ final class FollowFunction extends ParserFunctionBase {
 	public function __construct(
 		private readonly RedirectLookup $redirectLookup
 	) {
+		parent::__construct();
 	}
 
 	/**

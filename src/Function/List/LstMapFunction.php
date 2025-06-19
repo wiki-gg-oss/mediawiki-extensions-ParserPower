@@ -28,6 +28,7 @@ final class LstMapFunction extends ListMapFunction {
 	 */
 	public function __construct( ParserPowerConfig $config ) {
 		$this->useLegacyExpansion = $config->get( 'LstmapExpansionCompat' );
+		parent::__construct();
 	}
 
 	/**
