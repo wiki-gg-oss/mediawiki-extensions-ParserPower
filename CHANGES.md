@@ -16,8 +16,11 @@ Add new entries to the top of the 1.x.x-NEXT section.
 ## Versions
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
-* Fixed `#listmap` not properly setting `outconj` when the input list contains 2 values.
 * …
+
+### 1.7.1 (2025-06-27)
+* Fixed `#listmap` not properly setting `outconj` when the input list contains 2 values.
+* The `Pages using duplicate arguments in ParserPower functions` category is now listed at `Special:TrackingCategories`.
 
 ### 1.7.0 (2025-06-19)
 * Added `outconj` optional parameter to `#listmap`. If defined, its value is unescaped then trimmed, and will be used as delimiter for the last 2 output list values.
