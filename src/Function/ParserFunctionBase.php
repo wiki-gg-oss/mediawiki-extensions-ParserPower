@@ -6,7 +6,6 @@ namespace MediaWiki\Extension\ParserPower\Function;
 
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParameterParserFactory;
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 

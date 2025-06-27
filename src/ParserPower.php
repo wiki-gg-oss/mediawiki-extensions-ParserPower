@@ -224,7 +224,7 @@ class ParserPower {
 
 	/**
 	 * Create a ParserPower-specific message.
-	 * 
+	 *
 	 * @param string $key Message key.
 	 * @param mixed ...$params Message parameters.
 	 * @return Message The ParserPower message.
@@ -242,8 +242,8 @@ class ParserPower {
 	 * @return string The formatted message text.
 	 */
 	public static function errorMessage( string $origin, string $key, ...$params ): string {
-		$innerMessage = ParserPower::newMessage( 'error-' . $key, $params );
-		$outerMessage = ParserPower::newMessage( 'error', $origin, $innerMessage );
+		$innerMessage = self::newMessage( 'error-' . $key, $params );
+		$outerMessage = self::newMessage( 'error', $origin, $innerMessage );
 		return '<strong class="error">' . $outerMessage->inContentLanguage()->text() . '</strong>';
 	}
 }
