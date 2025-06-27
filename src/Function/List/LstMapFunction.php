@@ -4,14 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListSorter;
 use MediaWiki\Extension\ParserPower\ListUtils;
-use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
-use MediaWiki\Extension\ParserPower\ParameterParser;
-use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Extension\ParserPower\ParserPowerConfig;
-use MediaWiki\Parser\Parser;
-use MediaWiki\Parser\PPFrame;
 
 /**
  * Parser function for mapping list values from a pattern (#lstmap).

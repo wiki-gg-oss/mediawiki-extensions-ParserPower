@@ -4,12 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListSorter;
 use MediaWiki\Extension\ParserPower\ListUtils;
-use MediaWiki\Extension\ParserPower\ParameterParser;
-use MediaWiki\Extension\ParserPower\ParserPower;
-use MediaWiki\Parser\Parser;
-use MediaWiki\Parser\PPFrame;
 
 /**
  * Parser function for sorting list values from an identity pattern (#lstsrt).
