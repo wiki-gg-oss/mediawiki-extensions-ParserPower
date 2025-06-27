@@ -19,6 +19,9 @@
 			"php": ">= 8.1"
 		}
 	},
+	"TrackingCategories": [
+		"parserpower-duplicate-args-category"
+	],
 	"MessagesDirs": {
 		"ParserPower": [
 			"i18n"
