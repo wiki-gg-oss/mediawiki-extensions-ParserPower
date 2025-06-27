@@ -139,12 +139,16 @@ class ListMapFunction extends ParserFunctionBase {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
-		$outSep = $count > 2 ? $params->get( 'outsep' ) : '';
-		$outConj = $count > 1 ? $params->get( $params->isDefined( 'outconj' ) ? 'outconj' : 'outsep' ) : '';
-		if ( $outConj !== $outSep ) {
-			$outConj = ' ' . trim( $outConj ) . ' ';
+		if ( $count > 1 ) {
+			$outSep = $params->get( 'outsep' );
+			if ( $params->isDefined( 'outconj' ) ) {
+				$outConj = $params->get( 'outconj' );
+				if ( $outConj !== $outSep ) {
+					$outConj = ' ' . trim( $outConj ) . ' ';
+				}
+			}
 		}
-		$outList = ListUtils::implode( $outValues, $outSep, $outConj );
+		$outList = ListUtils::implode( $outValues, $outSep ?? '', $outConj ?? null );
 
 		$countToken = $params->get( 'counttoken' );
 		$intro = $params->get( 'intro' );
