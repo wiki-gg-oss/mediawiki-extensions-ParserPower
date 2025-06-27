@@ -11,5 +11,6 @@
 	"parserpower-error-invalid-integer": "\"$1\" must be an integer.",
 	"parserpower-error-missing-parameter": "The parameter \"$1\" is required.",
 	"parserpower-error-no-arguments": "No formatter arguments were given.",
-	"parserpower-duplicate-args-category": "Pages using duplicate arguments in ParserPower functions"
+	"parserpower-duplicate-args-category": "Pages using duplicate arguments in ParserPower functions",
+	"parserpower-duplicate-args-category-desc": "The page contains ParserPower function calls that use duplicates of arguments."
 }
