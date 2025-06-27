@@ -4,7 +4,7 @@
 			"OOeyes"
 		]
 	},
-	"parserpower": "The name of the extension's entry in Special:SpecialPages",
+	"parserpower": "ParserPower",
 	"parserpower-desc": "A collection of extended parser functions for MediaWiki, particularly including functions for dealing with lists of values separated by a dynamically-specified delimiter.",
 	"parserpower-error": "$1 error: $2",
 	"parserpower-error-invalid-argument-number": "The number of given formatter arguments must be divisible by \"$1\".",

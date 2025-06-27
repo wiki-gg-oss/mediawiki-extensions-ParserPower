@@ -1,5 +1,6 @@
 {
 	"name": "ParserPower",
+	"namemsg": "parserpower",
 	"version": "1.7.0",
 	"author": [
 		"[http://www.mediawiki.org/wiki/User:OoEyes Shawn Bruckner]",
