@@ -1,3 +1,11 @@
 {
-	"parserpower": "{{name}}"
+	"parserpower": "{{name}}",
+	"parserpower-desc": "{{desc|name=ParserPower|url=https://www.mediawiki.org/wiki/Extension:ParserPower}}",
+	"parserpower-error": "Used when an error message is included.\n\nParameters:\n* $1 - source parser function name\n* $2 - error message",
+	"parserpower-error-invalid-argument-number": "An error message.\n\nParameters:\n$1 - number of parameters per template call",
+	"parserpower-error-invalid-integer": "An error message.",
+	"parserpower-error-missing-parameter": "An error message.\n\nParameters:\n$1 - a parameter name",
+	"parserpower-error-no-arguments": "An error message.",
+	"parserpower-duplicate-args-category": "{{tracking category name}}\nTracking category for pages using duplicate arguments in ParserPower functions",
+	"parserpower-duplicate-args-category-desc": "Description on [[Special:TrackingCategories]] for the {{msg-mw|parserpower-duplicate-args-category}} tracking category."
 }
