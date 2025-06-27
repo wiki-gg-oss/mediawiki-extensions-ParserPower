@@ -16,6 +16,7 @@ Add new entries to the top of the 1.x.x-NEXT section.
 ## Versions
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
+* Fixed `#listmap` not properly setting `outconj` when the input list contains 2 values.
 * …
 
 ### 1.7.0 (2025-06-19)
