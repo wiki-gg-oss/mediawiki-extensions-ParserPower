@@ -1,4 +1,12 @@
 {
+	"@metadata" : {
+		"authors" : [
+			"OOeyes",
+			"Hydra Wiki Platform Team",
+			"wiki.gg development team",
+			"Derugon"
+		]
+	},
 	"parserpower": "{{name}}",
 	"parserpower-desc": "{{desc|name=ParserPower|url=https://www.mediawiki.org/wiki/Extension:ParserPower}}",
 	"parserpower-error": "Used when an error message is included.\n\nParameters:\n* $1 - source parser function name\n* $2 - error message",

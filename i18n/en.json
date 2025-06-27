@@ -1,7 +1,10 @@
 {
 	"@metadata" : {
 		"authors" : [
-			"OOeyes"
+			"OOeyes",
+			"Hydra Wiki Platform Team",
+			"wiki.gg development team",
+			"Derugon"
 		]
 	},
 	"parserpower": "ParserPower",
