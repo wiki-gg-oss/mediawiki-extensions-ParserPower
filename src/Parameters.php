@@ -11,6 +11,12 @@ use MediaWiki\Parser\PPFrame;
  * Parameter wrapper for parser functions.
  * Only evaluates parameter values on use site, and applies some post-processing steps to parsed values,
  * such as trimming whitespaces (as per longstanding MediaWiki conventions).
+ *
+ * Each parameter is an array with the following optional fields:
+ * - default (mixed): expanded and post-processed value to use if value is unspecified.
+ * - value (PPNode|string): unexpanded parameter value.
+ * - novars (bool): variable syntax should not be expanded.
+ * - unescape (bool): wikitext should be unescaped once expanded.
  */
 final class Parameters {
 

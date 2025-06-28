@@ -9,6 +9,12 @@ use MediaWiki\Parser\PPFrame;
 
 /**
  * Parameter parser for parser functions.
+ *
+ * Each parameter can be provided parsing and post-processing options. This includes all options recognized by the Parameters
+ * class (except value, which is generated automatically). Additional options are:
+ * - alias (string): name of another parameter to override.
+ *
+ * If a parameter name (string) is used directly as options, it overrides the specified parameter using the same options.
  */
 final class ParameterParser {
 
@@ -69,7 +75,7 @@ final class ParameterParser {
 			$options = $this->paramOptions[$key] ?? $this->defaultOptions;
 			if ( is_string( $options ) ) {
 				$key = $options;
-				$options = $this->paramOptions[$key] ?? $this->defaultOptions;
+				$options = $this->paramOptions[$key];
 			}
 			if ( isset( $options['alias'] ) ) {
 				$key = $options['alias'];
@@ -83,6 +89,6 @@ final class ParameterParser {
 			$params[$key] = $options;
 		}
 
-		return new Parameters( $parser, $frame, $params );
+		return new Parameters( $parser, $frame, $params, $this->defaultOptions['default'] ?? '' );
 	}
 }
