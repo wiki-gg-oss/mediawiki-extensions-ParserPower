@@ -38,6 +38,51 @@ final class ParameterParser {
 	 * @return Parameters A parameter parser.
 	 */
 	public function parse( Parser $parser, PPFrame $frame, array $rawParams ): Parameters {
-		return new Parameters( $parser, $frame, $rawParams, $this->paramOptions, $this->defaultOptions, $this->flags );
+		$numberedCount = 0;
+		$params = $this->paramOptions;
+
+		foreach ( $rawParams as $rawParam ) {
+			// Split key from value
+			if ( $this->flags & self::ALLOWS_NAMED ) {
+				if ( is_string( $rawParam ) ) {
+					$pair = explode( '=', $rawParam, 2 );
+					$key = isset( $pair[1] ) ? array_shift( $pair ) : null;
+					$value = $pair[0];
+				} else {
+					$bits = $rawParam->splitArg();
+					$key = $bits['index'] === '' ? $bits['name'] : null;
+					$value = $bits['value'];
+				}
+			} else {
+				$key = null;
+				$value = $rawParam;
+			}
+
+			// Expand key
+			if ( $key !== null ) {
+				$key = ParserPower::expand( $frame, $key );
+			} else {
+				$key = $numberedCount++;
+			}
+
+			// Resolve aliases
+			$options = $this->paramOptions[$key] ?? $this->defaultOptions;
+			if ( is_string( $options ) ) {
+				$key = $options;
+				$options = $this->paramOptions[$key] ?? $this->defaultOptions;
+			}
+			if ( isset( $options['alias'] ) ) {
+				$key = $options['alias'];
+			}
+
+			if ( isset( $params[$key] ) ) {
+				$parser->addTrackingCategory( 'parserpower-duplicate-args-category' );
+			}
+
+			$options['value'] = $value;
+			$params[$key] = $options;
+		}
+
+		return new Parameters( $parser, $frame, $params );
 	}
 }

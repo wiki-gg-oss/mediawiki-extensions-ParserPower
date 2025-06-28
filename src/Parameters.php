@@ -15,16 +15,6 @@ use MediaWiki\Parser\PPFrame;
 final class Parameters {
 
 	/**
-	 * Unexpanded parameters. Parameter values can be:
-	 * - an expanded node (string),
-	 * - an unexpanded node (PPNode), or
-	 * - a reference to another parameter (array with an "alias" key).
-	 *
-	 * @var array
-	 */
-	private array $params = [];
-
-	/**
 	 * Expanded (and post-processed) parameters.
 	 *
 	 * @var array
@@ -34,57 +24,15 @@ final class Parameters {
 	/**
 	 * @param Parser $parser Parser object.
 	 * @param PPFrame $frame Parser frame object.
-	 * @param array $rawParams Unexpanded parameters.
-	 * @param array $paramOptions Parsing and post-processing options for all parameters.
-	 * @param array $defaultOptions Parsing and post-processing options for unknown parameters.
-	 * @param int $flags Parameter parser flags.
+	 * @param array $params Unexpanded value with parsing options for every known parameter.
+	 * @param mixed $default Default value for unknown parameters.
 	 */
 	public function __construct(
 		private readonly Parser $parser,
 		private readonly PPFrame $frame,
-		private array $rawParams,
-		private array $paramOptions = [],
-		private array $defaultOptions = [],
-		int $flags = 0
+		private array $params,
+		private $default = ''
 	) {
-		$numberedCount = 0;
-
-		foreach ( $rawParams as $rawParam ) {
-			if ( $flags & ParameterParser::ALLOWS_NAMED ) {
-				if ( is_string( $rawParam ) ) {
-					$pair = explode( '=', $rawParam, 2 );
-					$key = isset( $pair[1] ) ? array_shift( $pair ) : null;
-					$value = $pair[0];
-				} else {
-					$bits = $rawParam->splitArg();
-					$key = $bits['index'] === '' ? $bits['name'] : null;
-					$value = $bits['value'];
-				}
-			} else {
-				$key = null;
-				$value = $rawParam;
-			}
-
-			if ( $key !== null ) {
-				$key = ParserPower::expand( $frame, $key );
-			} else {
-				$key = $numberedCount++;
-			}
-
-			// Resolve parameter aliases.
-			$options = $this->getOptions( $key );
-			if ( isset( $options['alias'] ) ) {
-				$this->params[$key] = $value;
-				$value = [ 'alias' => $key ];
-				$key = $options['alias'];
-			}
-
-			if ( isset( $this->params[$key] ) ) {
-				$parser->addTrackingCategory( 'parserpower-duplicate-args-category' );
-			}
-
-			$this->params[$key] = $value;
-		}
 	}
 
 	/**
@@ -94,54 +42,30 @@ final class Parameters {
 	 * @return bool True if the parameter is defined, false otherwise.
 	 */
 	public function isDefined( int|string $key ): bool {
-		return isset( $this->params[$key] );
-	}
-
-	/**
-	 * Get the parsing an post-processing options of a parameter.
-	 *
-	 * @param int|string $key Parameter index or name.
-	 * @param array $extraOptions Extra parsing and post-processing options, overriding the default ones.
-	 * @return array The set of parameter options.
-	 */
-	private function getOptions( int|string $key, array $extraOptions = [] ): array {
-		$options = $this->paramOptions[$key] ?? $this->defaultOptions;
-
-		if ( is_string( $options ) ) {
-			$options = [ 'alias' => $options, ...$this->paramOptions[$options] ];
-		}
-
-		return array_merge( $options, $extraOptions );
+		return isset( $this->params[$key]['value'] );
 	}
 
 	/**
 	 * Get the expanded value of a parameter.
 	 *
 	 * @param int|string $key Parameter index or name.
-	 * @param array $extraOptions Parsing and post-processing options, overriding the default ones if it has not already been parsed.
+	 * @param array $options Parsing and post-processing options, overriding the default ones if it has not already been parsed.
 	 * @return string The expanded (and post-processed) parameter value.
 	 */
-	public function get( int|string $key, array $extraOptions = [] ): string {
+	public function get( int|string $key, array $options = [] ): string {
 		if ( isset( $this->expandedParams[$key] ) ) {
 			return $this->expandedParams[$key];
 		}
 
-		$options = $this->getOptions( $key, $extraOptions );
-		if ( isset( $options['alias'] ) ) {
-			$key = $options['alias'];
-		}
+		$options = array_merge( [ 'default' => $this->default ], $this->params[$key], $options );
 
-		if ( !isset( $this->params[$key] ) ) {
+		if ( !isset( $options['value'] ) ) {
 			$value = $options['default'] ?? '';
 			$this->expandedParams[$key] = $value;
 			return $value;
 		}
 
-		$value = $this->params[$key];
-		if ( is_array( $value ) ) {
-			$options = $this->getOptions( $value['alias'], $extraOptions );
-			$value = $this->params[$value['alias']];
-		}
+		$value = $options['value'];
 
 		$flags = 0;
 		if ( $options['unescape'] ?? false ) {
