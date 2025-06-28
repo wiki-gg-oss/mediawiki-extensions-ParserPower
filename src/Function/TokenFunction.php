@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
-use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -35,7 +35,7 @@ final class TokenFunction extends ParserFunctionBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
+	public function execute( Parser $parser, PPFrame $frame, Parameters $params ): string {
 		$outValue = ParserPower::applyPattern( $params->get( 0 ), $params->get( 1 ), $params->get( 2 ) );
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
 		$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );

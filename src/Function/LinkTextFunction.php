@@ -5,7 +5,7 @@
 namespace MediaWiki\Extension\ParserPower\Function;
 
 use MediaWiki\Extension\ParserPower\LinkUtils;
-use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
@@ -33,7 +33,7 @@ final class LinkTextFunction extends ParserFunctionBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
+	public function execute( Parser $parser, PPFrame $frame, Parameters $params ): string {
 		return LinkUtils::replace( $params->get( 0 ), static function ( $page, $text ) {
 			return $text ?? $page;
 		} );

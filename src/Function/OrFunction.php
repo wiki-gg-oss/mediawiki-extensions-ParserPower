@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
-use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
@@ -30,7 +30,7 @@ final class OrFunction extends ParserFunctionBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
+	public function execute( Parser $parser, PPFrame $frame, Parameters $params ): string {
 		for ( $i = 0; $params->isDefined( $i ); ++$i ) {
 			$inValue = $params->get( $i );
 
