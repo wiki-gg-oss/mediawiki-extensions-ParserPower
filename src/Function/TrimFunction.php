@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
-use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
@@ -32,7 +32,7 @@ final class TrimFunction extends ParserFunctionBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
+	public function execute( Parser $parser, PPFrame $frame, Parameters $params ): string {
 		return $params->get( 0 );
 	}
 }

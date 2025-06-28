@@ -4,17 +4,17 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
+use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParameterParser;
-use MediaWiki\Extension\ParserPower\ParameterParserFactory;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
 /**
- * Parser function, using a ParameterParser to manage its parameters.
+ * Parser function, using a Parameters to manage its parameters.
  */
 abstract class ParserFunctionBase implements ParserFunction {
 
-	private readonly ParameterParserFactory $paramsFactory;
+	private readonly ParameterParser $paramParser;
 
 	public function __construct() {
 		$paramFlags = 0;
@@ -22,7 +22,7 @@ abstract class ParserFunctionBase implements ParserFunction {
 			$paramFlags |= ParameterParser::ALLOWS_NAMED;
 		}
 
-		$this->paramsFactory = new ParameterParserFactory( $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
+		$this->paramParser = new ParameterParser( $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
 	}
 
 	/**
@@ -57,16 +57,16 @@ abstract class ParserFunctionBase implements ParserFunction {
 	 *
 	 * @param Parser $parser Parser object.
 	 * @param PPFrame $frame Parser frame object.
-	 * @param ParameterParser $params Arranged function parameters.
+	 * @param Parameters $params Arranged function parameters.
 	 * @return string The function output.
 	 */
-	abstract public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string;
+	abstract public function execute( Parser $parser, PPFrame $frame, Parameters $params ): string;
 
 	/**
 	 * @inheritDoc
 	 */
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
-		$params = $this->paramsFactory->newParameterParser( $parser, $frame, $params );
+		$params = $this->paramParser->parse( $parser, $frame, $params );
 		return $this->execute( $parser, $frame, $params );
 	}
 }
