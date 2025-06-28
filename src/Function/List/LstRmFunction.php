@@ -6,7 +6,7 @@ namespace MediaWiki\Extension\ParserPower\Function\List;
 
 use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
-use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
@@ -47,7 +47,7 @@ final class LstRmFunction extends ListFilterFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute( Parser $parser, PPFrame $frame, ParameterParser $params ): string {
+	public function execute( Parser $parser, PPFrame $frame, Parameters $params ): string {
 		$inList = $params->get( 'list' );
 		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
