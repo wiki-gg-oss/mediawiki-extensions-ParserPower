@@ -4,8 +4,6 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListUtils;
-
 /**
  * Parser function for sorting list values from an identity pattern (#lstsrt).
  */
@@ -30,7 +28,7 @@ final class LstSrtFunction extends ListSortFunction {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep',
 			2 => 'outsep',

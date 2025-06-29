@@ -9,12 +9,11 @@ use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for appending a value to a list (#lstapp).
  */
-final class LstAppFunction extends ParserFunctionBase {
+final class LstAppFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -28,7 +27,7 @@ final class LstAppFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep',
 			2 => 'value'

@@ -9,12 +9,11 @@ use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for replacing the value separator of a list (#lstsep).
  */
-final class LstSepFunction extends ParserFunctionBase {
+final class LstSepFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -28,7 +27,7 @@ final class LstSepFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep',
 			2 => 'outsep'

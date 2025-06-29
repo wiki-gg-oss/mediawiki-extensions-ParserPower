@@ -13,12 +13,11 @@ use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for filtering list values (#listfilter).
  */
-class ListFilterFunction extends ParserFunctionBase {
+class ListFilterFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -32,13 +31,6 @@ class ListFilterFunction extends ParserFunctionBase {
 	 */
 	public function allowsNamedParams(): bool {
 		return true;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getParamSpec(): array {
-		return ListUtils::PARAM_OPTIONS;
 	}
 
 	/**

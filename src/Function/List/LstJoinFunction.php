@@ -9,12 +9,11 @@ use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for joining two lists (#lstjoin).
  */
-final class LstJoinFunction extends ParserFunctionBase {
+final class LstJoinFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -28,7 +27,7 @@ final class LstJoinFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'list1',
 			1 => 'insep1',
 			2 => 'list2',
