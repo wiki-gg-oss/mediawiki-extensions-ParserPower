@@ -26,8 +26,17 @@ final class LstJoinFunction extends ListFunction {
 	 * @inheritDoc
 	 */
 	public function getParamSpec(): array {
+		$paramSpec = parent::getParamSpec();
+
+		foreach ( [ '1', '2' ] as $i ) {
+			$paramSpec += [
+				"list$i" => $paramSpec['list'],
+				"insep$i" => $paramSpec['insep']
+			];
+		}
+
 		return [
-			...parent::getParamSpec(),
+			...$paramSpec,
 			0 => 'list1',
 			1 => 'insep1',
 			2 => 'list2',
