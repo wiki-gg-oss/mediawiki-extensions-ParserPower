@@ -8,12 +8,11 @@ use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for counting values of a list (#lstcnt).
  */
-final class LstCntFunction extends ParserFunctionBase {
+final class LstCntFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -27,7 +26,7 @@ final class LstCntFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep'
 		];

@@ -33,7 +33,7 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep',
 			2 => 'csoption'

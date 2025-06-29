@@ -35,7 +35,7 @@ final class LstRmFunction extends ListFilterFunction {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'value',
 			1 => 'list',
 			2 => 'insep',

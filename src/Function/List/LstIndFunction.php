@@ -8,12 +8,11 @@ use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for searching a list value index (#lstind).
  */
-final class LstIndFunction extends ParserFunctionBase {
+final class LstIndFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -27,7 +26,7 @@ final class LstIndFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'value',
 			1 => 'list',
 			2 => 'insep',

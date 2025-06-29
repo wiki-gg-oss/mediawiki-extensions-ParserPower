@@ -12,12 +12,11 @@ use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for removing non-unique list values (#listunique).
  */
-class ListUniqueFunction extends ParserFunctionBase {
+class ListUniqueFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -31,13 +30,6 @@ class ListUniqueFunction extends ParserFunctionBase {
 	 */
 	public function allowsNamedParams(): bool {
 		return true;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getParamSpec(): array {
-		return ListUtils::PARAM_OPTIONS;
 	}
 
 	/**
