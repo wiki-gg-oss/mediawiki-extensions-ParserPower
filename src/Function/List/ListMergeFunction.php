@@ -34,6 +34,28 @@ class ListMergeFunction extends ListFunction {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function getParamSpec(): array {
+		$paramSpec = parent::getParamSpec();
+
+		foreach ( [ 'match', 'merge' ] as $op ) {
+			$paramSpec += [
+				"{$op}pattern" => $paramSpec['pattern'],
+				"{$op}template" => $paramSpec['template']
+			];
+		}
+
+		foreach ( [ '1', '2' ] as $i ) {
+			$paramSpec += [
+				"token$i" => $paramSpec['token']
+			];
+		}
+
+		return $paramSpec;
+	}
+
+	/**
 	 * This function performs repeated merge passes until either the input array is merged to a single value, or until
 	 * a merge pass is completed that does not perform any further merges (pre- and post-pass array count is the same).
 	 * Each merge pass operates by performing a conditional on all possible pairings of items, immediately merging two
