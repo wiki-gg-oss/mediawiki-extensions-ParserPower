@@ -106,7 +106,7 @@ class ListUniqueFunction extends ListFunction {
 				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 				$outValues = $this->reduceToUniqueValuesByKey( $operation, $inValues, $fieldSep );
 			} else {
-				$uniqueCS = ListUtils::decodeBool( $params->get( 'uniquecs' ) );
+				$uniqueCS = $params->get( 'uniquecs' );
 				$outValues = $this->reduceToUniqueValues( $inValues, $uniqueCS );
 			}
 		}

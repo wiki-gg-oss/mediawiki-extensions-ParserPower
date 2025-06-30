@@ -53,7 +53,7 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 			return '0';
 		}
 
-		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
+		$csOption = $params->get( 'csoption' );
 		$values = $this->reduceToUniqueValues( $values, $csOption );
 
 		return (string)count( $values );

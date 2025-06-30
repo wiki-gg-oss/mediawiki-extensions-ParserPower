@@ -50,25 +50,6 @@ final class ListUtils {
 	public const SORTMODE_COMPAT = 4;
 
 	/**
-	 * This function converts a string containing a boolean keyword into a boolean.
-	 *
-	 * @param string $text The string containg a boolean keyword.
-	 * @param bool $default Value that should be used by default.
-	 * @return bool
-	 */
-	public static function decodeBool( string $text, bool $default = false ): bool {
-		$text = strtolower( $text );
-		switch ( $text ) {
-			case 'yes':
-				return true;
-			case 'no':
-				return false;
-			default:
-				return $default;
-		}
-	}
-
-	/**
 	 * This function converts a string containing a duplicate removal keyword into an integer of duplicate mode flags.
 	 *
 	 * @param string $text The string containing a duplicate removal keyword.
@@ -88,25 +69,6 @@ final class ListUtils {
 				return self::DUPLICATES_POSTSTRIP;
 			case 'pre/poststrip':
 				return self::DUPLICATES_PRESTRIP | self::DUPLICATES_POSTSTRIP;
-			default:
-				return $default;
-		}
-	}
-
-	/**
-	 * This function converts a string containing a case sensitivity keyword into a boolean.
-	 *
-	 * @param string $text The string containg a case sensitivity keyword.
-	 * @param bool $default Value that should be used by default.
-	 * @return bool True if case sentitive, false otherwise.
-	 */
-	public static function decodeCSOption( string $text, bool $default = false ): bool {
-		$text = strtolower( $text );
-		switch ( $text ) {
-			case 'cs':
-				return true;
-			case 'ncs':
-				return false;
 			default:
 				return $default;
 		}

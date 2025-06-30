@@ -60,7 +60,7 @@ final class LstFltrFunction extends ListFilterFunction {
 
 		$values = $params->get( 'keep' );
 		$valueSep = $params->get( 'keepsep' );
-		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
+		$csOption = $params->get( 'csoption' );
 
 		if ( $valueSep !== '' ) {
 			$values = ListUtils::explode( $valueSep, $values );
