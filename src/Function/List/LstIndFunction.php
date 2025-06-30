@@ -50,32 +50,32 @@ final class LstIndFunction extends ListFunction {
 
 		$item = $params->get( 'value' );
 
-		$options = ListUtils::decodeIndexOptions( $params->get( 'indexoptions' ) );
-		if ( $options & ListUtils::INDEX_DESC ) {
-			if ( $options & ListUtils::INDEX_CS ) {
+		$options = $params->get( 'indexoptions' );
+		if ( $options & self::INDEX_DESC ) {
+			if ( $options & self::INDEX_CS ) {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( $values[$index] === $item ) {
-						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			} else {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			}
 		} else {
-			if ( $options & ListUtils::INDEX_CS ) {
+			if ( $options & self::INDEX_CS ) {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( $values[$index] === $item ) {
-						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			} else {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			}
