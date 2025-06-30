@@ -55,7 +55,7 @@ final class LstUniqFunction extends ListUniqueFunction {
 			return '';
 		}
 
-		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
+		$csOption = $params->get( 'csoption' );
 		$values = $this->reduceToUniqueValues( $values, $csOption );
 
 		$outSep = count( $values ) > 1 ? $params->get( 'outsep' ) : '';

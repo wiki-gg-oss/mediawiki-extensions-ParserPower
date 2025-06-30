@@ -58,7 +58,7 @@ final class LstRmFunction extends ListFilterFunction {
 		}
 
 		$value = $params->get( 'value' );
-		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
+		$csOption = $params->get( 'csoption' );
 		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
 		$outValues = $this->filterList( $operation, $inValues );
 

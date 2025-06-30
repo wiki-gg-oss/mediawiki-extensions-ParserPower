@@ -86,7 +86,7 @@ class ListSortFunction extends ListFunction {
 
 		$template = $params->get( 'template' );
 		$sortOptions = $params->get( 'sortoptions' );
-		$subsort = ListUtils::decodeBool( $params->get( 'subsort' ) );
+		$subsort = $params->get( 'subsort' );
 		$subsortOptions = $subsort ? ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) ) : null;
 		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
 

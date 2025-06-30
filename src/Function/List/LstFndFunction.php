@@ -51,7 +51,6 @@ final class LstFndFunction extends ListFunction {
 		$item = $params->get( 'value' );
 
 		$csOption = $params->get( 'csoption' );
-		$csOption = ListUtils::decodeCSOption( $csOption );
 		if ( $csOption ) {
 			foreach ( $values as $value ) {
 				if ( $value === $item ) {

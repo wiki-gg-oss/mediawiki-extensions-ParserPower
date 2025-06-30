@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
+use MediaWiki\Extension\ParserPower\Formatter\BoolFormatter;
 use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
@@ -17,12 +18,12 @@ abstract class ListFunction extends ParserFunctionBase {
 	public function getParamSpec(): array {
 		return [
 			'counttoken' => [ 'unescape' => true ],
-			'csoption' => [],
+			'csoption' => [ 'formatter' => new BoolFormatter( 'cs', 'ncs' ) ],
 			'default' => [ 'unescape' => true ],
 			'duplicates' => [],
 			'fieldsep' => [ 'unescape' => true ],
 			'keep' => [],
-			'keepcs' => [],
+			'keepcs' => [ 'formatter' => BoolFormatter::getBase() ],
 			'keepsep' => [ 'default' => ',' ],
 			'index' => [ 'unescape' => true ],
 			'indexoptions' => [],
@@ -36,16 +37,16 @@ abstract class ListFunction extends ParserFunctionBase {
 			'outconj' => [ 'unescape' => true ],
 			'pattern' => [],
 			'remove' => [],
-			'removecs' => [],
+			'removecs' => [ 'formatter' => BoolFormatter::getBase() ],
 			'removesep' => [ 'default' => ',' ],
 			'sortmode' => [],
 			'sortoptions' => [],
-			'subsort' => [],
+			'subsort' => [ 'formatter' => BoolFormatter::getBase() ],
 			'subsortoptions' => [],
 			'template' => [],
 			'token' => [ 'unescape' => true ],
 			'tokensep' => [ 'unescape' => true, 'default' => ',' ],
-			'uniquecs' => [],
+			'uniquecs' => [ 'formatter' => BoolFormatter::getBase() ],
 			'value' => [ 'unescape' => true ]
 		];
 	}
