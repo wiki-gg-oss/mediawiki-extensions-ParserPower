@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
+use MediaWiki\Extension\ParserPower\Formatter\BoolFormatter;
 use MediaWiki\Extension\ParserPower\ListSorter;
 use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
@@ -18,6 +19,16 @@ use MediaWiki\Parser\PPFrame;
  * Parser function for merging list values (#listmerge).
  */
 class ListMergeFunction extends ListFunction {
+
+	/**
+	 * @var BoolFormatter Wikitext formatter for the match operation result.
+	 */
+	private BoolFormatter $matchFormatter;
+
+	public function __construct() {
+		$this->matchFormatter = BoolFormatter::getBase();
+		parent::__construct();
+	}
 
 	/**
 	 * @inheritDoc
@@ -105,8 +116,7 @@ class ListMergeFunction extends ListFunction {
 							$fields[$offset + $i] = $field;
 						}
 
-						$doMerge = $matchOperation->apply( $fields );
-						$doMerge = ListUtils::decodeBool( $doMerge );
+						$doMerge = $this->matchFormatter->format( $matchOperation->apply( $fields ) );
 						$checkedPairs[$value1][$value2] = $doMerge;
 					}
 

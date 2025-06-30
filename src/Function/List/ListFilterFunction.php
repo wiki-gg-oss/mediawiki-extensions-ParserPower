@@ -78,7 +78,7 @@ class ListFilterFunction extends ListFunction {
 				$keepValues = [ ParserPower::unescape( $keepValues ) ];
 			}
 
-			$keepCS = ListUtils::decodeBool( $params->get( 'keepcs' ) );
+			$keepCS = $params->get( 'keepcs' );
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
 		} else {
 			$removeValues = $params->get( 'remove' );
@@ -91,7 +91,7 @@ class ListFilterFunction extends ListFunction {
 					$removeValues = [ ParserPower::unescape( $removeValues ) ];
 				}
 
-				$removeCS = ListUtils::decodeBool( $params->get( 'removecs' ) );
+				$removeCS = $params->get( 'removecs' );
 				$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
 			} else {
 				$template = $params->get( 'template' );
