@@ -51,9 +51,7 @@ final class LstSubFunction extends ListFunction {
 		}
 
 		$offset = $params->get( 'index' );
-		$offset = is_numeric( $offset ) ? intval( $offset ) : 0;
-		$length = $offset < $inCount ? $params->get( 'length' ) : '';
-		$length = is_numeric( $length ) ? intval( $length ) : null;
+		$length = $offset < $inCount ? $params->get( 'length' ) : null;
 		$outValues = ListUtils::slice( $inValues, $offset, $length );
 
 		$outSep = count( $outValues ) > 1 ? $params->get( 'outsep' ) : '';

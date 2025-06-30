@@ -7,6 +7,7 @@ namespace MediaWiki\Extension\ParserPower\Function\List;
 use MediaWiki\Extension\ParserPower\Formatter\BoolFormatter;
 use MediaWiki\Extension\ParserPower\Formatter\EnumFormatter;
 use MediaWiki\Extension\ParserPower\Formatter\FlagsFormatter;
+use MediaWiki\Extension\ParserPower\Formatter\IntFormatter;
 use MediaWiki\Extension\ParserPower\ListSorter;
 use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
@@ -63,7 +64,7 @@ abstract class ListFunction extends ParserFunctionBase {
 			'keep' => [],
 			'keepcs' => [ 'formatter' => BoolFormatter::getBase() ],
 			'keepsep' => [ 'default' => ',' ],
-			'index' => [ 'unescape' => true ],
+			'index' => [ 'unescape' => true, 'formatter' => new IntFormatter() ],
 			'indexoptions' => [
 				'formatter' => new FlagsFormatter( [
 					'neg'  => [ 'include' => self::INDEX_NEG ],
@@ -77,7 +78,7 @@ abstract class ListFunction extends ParserFunctionBase {
 			'indextoken' => [ 'unescape' => true ],
 			'insep' => [ 'unescape' => true, 'default' => ',' ],
 			'intro' => [ 'unescape' => true ],
-			'length' => [ 'unescape' => true ],
+			'length' => [ 'unescape' => true, 'formatter' => new IntFormatter(), 'default' => PHP_INT_MAX ],
 			'list' => [],
 			'outro' => [ 'unescape' => true ],
 			'outsep' => [ 'unescape' => true, 'default' => ', ' ],
