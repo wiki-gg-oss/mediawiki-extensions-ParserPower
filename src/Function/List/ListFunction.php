@@ -6,12 +6,27 @@ namespace MediaWiki\Extension\ParserPower\Function\List;
 
 use MediaWiki\Extension\ParserPower\Formatter\BoolFormatter;
 use MediaWiki\Extension\ParserPower\Formatter\EnumFormatter;
+use MediaWiki\Extension\ParserPower\Formatter\FlagsFormatter;
+use MediaWiki\Extension\ParserPower\ListSorter;
 use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function manipulating a list.
  */
 abstract class ListFunction extends ParserFunctionBase {
+
+	/**
+	 * Flag for reverse index search.
+	 */
+	public const INDEX_DESC = 1;
+	/**
+	 * Flag for sensitive index search.
+	 */
+	public const INDEX_CS = 2;
+	/**
+	 * Flag for index search returning a negative index.
+	 */
+	public const INDEX_NEG = 4;
 
 	/**
 	 * Flags for duplicate removal in lists.
@@ -49,7 +64,16 @@ abstract class ListFunction extends ParserFunctionBase {
 			'keepcs' => [ 'formatter' => BoolFormatter::getBase() ],
 			'keepsep' => [ 'default' => ',' ],
 			'index' => [ 'unescape' => true ],
-			'indexoptions' => [],
+			'indexoptions' => [
+				'formatter' => new FlagsFormatter( [
+					'neg'  => [ 'include' => self::INDEX_NEG ],
+					'pos'  => [ 'exclude' => self::INDEX_NEG ],
+					'cs'   => [ 'include' => self::INDEX_CS ],
+					'ncs'  => [ 'exclude' => self::INDEX_CS ],
+					'desc' => [ 'include' => self::INDEX_DESC ],
+					'asc'  => [ 'exclude' => self::INDEX_DESC ]
+				] )
+			],
 			'indextoken' => [ 'unescape' => true ],
 			'insep' => [ 'unescape' => true, 'default' => ',' ],
 			'intro' => [ 'unescape' => true ],
@@ -71,9 +95,27 @@ abstract class ListFunction extends ParserFunctionBase {
 					'pre/postsort' => self::SORTMODE_PRE | self::SORTMODE_POST
 				] )
 			],
-			'sortoptions' => [],
+			'sortoptions' => [
+				'formatter' => new FlagsFormatter( [
+					'numeric' => [ 'include' => ListSorter::NUMERIC ],
+					'alpha'   => [ 'exclude' => ListSorter::NUMERIC ],
+					'cs'      => [ 'include' => ListSorter::CASE_SENSITIVE ],
+					'ncs'     => [ 'exclude' => ListSorter::CASE_SENSITIVE ],
+					'desc'    => [ 'include' => ListSorter::DESCENDING ],
+					'asc'     => [ 'exclude' => ListSorter::DESCENDING ]
+				] )
+			],
 			'subsort' => [ 'formatter' => BoolFormatter::getBase() ],
-			'subsortoptions' => [],
+			'subsortoptions' => [
+				'formatter' => new FlagsFormatter( [
+					'numeric' => [ 'include' => ListSorter::NUMERIC ],
+					'alpha'   => [ 'exclude' => ListSorter::NUMERIC ],
+					'cs'      => [ 'include' => ListSorter::CASE_SENSITIVE ],
+					'ncs'     => [ 'exclude' => ListSorter::CASE_SENSITIVE ],
+					'desc'    => [ 'include' => ListSorter::DESCENDING ],
+					'asc'     => [ 'exclude' => ListSorter::DESCENDING ]
+				] )
+			],
 			'template' => [],
 			'token' => [ 'unescape' => true ],
 			'tokensep' => [ 'unescape' => true, 'default' => ',' ],

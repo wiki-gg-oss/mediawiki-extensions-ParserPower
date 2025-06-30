@@ -85,9 +85,8 @@ class ListSortFunction extends ListFunction {
 		}
 
 		$template = $params->get( 'template' );
-		$sortOptions = $params->get( 'sortoptions' );
 		$subsort = $params->get( 'subsort' );
-		$subsortOptions = $subsort ? ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) ) : null;
+		$subsortOptions = $subsort ? $params->get( 'subsortoptions' ) : null;
 		$duplicates = $params->get( 'duplicates' );
 
 		if ( $duplicates & self::DUPLICATES_STRIP ) {
@@ -96,7 +95,7 @@ class ListSortFunction extends ListFunction {
 
 		if ( $template !== '' ) {
 			$fieldSep = $params->get( 'fieldsep' );
-			$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+			$sortOptions = $params->get( 'sortoptions', [ 'default' => ListSorter::NUMERIC ] );
 			$sorter = new ListSorter( $sortOptions, $subsortOptions );
 			$operation = new TemplateOperation( $parser, $frame, $template );
 
@@ -112,7 +111,7 @@ class ListSortFunction extends ListFunction {
 				$fieldSep = $params->get( 'fieldsep' );
 				$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
 				$tokens = ListUtils::explodeToken( $tokenSep, $token );
-				$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+				$sortOptions = $params->get( 'sortoptions', [ 'default' => ListSorter::NUMERIC ] );
 				$sorter = new ListSorter( $sortOptions, $subsortOptions );
 				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 
@@ -120,7 +119,7 @@ class ListSortFunction extends ListFunction {
 				$sorter->sortPairs( $pairedValues );
 				$values = $this->discardSortKeys( $pairedValues );
 			} else {
-				$sortOptions = ListUtils::decodeSortOptions( $sortOptions );
+				$sortOptions = $params->get( 'sortoptions' );
 				$sorter = new ListSorter( $sortOptions );
 				$values = $sorter->sort( $values );
 			}
