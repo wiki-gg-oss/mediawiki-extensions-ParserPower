@@ -163,11 +163,11 @@ class ListMergeFunction extends ListFunction {
 		$mergeTemplate = $params->get( 'mergetemplate' );
 		$fieldSep = $params->get( 'fieldsep' );
 
-		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
+		$sortMode = $params->get( 'sortmode' );
 		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
-		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
+		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
 		}
 
@@ -195,7 +195,7 @@ class ListMergeFunction extends ListFunction {
 
 		$outValues = $this->iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, $fieldOffset ?? null );
 
-		if ( $sortMode & ( ListUtils::SORTMODE_POST | ListUtils::SORTMODE_COMPAT ) ) {
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 			$outValues = $sorter->sort( $outValues );
 		}
 

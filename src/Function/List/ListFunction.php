@@ -5,12 +5,27 @@
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
 use MediaWiki\Extension\ParserPower\Formatter\BoolFormatter;
+use MediaWiki\Extension\ParserPower\Formatter\EnumFormatter;
 use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function manipulating a list.
  */
 abstract class ListFunction extends ParserFunctionBase {
+
+	/**
+	 * Flags for duplicate removal in lists.
+	 */
+	public const DUPLICATES_STRIP = 1;
+	public const DUPLICATES_PRESTRIP = 2;
+	public const DUPLICATES_POSTSTRIP = 4;
+
+	/**
+	 * Flags for item sort mode in lists.
+	 */
+	public const SORTMODE_PRE = 1;
+	public const SORTMODE_POST = 2;
+	public const SORTMODE_COMPAT = 4;
 
 	/**
 	 * @inheritDoc
@@ -20,7 +35,15 @@ abstract class ListFunction extends ParserFunctionBase {
 			'counttoken' => [ 'unescape' => true ],
 			'csoption' => [ 'formatter' => new BoolFormatter( 'cs', 'ncs' ) ],
 			'default' => [ 'unescape' => true ],
-			'duplicates' => [],
+			'duplicates' => [
+				'formatter' => new EnumFormatter( [
+					'keep'          => 0,
+					'strip'         => self::DUPLICATES_STRIP | self::DUPLICATES_POSTSTRIP,
+					'prestrip'      => self::DUPLICATES_PRESTRIP,
+					'poststrip'     => self::DUPLICATES_POSTSTRIP,
+					'pre/poststrip' => self::DUPLICATES_PRESTRIP | self::DUPLICATES_POSTSTRIP
+				] )
+			],
 			'fieldsep' => [ 'unescape' => true ],
 			'keep' => [],
 			'keepcs' => [ 'formatter' => BoolFormatter::getBase() ],
@@ -39,7 +62,15 @@ abstract class ListFunction extends ParserFunctionBase {
 			'remove' => [],
 			'removecs' => [ 'formatter' => BoolFormatter::getBase() ],
 			'removesep' => [ 'default' => ',' ],
-			'sortmode' => [],
+			'sortmode' => [
+				'formatter' => new EnumFormatter( [
+					'nosort'       => 0,
+					'sort'         => self::SORTMODE_COMPAT,
+					'presort'      => self::SORTMODE_PRE,
+					'postsort'     => self::SORTMODE_POST,
+					'pre/postsort' => self::SORTMODE_PRE | self::SORTMODE_POST
+				] )
+			],
 			'sortoptions' => [],
 			'subsort' => [ 'formatter' => BoolFormatter::getBase() ],
 			'subsortoptions' => [],

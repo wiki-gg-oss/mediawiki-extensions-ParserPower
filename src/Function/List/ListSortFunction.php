@@ -88,9 +88,9 @@ class ListSortFunction extends ListFunction {
 		$sortOptions = $params->get( 'sortoptions' );
 		$subsort = $params->get( 'subsort' );
 		$subsortOptions = $subsort ? ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) ) : null;
-		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
+		$duplicates = $params->get( 'duplicates' );
 
-		if ( $duplicates & ListUtils::DUPLICATES_STRIP ) {
+		if ( $duplicates & self::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
 		}
 
