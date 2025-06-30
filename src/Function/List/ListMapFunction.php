@@ -78,7 +78,7 @@ class ListMapFunction extends ListFunction {
 		$fieldSep = $params->get( 'fieldsep' );
 
 		$sortMode = $params->get( 'sortmode' );
-		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
+		$sortOptions = $sortMode > 0 ? $params->get( 'sortoptions' ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
 		$duplicates = $params->get( 'duplicates' );
