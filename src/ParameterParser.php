@@ -89,6 +89,6 @@ final class ParameterParser {
 			$params[$key] = $options;
 		}
 
-		return new Parameters( $parser, $frame, $params, $this->defaultOptions['default'] ?? '' );
+		return new Parameters( $parser, $frame, $params, $this->defaultOptions['default'] ?? null );
 	}
 }
