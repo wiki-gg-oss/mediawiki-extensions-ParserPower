@@ -37,7 +37,7 @@ final class Parameters {
 		private readonly Parser $parser,
 		private readonly PPFrame $frame,
 		private array $params,
-		private $default = ''
+		private $default = null
 	) {
 	}
 
@@ -65,13 +65,14 @@ final class Parameters {
 
 		$options = array_merge( [ 'default' => $this->default ], $this->params[$key], $options );
 
-		if ( !isset( $options['value'] ) ) {
-			$value = $options['default'] ?? '';
-			$this->expandedParams[$key] = $value;
-			return $value;
-		}
+		$formatter = $options['formatter'] ?? null;
+		$default = $options['default'] ?? $formatter?->getDefault() ?? '';
+		$value = $options['value'] ?? null;
 
-		$value = $options['value'];
+		if ( $value === null ) {
+			$this->expandedParams[$key] = $default;
+			return $default;
+		}
 
 		$flags = 0;
 		if ( $options['unescape'] ?? false ) {
@@ -82,6 +83,10 @@ final class Parameters {
 		}
 
 		$value = ParserPower::expand( $this->frame, $value, $flags );
+		if ( $formatter ) {
+			$value = $formatter->format( $value, $default );
+		}
+
 		$this->expandedParams[$key] = $value;
 		return $value;
 	}
