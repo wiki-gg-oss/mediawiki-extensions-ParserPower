@@ -26,12 +26,16 @@ final class LstElemFunction extends ListFunction {
 	 * @inheritDoc
 	 */
 	public function getParamSpec(): array {
-		return [
+		$paramSpec = [
 			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep',
 			2 => 'index'
 		];
+
+		$paramSpec['index']['default'] = 1;
+
+		return $paramSpec;
 	}
 
 	/**
@@ -48,7 +52,6 @@ final class LstElemFunction extends ListFunction {
 		}
 
 		$index = $params->get( 'index' );
-		$index = is_numeric( $index ) ? intval( $index ) : 1;
 		$value = ListUtils::get( $inValues, $index );
 
 		return ParserPower::evaluateUnescaped( $parser, $frame, $value );
