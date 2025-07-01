@@ -4,7 +4,6 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\ParserPowerConfig;
 
 /**
@@ -44,7 +43,7 @@ final class LstMapFunction extends ListMapFunction {
 	 */
 	public function getParamSpec(): array {
 		$paramSpec = [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep',
 			2 => 'token',

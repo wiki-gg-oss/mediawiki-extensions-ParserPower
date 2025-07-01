@@ -8,12 +8,11 @@ use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for searching a list value index (#lstind).
  */
-final class LstIndFunction extends ParserFunctionBase {
+final class LstIndFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -27,7 +26,7 @@ final class LstIndFunction extends ParserFunctionBase {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'value',
 			1 => 'list',
 			2 => 'insep',
@@ -51,32 +50,32 @@ final class LstIndFunction extends ParserFunctionBase {
 
 		$item = $params->get( 'value' );
 
-		$options = ListUtils::decodeIndexOptions( $params->get( 'indexoptions' ) );
-		if ( $options & ListUtils::INDEX_DESC ) {
-			if ( $options & ListUtils::INDEX_CS ) {
+		$options = $params->get( 'indexoptions' );
+		if ( $options & self::INDEX_DESC ) {
+			if ( $options & self::INDEX_CS ) {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( $values[$index] === $item ) {
-						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			} else {
 				for ( $index = $count - 1; $index > -1; --$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			}
 		} else {
-			if ( $options & ListUtils::INDEX_CS ) {
+			if ( $options & self::INDEX_CS ) {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( $values[$index] === $item ) {
-						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			} else {
 				for ( $index = 0; $index < $count; ++$index ) {
 					if ( strtolower( $values[$index] ) === strtolower( $item ) ) {
-						return (string)( ( $options & ListUtils::INDEX_NEG ) ? $index - $count : $index + 1 );
+						return (string)( ( $options & self::INDEX_NEG ) ? $index - $count : $index + 1 );
 					}
 				}
 			}

@@ -35,7 +35,7 @@ final class LstFltrFunction extends ListFilterFunction {
 	 */
 	public function getParamSpec(): array {
 		return [
-			...ListUtils::PARAM_OPTIONS,
+			...parent::getParamSpec(),
 			0 => 'keep',
 			1 => 'keepsep',
 			2 => 'list',
@@ -60,7 +60,7 @@ final class LstFltrFunction extends ListFilterFunction {
 
 		$values = $params->get( 'keep' );
 		$valueSep = $params->get( 'keepsep' );
-		$csOption = ListUtils::decodeCSOption( $params->get( 'csoption' ) );
+		$csOption = $params->get( 'csoption' );
 
 		if ( $valueSep !== '' ) {
 			$values = ListUtils::explode( $valueSep, $values );

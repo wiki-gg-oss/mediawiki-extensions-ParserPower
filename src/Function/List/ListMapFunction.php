@@ -13,12 +13,11 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for mapping list values (#listmap).
  */
-class ListMapFunction extends ParserFunctionBase {
+class ListMapFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -32,13 +31,6 @@ class ListMapFunction extends ParserFunctionBase {
 	 */
 	public function allowsNamedParams(): bool {
 		return true;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getParamSpec(): array {
-		return ListUtils::PARAM_OPTIONS;
 	}
 
 	/**
@@ -85,25 +77,25 @@ class ListMapFunction extends ParserFunctionBase {
 		$template = $params->get( 'template' );
 		$fieldSep = $params->get( 'fieldsep' );
 
-		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
+		$sortMode = $params->get( 'sortmode' );
+		$sortOptions = $sortMode > 0 ? $params->get( 'sortoptions' ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
-		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
+		$duplicates = $params->get( 'duplicates' );
 
-		if ( $duplicates & ListUtils::DUPLICATES_PRESTRIP ) {
+		if ( $duplicates & self::DUPLICATES_PRESTRIP ) {
 			$inValues = array_unique( $inValues );
 		}
 
 		if ( $template !== '' ) {
-			if ( $sortMode & ListUtils::SORTMODE_PRE ) {
+			if ( $sortMode & self::SORTMODE_PRE ) {
 				$inValues = $sorter->sort( $inValues );
 			}
 
 			$operation = new TemplateOperation( $parser, $frame, $template );
 			$outValues = $this->mapList( $operation, true, $inValues, $fieldSep );
 
-			if ( $sortMode & ( ListUtils::SORTMODE_POST | ListUtils::SORTMODE_COMPAT ) ) {
+			if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 				$outValues = $sorter->sort( $outValues );
 			}
 		} else {
@@ -113,8 +105,8 @@ class ListMapFunction extends ParserFunctionBase {
 			$pattern = $params->get( 'pattern' );
 
 			if (
-				( $indexToken !== '' && $sortMode & ListUtils::SORTMODE_COMPAT ) ||
-				$sortMode & ListUtils::SORTMODE_PRE
+				( $indexToken !== '' && $sortMode & self::SORTMODE_COMPAT ) ||
+				$sortMode & self::SORTMODE_PRE
 			) {
 				$inValues = $sorter->sort( $inValues );
 			}
@@ -123,14 +115,14 @@ class ListMapFunction extends ParserFunctionBase {
 			$outValues = $this->mapList( $operation, false, $inValues, $fieldSep );
 
 			if (
-				( $indexToken === '' && $sortMode & ListUtils::SORTMODE_COMPAT ) ||
-				$sortMode & ListUtils::SORTMODE_POST
+				( $indexToken === '' && $sortMode & self::SORTMODE_COMPAT ) ||
+				$sortMode & self::SORTMODE_POST
 			) {
 				$outValues = $sorter->sort( $outValues );
 			}
 		}
 
-		if ( $duplicates & ListUtils::DUPLICATES_POSTSTRIP ) {
+		if ( $duplicates & self::DUPLICATES_POSTSTRIP ) {
 			$outValues = array_unique( $outValues );
 		}
 

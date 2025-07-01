@@ -13,12 +13,11 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for filtering list values (#listfilter).
  */
-class ListFilterFunction extends ParserFunctionBase {
+class ListFilterFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -32,13 +31,6 @@ class ListFilterFunction extends ParserFunctionBase {
 	 */
 	public function allowsNamedParams(): bool {
 		return true;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getParamSpec(): array {
-		return ListUtils::PARAM_OPTIONS;
 	}
 
 	/**
@@ -86,7 +78,7 @@ class ListFilterFunction extends ParserFunctionBase {
 				$keepValues = [ ParserPower::unescape( $keepValues ) ];
 			}
 
-			$keepCS = ListUtils::decodeBool( $params->get( 'keepcs' ) );
+			$keepCS = $params->get( 'keepcs' );
 			$operation = new ListInclusionOperation( $keepValues, '', 'remove', $keepCS );
 		} else {
 			$removeValues = $params->get( 'remove' );
@@ -99,7 +91,7 @@ class ListFilterFunction extends ParserFunctionBase {
 					$removeValues = [ ParserPower::unescape( $removeValues ) ];
 				}
 
-				$removeCS = ListUtils::decodeBool( $params->get( 'removecs' ) );
+				$removeCS = $params->get( 'removecs' );
 				$operation = new ListInclusionOperation( $removeValues, 'remove', '', $removeCS );
 			} else {
 				$template = $params->get( 'template' );

@@ -124,9 +124,9 @@ final class ParameterParser {
 	 *
 	 * @param int|string $key Parameter index or name.
 	 * @param array $extraOptions Parsing and post-processing options, overriding the default ones if it has not already been parsed.
-	 * @return string The expanded (and post-processed) parameter value.
+	 * @return mixed The expanded (and post-processed) parameter value.
 	 */
-	public function get( int|string $key, array $extraOptions = [] ): string {
+	public function get( int|string $key, array $extraOptions = [] ) {
 		if ( isset( $this->expandedParams[$key] ) ) {
 			return $this->expandedParams[$key];
 		}
@@ -136,13 +136,15 @@ final class ParameterParser {
 			$key = $options['alias'];
 		}
 
-		if ( !isset( $this->params[$key] ) ) {
-			$value = $options['default'] ?? '';
-			$this->expandedParams[$key] = $value;
-			return $value;
+		$formatter = $options['formatter'] ?? null;
+		$default = $options['default'] ?? $formatter?->getDefault() ?? '';
+		$value = $this->params[$key] ?? null;
+
+		if ( $value === null ) {
+			$this->expandedParams[$key] = $default;
+			return $default;
 		}
 
-		$value = $this->params[$key];
 		if ( is_array( $value ) ) {
 			$options = $this->getOptions( $value['alias'], $extraOptions );
 			$value = $this->params[$value['alias']];
@@ -157,6 +159,10 @@ final class ParameterParser {
 		}
 
 		$value = ParserPower::expand( $this->frame, $value, $flags );
+		if ( $formatter ) {
+			$value = $formatter->format( $value, $default );
+		}
+
 		$this->expandedParams[$key] = $value;
 		return $value;
 	}

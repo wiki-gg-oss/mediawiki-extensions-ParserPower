@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
+use MediaWiki\Extension\ParserPower\Formatter\BoolFormatter;
 use MediaWiki\Extension\ParserPower\ListSorter;
 use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
@@ -13,12 +14,21 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for merging list values (#listmerge).
  */
-class ListMergeFunction extends ParserFunctionBase {
+class ListMergeFunction extends ListFunction {
+
+	/**
+	 * @var BoolFormatter Wikitext formatter for the match operation result.
+	 */
+	private BoolFormatter $matchFormatter;
+
+	public function __construct() {
+		$this->matchFormatter = BoolFormatter::getBase();
+		parent::__construct();
+	}
 
 	/**
 	 * @inheritDoc
@@ -38,7 +48,22 @@ class ListMergeFunction extends ParserFunctionBase {
 	 * @inheritDoc
 	 */
 	public function getParamSpec(): array {
-		return ListUtils::PARAM_OPTIONS;
+		$paramSpec = parent::getParamSpec();
+
+		foreach ( [ 'match', 'merge' ] as $op ) {
+			$paramSpec += [
+				"{$op}pattern" => $paramSpec['pattern'],
+				"{$op}template" => $paramSpec['template']
+			];
+		}
+
+		foreach ( [ '1', '2' ] as $i ) {
+			$paramSpec += [
+				"token$i" => $paramSpec['token']
+			];
+		}
+
+		return $paramSpec;
 	}
 
 	/**
@@ -91,8 +116,7 @@ class ListMergeFunction extends ParserFunctionBase {
 							$fields[$offset + $i] = $field;
 						}
 
-						$doMerge = $matchOperation->apply( $fields );
-						$doMerge = ListUtils::decodeBool( $doMerge );
+						$doMerge = $this->matchFormatter->format( $matchOperation->apply( $fields ) );
 						$checkedPairs[$value1][$value2] = $doMerge;
 					}
 
@@ -139,11 +163,11 @@ class ListMergeFunction extends ParserFunctionBase {
 		$mergeTemplate = $params->get( 'mergetemplate' );
 		$fieldSep = $params->get( 'fieldsep' );
 
-		$sortMode = ListUtils::decodeSortMode( $params->get( 'sortmode' ) );
-		$sortOptions = $sortMode > 0 ? ListUtils::decodeSortOptions( $params->get( 'sortoptions' ) ) : 0;
+		$sortMode = $params->get( 'sortmode' );
+		$sortOptions = $sortMode > 0 ? $params->get( 'sortoptions' ) : 0;
 		$sorter = new ListSorter( $sortOptions );
 
-		if ( $sortMode & ListUtils::SORTMODE_PRE ) {
+		if ( $sortMode & self::SORTMODE_PRE ) {
 			$inValues = $sorter->sort( $inValues );
 		}
 
@@ -171,7 +195,7 @@ class ListMergeFunction extends ParserFunctionBase {
 
 		$outValues = $this->iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, $fieldOffset ?? null );
 
-		if ( $sortMode & ( ListUtils::SORTMODE_POST | ListUtils::SORTMODE_COMPAT ) ) {
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
 			$outValues = $sorter->sort( $outValues );
 		}
 

@@ -13,12 +13,11 @@ use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
-use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
  * Parser function for sorting list values (#listsort).
  */
-class ListSortFunction extends ParserFunctionBase {
+class ListSortFunction extends ListFunction {
 
 	/**
 	 * @inheritDoc
@@ -32,13 +31,6 @@ class ListSortFunction extends ParserFunctionBase {
 	 */
 	public function allowsNamedParams(): bool {
 		return true;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getParamSpec(): array {
-		return ListUtils::PARAM_OPTIONS;
 	}
 
 	/**
@@ -93,18 +85,17 @@ class ListSortFunction extends ParserFunctionBase {
 		}
 
 		$template = $params->get( 'template' );
-		$sortOptions = $params->get( 'sortoptions' );
-		$subsort = ListUtils::decodeBool( $params->get( 'subsort' ) );
-		$subsortOptions = $subsort ? ListUtils::decodeSortOptions( $params->get( 'subsortoptions' ) ) : null;
-		$duplicates = ListUtils::decodeDuplicates( $params->get( 'duplicates' ) );
+		$subsort = $params->get( 'subsort' );
+		$subsortOptions = $subsort ? $params->get( 'subsortoptions' ) : null;
+		$duplicates = $params->get( 'duplicates' );
 
-		if ( $duplicates & ListUtils::DUPLICATES_STRIP ) {
+		if ( $duplicates & self::DUPLICATES_STRIP ) {
 			$values = array_unique( $values );
 		}
 
 		if ( $template !== '' ) {
 			$fieldSep = $params->get( 'fieldsep' );
-			$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+			$sortOptions = $params->get( 'sortoptions', [ 'default' => ListSorter::NUMERIC ] );
 			$sorter = new ListSorter( $sortOptions, $subsortOptions );
 			$operation = new TemplateOperation( $parser, $frame, $template );
 
@@ -120,7 +111,7 @@ class ListSortFunction extends ParserFunctionBase {
 				$fieldSep = $params->get( 'fieldsep' );
 				$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
 				$tokens = ListUtils::explodeToken( $tokenSep, $token );
-				$sortOptions = ListUtils::decodeSortOptions( $sortOptions, ListSorter::NUMERIC );
+				$sortOptions = $params->get( 'sortoptions', [ 'default' => ListSorter::NUMERIC ] );
 				$sorter = new ListSorter( $sortOptions, $subsortOptions );
 				$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 
@@ -128,7 +119,7 @@ class ListSortFunction extends ParserFunctionBase {
 				$sorter->sortPairs( $pairedValues );
 				$values = $this->discardSortKeys( $pairedValues );
 			} else {
-				$sortOptions = ListUtils::decodeSortOptions( $sortOptions );
+				$sortOptions = $params->get( 'sortoptions' );
 				$sorter = new ListSorter( $sortOptions );
 				$values = $sorter->sort( $values );
 			}
