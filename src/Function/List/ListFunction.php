@@ -44,13 +44,24 @@ abstract class ListFunction extends ParserFunctionBase {
 	public const SORTMODE_COMPAT = 4;
 
 	/**
+	 * @var ?array Base parameter specification for list functions.
+	 */
+	private static ?array $paramSpec;
+
+	/**
 	 * @inheritDoc
 	 */
 	public function getParamSpec(): array {
-		return [
-			'counttoken' => [ 'unescape' => true ],
-			'csoption' => [ 'formatter' => new BoolFormatter( 'cs', 'ncs' ) ],
-			'default' => [ 'unescape' => true ],
+		self::$paramSpec ??= [
+			'counttoken' => [
+				'unescape' => true
+			],
+			'csoption' => [
+				'formatter' => new BoolFormatter( 'cs', 'ncs' )
+			],
+			'default' => [
+				'unescape' => true
+			],
 			'duplicates' => [
 				'formatter' => new EnumFormatter( [
 					'keep'          => 0,
@@ -60,11 +71,20 @@ abstract class ListFunction extends ParserFunctionBase {
 					'pre/poststrip' => self::DUPLICATES_PRESTRIP | self::DUPLICATES_POSTSTRIP
 				] )
 			],
-			'fieldsep' => [ 'unescape' => true ],
+			'fieldsep' => [
+				'unescape' => true
+			],
 			'keep' => [],
-			'keepcs' => [ 'formatter' => BoolFormatter::getBase() ],
-			'keepsep' => [ 'default' => ',' ],
-			'index' => [ 'unescape' => true, 'formatter' => new IntFormatter() ],
+			'keepcs' => [
+				'formatter' => BoolFormatter::getBase()
+			],
+			'keepsep' => [
+				'default' => ','
+			],
+			'index' => [
+				'unescape' => true,
+				'formatter' => new IntFormatter()
+			],
 			'indexoptions' => [
 				'formatter' => new FlagsFormatter( [
 					'neg'  => [ 'include' => self::INDEX_NEG ],
@@ -75,18 +95,40 @@ abstract class ListFunction extends ParserFunctionBase {
 					'asc'  => [ 'exclude' => self::INDEX_DESC ]
 				] )
 			],
-			'indextoken' => [ 'unescape' => true ],
-			'insep' => [ 'unescape' => true, 'default' => ',' ],
-			'intro' => [ 'unescape' => true ],
-			'length' => [ 'unescape' => true, 'formatter' => new IntFormatter(), 'default' => PHP_INT_MAX ],
+			'indextoken' => [
+				'unescape' => true
+			],
+			'insep' => [
+				'unescape' => true,
+				'default' => ','
+			],
+			'intro' => [
+				'unescape' => true
+			],
+			'length' => [
+				'unescape' => true,
+				'formatter' => new IntFormatter(),
+				'default' => PHP_INT_MAX
+			],
 			'list' => [],
-			'outro' => [ 'unescape' => true ],
-			'outsep' => [ 'unescape' => true, 'default' => ', ' ],
-			'outconj' => [ 'unescape' => true ],
+			'outro' => [
+				'unescape' => true
+			],
+			'outsep' => [
+				'unescape' => true,
+				'default' => ', '
+			],
+			'outconj' => [
+				'unescape' => true
+			],
 			'pattern' => [],
 			'remove' => [],
-			'removecs' => [ 'formatter' => BoolFormatter::getBase() ],
-			'removesep' => [ 'default' => ',' ],
+			'removecs' => [
+				'formatter' => BoolFormatter::getBase()
+			],
+			'removesep' => [
+				'default' => ','
+			],
 			'sortmode' => [
 				'formatter' => new EnumFormatter( [
 					'nosort'       => 0,
@@ -106,7 +148,9 @@ abstract class ListFunction extends ParserFunctionBase {
 					'asc'     => [ 'exclude' => ListSorter::DESCENDING ]
 				] )
 			],
-			'subsort' => [ 'formatter' => BoolFormatter::getBase() ],
+			'subsort' => [
+				'formatter' => BoolFormatter::getBase()
+			],
 			'subsortoptions' => [
 				'formatter' => new FlagsFormatter( [
 					'numeric' => [ 'include' => ListSorter::NUMERIC ],
@@ -118,10 +162,20 @@ abstract class ListFunction extends ParserFunctionBase {
 				] )
 			],
 			'template' => [],
-			'token' => [ 'unescape' => true ],
-			'tokensep' => [ 'unescape' => true, 'default' => ',' ],
-			'uniquecs' => [ 'formatter' => BoolFormatter::getBase() ],
-			'value' => [ 'unescape' => true ]
+			'token' => [
+				'unescape' => true
+			],
+			'tokensep' => [
+				'unescape' => true,
+				'default' => ','
+			],
+			'uniquecs' => [
+				'formatter' => BoolFormatter::getBase()
+			],
+			'value' => [
+				'unescape' => true
+			]
 		];
+		return self::$paramSpec;
 	}
 }

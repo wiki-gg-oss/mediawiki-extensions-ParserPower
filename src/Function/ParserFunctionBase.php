@@ -4,8 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
-use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
