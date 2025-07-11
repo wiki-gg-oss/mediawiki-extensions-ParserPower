@@ -49,6 +49,21 @@ abstract class ListFunction extends ParserFunctionBase {
 	private static ?array $paramSpec;
 
 	/**
+	 * @var ?array Wikitext formatter for case sensitivity options.
+	 */
+	private static ?BoolFormatter $csFormatter;
+
+	/**
+	 * Get a wikitext formatter to decode case sensitivity options.
+	 *
+	 * @return BoolFormatter A wikitext-to-bool formatter.
+	 */
+	protected function getCSFormatter(): BoolFormatter {
+		self::$csFormatter ??= new BoolFormatter( 'cs', 'ncs' );
+		return self::$csFormatter;
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function getParamSpec(): array {
@@ -57,7 +72,7 @@ abstract class ListFunction extends ParserFunctionBase {
 				'unescape' => true
 			],
 			'csoption' => [
-				'formatter' => new BoolFormatter( 'cs', 'ncs' )
+				'formatter' => $this->getCSFormatter()
 			],
 			'default' => [
 				'unescape' => true
