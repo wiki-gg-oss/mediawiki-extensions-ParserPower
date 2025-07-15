@@ -71,7 +71,7 @@ class ListMapFunction extends ListFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( count( $inValues ) === 0 ) {
+		if ( $inValues === [] ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
@@ -127,27 +127,10 @@ class ListMapFunction extends ListFunction {
 			$outValues = array_unique( $outValues );
 		}
 
-		$count = count( $outValues );
-		if ( $count === 0 ) {
+		if ( $outValues === [] ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		} else {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $outValues ) );
 		}
-
-		if ( $count > 1 ) {
-			$outSep = $params->get( 'outsep' );
-			if ( $params->isDefined( 'outconj' ) ) {
-				$outConj = $params->get( 'outconj' );
-				if ( $outConj !== $outSep ) {
-					$outConj = ' ' . trim( $outConj ) . ' ';
-				}
-			}
-		}
-		$outList = ListUtils::implode( $outValues, $outSep ?? '', $outConj ?? null );
-
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
-		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
