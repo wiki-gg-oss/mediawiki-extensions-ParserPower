@@ -24,8 +24,8 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function allowsNamedParams(): bool {
-		return false;
+	public function getParserFlags(): int {
+		return 0;
 	}
 
 	/**

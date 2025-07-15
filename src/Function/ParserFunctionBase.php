@@ -17,21 +17,16 @@ abstract class ParserFunctionBase implements ParserFunction {
 	private readonly ParameterParser $paramParser;
 
 	public function __construct() {
-		$paramFlags = 0;
-		if ( $this->allowsNamedParams() ) {
-			$paramFlags |= ParameterParser::ALLOWS_NAMED;
-		}
-
-		$this->paramParser = new ParameterParser( $this->getParamSpec(), $this->getDefaultSpec(), $paramFlags );
+		$this->paramParser = new ParameterParser( $this->getParamSpec(), $this->getDefaultSpec(), $this->getParserFlags() );
 	}
 
 	/**
-	 * Whether named parameters are recognized, along with numbered parameters.
+	 * Get the set of flags to use with the parameter parser.
 	 *
-	 * @return bool
+	 * @return int The set of ParameterParser flags.
 	 */
-	public function allowsNamedParams(): bool {
-		return false;
+	public function getParserFlags(): int {
+		return 0;
 	}
 
 	/**

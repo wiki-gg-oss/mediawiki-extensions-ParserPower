@@ -26,8 +26,8 @@ final class LstFltrFunction extends ListFilterFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function allowsNamedParams(): bool {
-		return false;
+	public function getParserFlags(): int {
+		return 0;
 	}
 
 	/**

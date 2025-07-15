@@ -16,6 +16,7 @@ Add new entries to the top of the 1.x.x-NEXT section.
 ## Versions
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
+* Added `parserpower-invalid-args-category` system message. It defines a tracking category added to pages using ParserPower parser functions with an invalid parameter, either numbered or named.
 * …
 
 ### 1.7.1 (2025-06-27)
