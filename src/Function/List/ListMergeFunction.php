@@ -10,6 +10,7 @@ use MediaWiki\Extension\ParserPower\ListUtils;
 use MediaWiki\Extension\ParserPower\Operation\PatternOperation;
 use MediaWiki\Extension\ParserPower\Operation\TemplateOperation;
 use MediaWiki\Extension\ParserPower\Operation\WikitextOperation;
+use MediaWiki\Extension\ParserPower\ParameterParser;
 use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
@@ -40,8 +41,8 @@ class ListMergeFunction extends ListFunction {
 	/**
 	 * @inheritDoc
 	 */
-	public function allowsNamedParams(): bool {
-		return true;
+	public function getParserFlags(): int {
+		return ParameterParser::ALLOWS_NAMED;
 	}
 
 	/**
