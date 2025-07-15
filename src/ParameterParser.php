@@ -25,12 +25,12 @@ final class ParameterParser {
 
 	/**
 	 * @param array $paramOptions Parsing and post-processing options for all parameters.
-	 * @param array $defaultOptions Parsing and post-processing options for unknown parameters.
+	 * @param ?array $defaultOptions Parsing and post-processing options for unknown parameters if allowed.
 	 * @param int $flags Parameter parser flags.
 	 */
 	public function __construct(
 		private array $paramOptions = [],
-		private array $defaultOptions = [],
+		private ?array $defaultOptions = null,
 		private int $flags = 0
 	) {
 	}
@@ -71,8 +71,16 @@ final class ParameterParser {
 				$key = $numberedCount++;
 			}
 
+			if ( isset( $this->paramOptions[$key] ) ) {
+				$options = $this->paramOptions[$key];
+			} elseif ( $this->defaultOptions !== null ) {
+				$options = $this->defaultOptions;
+			} else {
+				$parser->addTrackingCategory( 'parserpower-invalid-args-category' );
+				continue;
+			}
+
 			// Resolve aliases
-			$options = $this->paramOptions[$key] ?? $this->defaultOptions;
 			if ( is_string( $options ) ) {
 				$key = $options;
 				$options = $this->paramOptions[$key];

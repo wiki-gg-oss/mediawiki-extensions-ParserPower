@@ -46,10 +46,10 @@ abstract class ParserFunctionBase implements ParserFunction {
 	/**
 	 * Get the parsing and post-processing options to use with unknown parameters.
 	 *
-	 * @return array A parameter specification.
+	 * @return ?array A parameter specification if unknown parameters are allowed.
 	 */
-	public function getDefaultSpec(): array {
-		return [];
+	public function getDefaultSpec(): ?array {
+		return null;
 	}
 
 	/**

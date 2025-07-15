@@ -15,5 +15,7 @@
 	"parserpower-error-missing-parameter": "An error message.\n\nParameters:\n$1 - a parameter name",
 	"parserpower-error-no-arguments": "An error message.",
 	"parserpower-duplicate-args-category": "{{tracking category name}}\nTracking category for pages using duplicate arguments in ParserPower functions",
-	"parserpower-duplicate-args-category-desc": "Description on [[Special:TrackingCategories]] for the {{msg-mw|parserpower-duplicate-args-category}} tracking category."
+	"parserpower-duplicate-args-category-desc": "Description on [[Special:TrackingCategories]] for the {{msg-mw|parserpower-duplicate-args-category}} tracking category.",
+	"parserpower-invalid-args-category": "{{tracking category name}}\nTracking category for pages using invalid arguments in ParserPower functions",
+	"parserpower-invalid-args-category-desc": "Description on [[Special:TrackingCategories]] for the {{msg-mw|parserpower-invalid-args-category}} tracking category."
 }

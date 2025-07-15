@@ -20,7 +20,8 @@
 		}
 	},
 	"TrackingCategories": [
-		"parserpower-duplicate-args-category"
+		"parserpower-duplicate-args-category",
+		"parserpower-invalid-args-category"
 	],
 	"MessagesDirs": {
 		"ParserPower": [

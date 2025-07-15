@@ -23,7 +23,7 @@ final class OrFunction extends ParserFunctionBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function getDefaultSpec(): array {
+	public function getDefaultSpec(): ?array {
 		return [];
 	}
 
