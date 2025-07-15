@@ -200,19 +200,10 @@ class ListMergeFunction extends ListFunction {
 			$outValues = $sorter->sort( $outValues );
 		}
 
-		$count = count( $outValues );
-		if ( $count === 0 ) {
+		if ( $outValues === [] ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		} else {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $outValues ) );
 		}
-
-		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
-		$outList = ListUtils::implode( $outValues, $outSep );
-
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
-		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }

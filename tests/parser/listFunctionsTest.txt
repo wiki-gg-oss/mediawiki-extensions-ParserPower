@@ -640,11 +640,30 @@ cs desc neg: "-3" / ""
 !! test
 {{#listfilter}} outsep
 !! wikitext
+"{{#listfilter: list = a, b | outsep = }}"
+"{{#listfilter: list = a, b | outsep = ! }}"
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = }}"
 "{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = ; }}"
 !! html/php
-<p>"abcdefghij"
+<p>"ab"
+"a!b"
+"abcdefghij"
 "a;b;c;d;e;f;g;h;i;j"
+</p>
+!! end
+
+!! test
+{{#listfilter}} outconj
+!! wikitext
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | outconj = }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | outconj = \_\n! }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = | outconj = }}"
+"{{#listfilter: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = | outconj = ! }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i  j"
+"a, b, c, d, e, f, g, h, i&#160;! j"
+"abcdefghij"
+"abcdefghi&#160;! j"
 </p>
 !! end
 
@@ -1056,11 +1075,30 @@ cs desc neg: "-3" / ""
 !! test
 {{#listunique}} outsep
 !! wikitext
+"{{#listunique: list = a, b | outsep = }}"
+"{{#listunique: list = a, b | outsep = ! }}"
 "{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | outsep = }}"
 "{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | outsep = ! }}"
 !! html/php
-<p>"abCDEf"
+<p>"ab"
+"a!b"
+"abCDEf"
 "a!b!C!D!E!f"
+</p>
+!! end
+
+!! test
+{{#listunique}} outconj
+!! wikitext
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | outconj = }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | outconj = \_\n! }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | outsep = | outconj = }}"
+"{{#listunique: list = a, b ,C,D,,A ,b, ,c, D,E,f | outsep = | outconj = ! }}"
+!! html/php
+<p>"a, b, C, D, E  f"
+"a, b, C, D, E&#160;! f"
+"abCDEf"
+"abCDE&#160;! f"
 </p>
 !! end
 
@@ -1287,11 +1325,30 @@ cs desc neg: "-3" / ""
 !! test
 {{#listsort}} outsep
 !! wikitext
+"{{#listsort: list = f, D | outsep = }}"
+"{{#listsort: list = f, D | outsep = ! }}"
 "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | outsep = }}"
 "{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | outsep = ! }}"
 !! html/php
-<p>"AaBCcCDefF"
+<p>"Df"
+"D!f"
+"AaBCcCDefF"
 "A!a!B!C!c!C!D!e!f!F"
+</p>
+!! end
+
+!! test
+{{#listsort}} outconj
+!! wikitext
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | outconj = }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | outconj = \_\n! }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | outsep = | outconj = }}"
+"{{#listsort: list = f, D ,C,A,,F ,B, ,e, a,c,C | outsep = | outconj = ! }}"
+!! html/php
+<p>"A, a, B, C, c, C, D, e, f  F"
+"A, a, B, C, c, C, D, e, f&#160;! F"
+"AaBCcCDefF"
+"AaBCcCDef&#160;! F"
 </p>
 !! end
 
@@ -2006,11 +2063,30 @@ numeric desc: "6!6!4!4!3!3!3!2!1!1"
 !! test
 {{#listmerge}} outsep
 !! wikitext
+"{{#listmerge: list = a, b | outsep = }}"
+"{{#listmerge: list = a, b | outsep = ! }}"
 "{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = }}"
 "{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = ! }}"
 !! html/php
-<p>"abcdefghij"
+<p>"ab"
+"a!b"
+"abcdefghij"
 "a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#listmerge}} outconj
+!! wikitext
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | outconj = }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | outconj = \_\n! }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = | outconj = }}"
+"{{#listmerge: list = a, b ,c,d,,e ,f, ,g, h,i,j | outsep = | outconj = ! }}"
+!! html/php
+<p>"a, b, c, d, e, f, g, h, i  j"
+"a, b, c, d, e, f, g, h, i&#160;! j"
+"abcdefghij"
+"abcdefghi&#160;! j"
 </p>
 !! end
 
