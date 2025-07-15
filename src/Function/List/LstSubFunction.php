@@ -54,9 +54,6 @@ final class LstSubFunction extends ListFunction {
 		$length = $offset < $inCount ? $params->get( 'length' ) : null;
 		$outValues = ListUtils::slice( $inValues, $offset, $length );
 
-		$outSep = count( $outValues ) > 1 ? $params->get( 'outsep' ) : '';
-		$outList = ListUtils::implode( $outValues, $outSep );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $outValues ) );
 	}
 }

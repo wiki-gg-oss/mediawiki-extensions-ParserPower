@@ -126,19 +126,10 @@ class ListSortFunction extends ListFunction {
 			}
 		}
 
-		if ( count( $values ) === 0 ) {
+		if ( $values === [] ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		} else {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $values ) );
 		}
-
-		$count = count( $values );
-		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
-		$outList = ListUtils::implode( $values, $outSep );
-
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
-		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
 	}
 }
