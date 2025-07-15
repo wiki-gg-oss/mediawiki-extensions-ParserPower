@@ -24,7 +24,7 @@ final class UeOrFunction extends ParserFunctionBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function getDefaultSpec(): array {
+	public function getDefaultSpec(): ?array {
 		return [];
 	}
 
