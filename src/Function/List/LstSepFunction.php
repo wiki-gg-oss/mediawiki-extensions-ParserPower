@@ -30,7 +30,8 @@ final class LstSepFunction extends ListFunction {
 			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep',
-			2 => 'outsep'
+			2 => 'outsep',
+			3 => 'outconj'
 		];
 	}
 

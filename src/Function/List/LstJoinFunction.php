@@ -41,7 +41,8 @@ final class LstJoinFunction extends ListFunction {
 			1 => 'insep1',
 			2 => 'list2',
 			3 => 'insep2',
-			4 => 'outsep'
+			4 => 'outsep',
+			5 => 'outconj'
 		];
 	}
 
