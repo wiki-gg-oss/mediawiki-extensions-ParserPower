@@ -230,11 +230,30 @@ Template:Match/fields by len
 !! test
 {{#lstsep}} outsep
 !! wikitext
+"{{#lstsep: a; b | ; | }}"
+"{{#lstsep: a; b | ; | ! }}"
 "{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | }}"
 "{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! }}"
 !! html/php
-<p>"abcdefghij"
+<p>"ab"
+"a!b"
+"abcdefghij"
 "a!b!c!d!e!f!g!h!i!j"
+</p>
+!! end
+
+!! test
+{{#lstsep}} outconj
+!! wikitext
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | ! | \_\n! }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | | }}"
+"{{#lstsep: a; b ;c;d;;e ;f; ;g; h;i;j | ; | | \_\n! }}"
+!! html/php
+<p>"a!b!c!d!e!f!g!h!i  j"
+"a!b!c!d!e!f!g!h!i&#160;! j"
+"abcdefghij"
+"abcdefghi&#160;! j"
 </p>
 !! end
 
@@ -605,11 +624,30 @@ cs desc neg: "-3" / ""
 !! test
 {{#lstjoin}} outsep
 !! wikitext
+"{{#lstjoin: a | ; | k | ; | }}"
+"{{#lstjoin: a | ; | k | ; | ! }}"
 "{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | }}"
-"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | \_; }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | ! }}"
 !! html/php
-<p>"abcdefghijklmnopqrst"
-"a ;b ;c ;d ;e ;f ;g ;h ;i ;j ;k ;l ;m ;n ;o ;p ;q ;r ;s ;t"
+<p>"ak"
+"a!k"
+"abcdefghijklmnopqrst"
+"a!b!c!d!e!f!g!h!i!j!k!l!m!n!o!p!q!r!s!t"
+</p>
+!! end
+
+!! test
+{{#lstjoin}} outconj
+!! wikitext
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | ! | }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | ! | \_\n! }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | | }}"
+"{{#lstjoin: a; b ;c;d;;e ;f; ;g; h;i;j | ; | k; l ;m;n;;o ;p; ;q; r;s;t | ; | | \_\n! }}"
+!! html/php
+<p>"a!b!c!d!e!f!g!h!i!j!k!l!m!n!o!p!q!r!s  t"
+"a!b!c!d!e!f!g!h!i!j!k!l!m!n!o!p!q!r!s&#160;! t"
+"abcdefghijklmnopqrst"
+"abcdefghijklmnopqrs&#160;! t"
 </p>
 !! end
 
