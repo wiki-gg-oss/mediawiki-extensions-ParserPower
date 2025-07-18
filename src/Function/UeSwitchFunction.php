@@ -26,7 +26,7 @@ final class UeSwitchFunction implements ParserFunction {
 	public function render( Parser $parser, PPFrame $frame, array $params ): string {
 		$switchKey = isset( $params[0] ) ? ParserPower::expand( $frame, array_shift( $params ), ParserPower::UNESCAPE ) : '';
 
-		if ( count( $params ) === 0 ) {
+		if ( empty( $params ) ) {
 			return '';
 		}
 

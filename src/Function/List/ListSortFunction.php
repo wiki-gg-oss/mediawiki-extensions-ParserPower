@@ -81,7 +81,7 @@ class ListSortFunction extends ListFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$values = ListUtils::explode( $inSep, $inList );
 
-		if ( count( $values ) === 0 ) {
+		if ( empty( $values ) ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
@@ -126,7 +126,7 @@ class ListSortFunction extends ListFunction {
 			}
 		}
 
-		if ( $values === [] ) {
+		if ( empty( $values ) ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		} else {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $values ) );
