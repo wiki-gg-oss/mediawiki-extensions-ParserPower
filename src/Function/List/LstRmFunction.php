@@ -53,7 +53,7 @@ final class LstRmFunction extends ListFilterFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( count( $inValues ) === 0 ) {
+		if ( empty( $inValues ) ) {
 			return '';
 		}
 

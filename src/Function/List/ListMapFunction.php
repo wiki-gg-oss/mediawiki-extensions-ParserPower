@@ -71,7 +71,7 @@ class ListMapFunction extends ListFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( $inValues === [] ) {
+		if ( empty( $inValues ) ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
@@ -127,7 +127,7 @@ class ListMapFunction extends ListFunction {
 			$outValues = array_unique( $outValues );
 		}
 
-		if ( $outValues === [] ) {
+		if ( empty( $outValues ) ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		} else {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $outValues ) );

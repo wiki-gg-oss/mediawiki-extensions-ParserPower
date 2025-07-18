@@ -53,7 +53,7 @@ final class IArgMapFunction extends ParserFunctionBase {
 		}
 
 		$allFormatterArgs = $frame->getNumberedArguments();
-		if ( count( $allFormatterArgs ) == 0 ) {
+		if ( empty( $allFormatterArgs ) ) {
 			return ParserPower::errorMessage( 'iargmap', 'no-arguments', 'n' );
 		}
 
