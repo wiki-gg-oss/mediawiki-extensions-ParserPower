@@ -44,7 +44,7 @@ final class LstFndFunction extends ListFunction {
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $list );
 
-		if ( count( $values ) === 0 ) {
+		if ( empty( $values ) ) {
 			return '';
 		}
 

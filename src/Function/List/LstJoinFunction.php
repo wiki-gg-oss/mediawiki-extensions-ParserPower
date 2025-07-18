@@ -41,7 +41,8 @@ final class LstJoinFunction extends ListFunction {
 			1 => 'insep1',
 			2 => 'list2',
 			3 => 'insep2',
-			4 => 'outsep'
+			4 => 'outsep',
+			5 => 'outconj'
 		];
 	}
 
@@ -61,9 +62,6 @@ final class LstJoinFunction extends ListFunction {
 
 		$values = array_merge( $values1, $values2 );
 
-		$outSep = count( $values ) > 1 ? $params->get( 'outsep' ) : '';
-		$outList = ListUtils::implode( $values, $outSep );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $values ) );
 	}
 }

@@ -49,7 +49,7 @@ final class LstCntUniqFunction extends ListUniqueFunction {
 		$sep = $parser->getStripState()->unstripNoWiki( $sep );
 		$values = ListUtils::explode( $sep, $inList );
 
-		if ( count( $values ) === 0 ) {
+		if ( empty( $values ) ) {
 			return '0';
 		}
 

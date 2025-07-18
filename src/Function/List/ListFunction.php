@@ -9,6 +9,8 @@ use MediaWiki\Extension\ParserPower\Formatter\EnumFormatter;
 use MediaWiki\Extension\ParserPower\Formatter\FlagsFormatter;
 use MediaWiki\Extension\ParserPower\Formatter\IntFormatter;
 use MediaWiki\Extension\ParserPower\ListSorter;
+use MediaWiki\Extension\ParserPower\ListUtils;
+use MediaWiki\Extension\ParserPower\Parameters;
 use MediaWiki\Extension\ParserPower\Function\ParserFunctionBase;
 
 /**
@@ -192,5 +194,34 @@ abstract class ListFunction extends ParserFunctionBase {
 			]
 		];
 		return self::$paramSpec;
+	}
+
+	/**
+	 * Implode an output list.
+	 *
+	 * @param Parameters $params Parser function parameters.
+	 * @param array $values Array to implode.
+	 * @return string The imploded list.
+	 */
+	protected function implodeOutList( Parameters $params, array $values ): string {
+		$count = count( $values );
+
+		if ( $count > 1 ) {
+			$sep = $params->get( 'outsep' );
+			if ( $params->isDefined( 'outconj' ) ) {
+				$conj = $params->get( 'outconj' );
+				if ( $conj !== $sep ) {
+					$conj = ' ' . trim( $conj ) . ' ';
+				}
+			}
+		}
+		$list = ListUtils::implode( $values, $sep ?? '', $conj ?? null );
+
+		$countToken = $params->get( 'counttoken' );
+		$intro = $params->get( 'intro' );
+		$outro = $params->get( 'outro' );
+		$list = ListUtils::applyIntroAndOutro( $intro, $list, $outro, $countToken, $count );
+
+		return $list;
 	}
 }

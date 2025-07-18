@@ -85,7 +85,7 @@ class ListUniqueFunction extends ListFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$inValues = ListUtils::explode( $inSep, $inList );
 
-		if ( count( $inValues ) === 0 ) {
+		if ( empty( $inValues ) ) {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
 		}
 
@@ -112,15 +112,10 @@ class ListUniqueFunction extends ListFunction {
 			}
 		}
 
-		$count = count( $outValues );
-		$outSep = $count > 1 ? $params->get( 'outsep' ) : '';
-		$outList = ListUtils::implode( $outValues, $outSep );
-
-		$countToken = $params->get( 'counttoken' );
-		$intro = $params->get( 'intro' );
-		$outro = $params->get( 'outro' );
-		$outList = ListUtils::applyIntroAndOutro( $intro, $outList, $outro, $countToken, $count );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+		if ( empty( $outValues ) ) {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 'default' ) );
+		} else {
+			return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $outValues ) );
+		}
 	}
 }

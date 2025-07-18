@@ -30,7 +30,8 @@ final class LstSepFunction extends ListFunction {
 			...parent::getParamSpec(),
 			0 => 'list',
 			1 => 'insep',
-			2 => 'outsep'
+			2 => 'outsep',
+			3 => 'outconj'
 		];
 	}
 
@@ -43,9 +44,6 @@ final class LstSepFunction extends ListFunction {
 		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
 		$values = ListUtils::explode( $inSep, $inList );
 
-		$outSep = count( $values ) > 1 ? $params->get( 'outsep' ) : '';
-		$outList = ListUtils::implode( $values, $outSep );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $outList );
+		return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $values ) );
 	}
 }
