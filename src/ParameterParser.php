@@ -4,6 +4,7 @@
 
 namespace MediaWiki\Extension\ParserPower;
 
+use InvalidArgumentException;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 use MediaWiki\Parser\PPNode;
