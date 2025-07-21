@@ -16,9 +16,11 @@ Add new entries to the top of the 1.x.x-NEXT section.
 ## Versions
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
+* …
+
+### 1.8.0 (2025-07-21)
 * Added `parserpower-invalid-args-category` system message. It defines a tracking category added to pages using ParserPower parser functions with an invalid parameter, either numbered or named.
 * Added `outconj` optional parameter to `#listfilter`, `#listsort`, `#listunique`, `#listmerge`. Also added as numbered parameter to `#lstsep` (4th) and `#lstjoin` (6th).
-* …
 
 ### 1.7.1 (2025-06-27)
 * Fixed `#listmap` not properly setting `outconj` when the input list contains 2 values.
