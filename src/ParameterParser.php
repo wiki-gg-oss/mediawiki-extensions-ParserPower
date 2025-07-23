@@ -120,7 +120,7 @@ final class ParameterParser {
 				$key = $options['alias'];
 			}
 
-			if ( isset( $params[$key] ) ) {
+			if ( isset( $params[$key]['value'] ) ) {
 				$parser->addTrackingCategory( 'parserpower-duplicate-args-category' );
 			}
 
