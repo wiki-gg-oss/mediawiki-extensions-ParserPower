@@ -34,34 +34,20 @@ final class LstRmFunction extends ListFilterFunction {
 	 * @inheritDoc
 	 */
 	public function getParamSpec(): array {
-		return [
+		$paramSpec = [
 			...parent::getParamSpec(),
-			0 => 'value',
+			0 => 'remove',
 			1 => 'list',
 			2 => 'insep',
 			3 => 'outsep',
-			4 => 'csoption'
+			4 => [
+				'alias' => 'removecs',
+				'formatter' => $this->getCSFormatter()
+			]
 		];
-	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function execute( Parser $parser, PPFrame $frame, Parameters $params ): string {
-		$inList = $params->get( 'list' );
-		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$inValues = ListUtils::explode( $inSep, $inList );
+		$paramSpec['removesep']['default'] = '';
 
-		if ( empty( $inValues ) ) {
-			return '';
-		}
-
-		$value = $params->get( 'value' );
-		$csOption = $params->get( 'csoption' );
-		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
-		$outValues = $this->filterList( $operation, $inValues );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $outValues ) );
+		return $paramSpec;
 	}
 }
