@@ -105,7 +105,10 @@ final class ParserVariableRegistry {
 		LstCntFunction::class,
 		LstCntUniqFunction::class,
 		LstElemFunction::class,
-		LstFltrFunction::class,
+		[
+			'class' => LstFltrFunction::class,
+			'services' => [ 'ParserPower.Config' ]
+		],
 		LstFndFunction::class,
 		LstIndFunction::class,
 		LstJoinFunction::class,
@@ -113,13 +116,25 @@ final class ParserVariableRegistry {
 			'class' => LstMapFunction::class,
 			'services' => [ 'ParserPower.Config' ]
 		],
-		LstMapTempFunction::class,
+		[
+			'class' => LstMapTempFunction::class,
+			'services' => [ 'ParserPower.Config' ]
+		],
 		LstPrepFunction::class,
-		LstRmFunction::class,
+		[
+			'class' => LstRmFunction::class,
+			'services' => [ 'ParserPower.Config' ]
+		],
 		LstSepFunction::class,
-		LstSrtFunction::class,
+		[
+			'class' => LstSrtFunction::class,
+			'services' => [ 'ParserPower.Config' ]
+		],
 		LstSubFunction::class,
-		LstUniqFunction::class
+		[
+			'class' => LstUniqFunction::class,
+			'services' => [ 'ParserPower.Config' ]
+		]
 	];
 
 	public function __construct( private ObjectFactory $objectFactory ) {
