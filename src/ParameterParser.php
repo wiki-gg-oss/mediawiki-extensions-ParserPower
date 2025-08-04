@@ -95,11 +95,17 @@ final class ParameterParser {
 			} elseif ( $this->defaultOptions !== null ) {
 				$options = $this->defaultOptions;
 			} else {
-				$parser->addTrackingCategory( 'parserpower-invalid-args-category' );
+				// Track unknown parameters, except empty ones that may be used for layout.
+				// This includes "|v}}", "|k= }}", or "|=}}" but excludes "| }}".
+				if ( is_string( $key ) || trim( $frame->expand( $value, PPFrame::RECOVER_ORIG ) ) !== '' ) {
+					$parser->addTrackingCategory( 'parserpower-invalid-args-category' );
+				}
+
 				continue;
 			}
 
-			if ( $key === null && $this->flags & self::TRACKS_NAMED_VALUES ) {
+			// Ensure numbered parameters are not confused with named ones.
+			if ( is_int( $key ) && $this->flags & self::TRACKS_NAMED_VALUES ) {
 				try {
 					[ $subKey, ] = $this->splitKeyValue( $value );
 				} catch ( InvalidArgumentException ) {
