@@ -54,7 +54,12 @@
 	"config_prefix": "wgParserPower",
 	"config": {
 		"LstmapExpansionCompat": {
+			"description": "Use true to expand token and pattern variables only after token replacements in {{#lstmap}}. Use false to expand variables the same way as {{#listmap}}.",
 			"value": false
+		},
+		"LstFunctionNamedExpansionCompat": {
+			"description": "Use 'old' to only allow numbered parameters in {{#lstmap}}, {{#lstmaptemp}}, {{#lstsrt}}, and {{#lstuniq}}. Use 'tracking-old' to also track parameters that may be confused as named parameters. Use 'new' to allow both numbered and named parameters.",
+			"value": "old"
 		}
 	},
 	"manifest_version": 2

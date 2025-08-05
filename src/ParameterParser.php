@@ -99,7 +99,7 @@ final class ParameterParser {
 				continue;
 			}
 
-			if ( $key === null && $this->flags & self::TRACKS_NAMED_VALUES ) {
+			if ( is_int( $key ) && $this->flags & self::TRACKS_NAMED_VALUES ) {
 				try {
 					[ $subKey, ] = $this->splitKeyValue( $value );
 				} catch ( InvalidArgumentException ) {
