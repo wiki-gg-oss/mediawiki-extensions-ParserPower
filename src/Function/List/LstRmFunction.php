@@ -4,14 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListUtils;
-use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
 use MediaWiki\Extension\ParserPower\ParameterParser;
-use MediaWiki\Extension\ParserPower\Parameters;
-use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Extension\ParserPower\ParserPowerConfig;
-use MediaWiki\Parser\Parser;
-use MediaWiki\Parser\PPFrame;
 
 /**
  * Parser function for filtering list values from an exclusion value (#lstrm).
