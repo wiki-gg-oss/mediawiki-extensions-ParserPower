@@ -16,4 +16,14 @@ function ParserPowerString.setupInterface( options )
 	package.loaded['mw.ext.ParserPower.string'] = ParserPowerString
 end
 
+function ParserPowerString.escape( text )
+	libraryUtil.checkType( 'escape', 1, text, 'string' )
+	return php.escape( text )
+end
+
+function ParserPowerString.unescape( text )
+	libraryUtil.checkType( 'unescape', 1, text, 'string' )
+	return php.unescape( text )
+end
+
 return ParserPowerString
