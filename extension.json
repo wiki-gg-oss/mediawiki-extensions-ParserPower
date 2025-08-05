@@ -43,10 +43,14 @@
 			"services": [
 				"ParserPower.ParserVariableRegistry"
 			]
+		},
+		"Scribunto": {
+			"class": "MediaWiki\\Extension\\ParserPower\\Hooks\\ScribuntoHooks"
 		}
 	},
 	"Hooks": {
-		"ParserFirstCallInit": "FunctionRegistration"
+		"ParserFirstCallInit": "FunctionRegistration",
+		"ScribuntoExternalLibraries": "Scribunto"
 	},
 	"ConfigRegistry": {
 		"ParserPower": "MediaWiki\\Extension\\ParserPower\\ParserPowerConfig::newInstance"
