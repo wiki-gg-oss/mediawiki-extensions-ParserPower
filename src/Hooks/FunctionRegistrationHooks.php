@@ -7,6 +7,9 @@ namespace MediaWiki\Extension\ParserPower\Hooks;
 use MediaWiki\Extension\ParserPower\ParserVariableRegistry;
 use MediaWiki\Parser\Parser;
 
+/**
+ * Hook handler for registering functions/tags with the legacy parser.
+ */
 final class FunctionRegistrationHooks implements
 	\MediaWiki\Hook\ParserFirstCallInitHook
 {
