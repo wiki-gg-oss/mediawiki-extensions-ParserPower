@@ -17,6 +17,7 @@ Add new entries to the top of the 1.x.x-NEXT section.
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
 * Empty function parameters are no longer added to the `Pages using duplicate invalid in ParserPower functions` tracking category.
+* Added a `mw.ext.ParserPower.string` Lua library. It contains utility functions for adding (`escape`) or removing (`unescape`) escape sequences from text.
 * …
 
 ### 1.8.0 (2025-07-21)
