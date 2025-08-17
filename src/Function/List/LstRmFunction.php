@@ -4,17 +4,26 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
-use MediaWiki\Extension\ParserPower\ListUtils;
-use MediaWiki\Extension\ParserPower\Operation\ListInclusionOperation;
-use MediaWiki\Extension\ParserPower\Parameters;
-use MediaWiki\Extension\ParserPower\ParserPower;
-use MediaWiki\Parser\Parser;
-use MediaWiki\Parser\PPFrame;
+use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\ParserPowerConfig;
 
 /**
  * Parser function for filtering list values from an exclusion value (#lstrm).
  */
 final class LstRmFunction extends ListFilterFunction {
+
+	/**
+	 * @var bool Whether named parameters are allowed, and should be split from numbered arguments.
+	 */
+	private string $legacyNamedExpansion;
+
+	/**
+	 * @param ParserPowerConfig $config
+	 */
+	public function __construct( ParserPowerConfig $config ) {
+		$this->legacyNamedExpansion = $config->get( 'LstFunctionNamedExpansionCompat' );
+		parent::__construct();
+	}
 
 	/**
 	 * @inheritDoc
@@ -27,41 +36,33 @@ final class LstRmFunction extends ListFilterFunction {
 	 * @inheritDoc
 	 */
 	public function getParserFlags(): int {
-		return 0;
+		if ( $this->legacyNamedExpansion === 'old' ) {
+			return 0;
+		} elseif ( $this->legacyNamedExpansion === 'tracking-old' ) {
+			return ParameterParser::TRACKS_NAMED_VALUES;
+		} else {
+			return ParameterParser::ALLOWS_NAMED;
+		}
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getParamSpec(): array {
-		return [
+		$paramSpec = [
 			...parent::getParamSpec(),
-			0 => 'value',
+			0 => 'remove',
 			1 => 'list',
 			2 => 'insep',
 			3 => 'outsep',
-			4 => 'csoption'
+			4 => [
+				'alias' => 'removecs',
+				'formatter' => $this->getCSFormatter()
+			]
 		];
-	}
 
-	/**
-	 * @inheritDoc
-	 */
-	public function execute( Parser $parser, PPFrame $frame, Parameters $params ): string {
-		$inList = $params->get( 'list' );
-		$inSep = $inList !== '' ? $params->get( 'insep' ) : '';
-		$inSep = $parser->getStripState()->unstripNoWiki( $inSep );
-		$inValues = ListUtils::explode( $inSep, $inList );
+		$paramSpec['removesep']['default'] = '';
 
-		if ( empty( $inValues ) ) {
-			return '';
-		}
-
-		$value = $params->get( 'value' );
-		$csOption = $params->get( 'csoption' );
-		$operation = new ListInclusionOperation( [ $value ], 'remove', '', $csOption );
-		$outValues = $this->filterList( $operation, $inValues );
-
-		return ParserPower::evaluateUnescaped( $parser, $frame, $this->implodeOutList( $params, $outValues ) );
+		return $paramSpec;
 	}
 }

@@ -4,10 +4,26 @@
 
 namespace MediaWiki\Extension\ParserPower\Function\List;
 
+use MediaWiki\Extension\ParserPower\ParameterParser;
+use MediaWiki\Extension\ParserPower\ParserPowerConfig;
+
 /**
  * Parser function for mapping list values from a template (#lstmaptemp).
  */
 final class LstMapTempFunction extends ListMapFunction {
+
+	/**
+	 * @var bool Whether named parameters are allowed, and should be split from numbered arguments.
+	 */
+	private string $legacyNamedExpansion;
+
+	/**
+	 * @param ParserPowerConfig $config
+	 */
+	public function __construct( ParserPowerConfig $config ) {
+		$this->legacyNamedExpansion = $config->get( 'LstFunctionNamedExpansionCompat' );
+		parent::__construct();
+	}
 
 	/**
 	 * @inheritDoc
@@ -20,7 +36,13 @@ final class LstMapTempFunction extends ListMapFunction {
 	 * @inheritDoc
 	 */
 	public function getParserFlags(): int {
-		return 0;
+		if ( $this->legacyNamedExpansion === 'old' ) {
+			return 0;
+		} elseif ( $this->legacyNamedExpansion === 'tracking-old' ) {
+			return ParameterParser::TRACKS_NAMED_VALUES;
+		} else {
+			return ParameterParser::ALLOWS_NAMED;
+		}
 	}
 
 	/**
