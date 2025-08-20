@@ -196,7 +196,7 @@ class ListMergeFunction extends ListFunction {
 
 		$outValues = $this->iterativeListMerge( $matchOperation, $mergeOperation, $inValues, $fieldSep, $fieldOffset ?? null );
 
-		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+		if ( $sortMode & self::SORTMODE_POST ) {
 			$outValues = $sorter->sort( $outValues );
 		}
 
