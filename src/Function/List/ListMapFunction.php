@@ -88,39 +88,25 @@ class ListMapFunction extends ListFunction {
 			$inValues = array_unique( $inValues );
 		}
 
-		if ( $template !== '' ) {
-			if ( $sortMode & self::SORTMODE_PRE ) {
-				$inValues = $sorter->sort( $inValues );
-			}
+		if ( $sortMode & self::SORTMODE_PRE ) {
+			$inValues = $sorter->sort( $inValues );
+		}
 
+		if ( $template !== '' ) {
 			$operation = new TemplateOperation( $parser, $frame, $template );
 			$outValues = $this->mapList( $operation, true, $inValues, $fieldSep );
-
-			if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
-				$outValues = $sorter->sort( $outValues );
-			}
 		} else {
 			$indexToken = $params->get( 'indextoken' );
 			$tokenSep = $fieldSep !== '' ? $params->get( 'tokensep' ) : '';
 			$tokens = ListUtils::explodeToken( $tokenSep, $params->get( 'token' ) );
 			$pattern = $params->get( 'pattern' );
 
-			if (
-				( $indexToken !== '' && $sortMode & self::SORTMODE_COMPAT ) ||
-				$sortMode & self::SORTMODE_PRE
-			) {
-				$inValues = $sorter->sort( $inValues );
-			}
-
 			$operation = new PatternOperation( $parser, $frame, $pattern, $tokens, $indexToken );
 			$outValues = $this->mapList( $operation, false, $inValues, $fieldSep );
+		}
 
-			if (
-				( $indexToken === '' && $sortMode & self::SORTMODE_COMPAT ) ||
-				$sortMode & self::SORTMODE_POST
-			) {
-				$outValues = $sorter->sort( $outValues );
-			}
+		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+			$outValues = $sorter->sort( $outValues );
 		}
 
 		if ( $duplicates & self::DUPLICATES_POSTSTRIP ) {
