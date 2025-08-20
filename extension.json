@@ -58,8 +58,8 @@
 			"value": false
 		},
 		"LstFunctionNamedExpansionCompat": {
-			"description": "Use 'old' to only allow numbered parameters in {{#lstmap}}, {{#lstmaptemp}}, {{#lstsrt}}, and {{#lstuniq}}. Use 'tracking-old' to also track parameters that may be confused as named parameters. Use 'new' to allow both numbered and named parameters.",
-			"value": "old"
+			"description": "Use 'old' to only allow numbered parameters in {{#lstfltr}}, {{#lstmap}}, {{#lstmaptemp}}, {{#lstrm}}, {{#lstsrt}}, and {{#lstuniq}}. Use 'tracking-old' to also track parameters that may be confused as named parameters. Use 'new' to allow both numbered and named parameters.",
+			"value": "tracking-old"
 		}
 	},
 	"manifest_version": 2
