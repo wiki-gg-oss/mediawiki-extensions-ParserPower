@@ -43,7 +43,6 @@ abstract class ListFunction extends ParserFunctionBase {
 	 */
 	public const SORTMODE_PRE = 1;
 	public const SORTMODE_POST = 2;
-	public const SORTMODE_COMPAT = 4;
 
 	/**
 	 * @var ?array Base parameter specification for list functions.
@@ -149,7 +148,7 @@ abstract class ListFunction extends ParserFunctionBase {
 			'sortmode' => [
 				'formatter' => new EnumFormatter( [
 					'nosort'       => 0,
-					'sort'         => self::SORTMODE_COMPAT,
+					'sort'         => self::SORTMODE_POST,
 					'presort'      => self::SORTMODE_PRE,
 					'postsort'     => self::SORTMODE_POST,
 					'pre/postsort' => self::SORTMODE_PRE | self::SORTMODE_POST

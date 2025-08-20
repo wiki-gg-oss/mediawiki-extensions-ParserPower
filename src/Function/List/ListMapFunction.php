@@ -105,7 +105,7 @@ class ListMapFunction extends ListFunction {
 			$outValues = $this->mapList( $operation, false, $inValues, $fieldSep );
 		}
 
-		if ( $sortMode & ( self::SORTMODE_POST | self::SORTMODE_COMPAT ) ) {
+		if ( $sortMode & self::SORTMODE_POST ) {
 			$outValues = $sorter->sort( $outValues );
 		}
 
