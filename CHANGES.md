@@ -17,6 +17,7 @@ Add new entries to the top of the 1.x.x-NEXT section.
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
 * Empty function parameters are no longer added to the `Pages using duplicate invalid in ParserPower functions` tracking category.
+* `#listmap` no longer makes `sortmode=sort` work as `sortmode=presort` when both a `pattern` and an `indextoken` are specified.
 * …
 
 ### 1.8.0 (2025-07-21)
