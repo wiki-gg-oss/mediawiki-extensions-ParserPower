@@ -16,6 +16,9 @@ Add new entries to the top of the 1.x.x-NEXT section.
 ## Versions
 
 ### 1.x.x-NEXT (YYYY-MM-DD)
+* …
+
+### 1.9.0 (2025-09-04)
 * Empty function parameters are no longer added to the `Pages using invalid arguments in ParserPower functions` tracking category.
 * Added a `mw.ext.ParserPower.string` Lua library. It contains utility functions for adding (`escape`) or removing (`unescape`) escape sequences from text.
 * Added `$wgParserPowerLstFunctionNamedExpansionCompat` configuration variable. If set to `old-tracking` (by default), shortcut list functions are added to the `Pages using invalid arguments in ParserPower functions` tracking category if they are used with numbered parameters that could be interpreted as named parameters. If set to `old`, no tracking category is added. If set to `new`, shortcut list functions also accept named parameters:
@@ -23,7 +26,6 @@ Add new entries to the top of the 1.x.x-NEXT section.
   - `#lstmap` and `#lstmaptemp` accept all `#listmap` parameters,
   - `#lstsrt` accept all `#listsort` parameters, and
   - `#lstuniq` accept all `#listunique` parameters.
-* …
 
 ### 1.8.0 (2025-07-21)
 * Added `parserpower-invalid-args-category` system message. It defines a tracking category added to pages using ParserPower parser functions with an invalid parameter, either numbered or named.
