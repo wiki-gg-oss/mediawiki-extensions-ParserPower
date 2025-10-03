@@ -34,6 +34,8 @@ use MediaWiki\Extension\ParserPower\Function\List\LstSepFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstSrtFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstSubFunction;
 use MediaWiki\Extension\ParserPower\Function\List\LstUniqFunction;
+use MediaWiki\Extension\ParserPower\Function\MaxFunction;
+use MediaWiki\Extension\ParserPower\Function\MinFunction;
 use MediaWiki\Extension\ParserPower\Function\OrFunction;
 use MediaWiki\Extension\ParserPower\Function\PageForms\ArrayMapFunction;
 use MediaWiki\Extension\ParserPower\Function\PageForms\ArrayMapTemplateFunction;
@@ -71,6 +73,8 @@ final class ParserVariableRegistry {
 		IArgMapFunction::class,
 		LinkPageFunction::class,
 		LinkTextFunction::class,
+		MaxFunction::class,
+		MinFunction::class,
 		OrFunction::class,
 		TokenFunction::class,
 		TokenIfFunction::class,
