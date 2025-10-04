@@ -47,7 +47,7 @@ final class MinFunction extends ParserFunctionBase {
 
 			// Throw an error if the parameter is non-numeric
 			if ( !is_numeric( $inValue ) ) {
-				return ParserPower::errorMessage( 'min', 'parserpower-error-invalid-number', $inValue );
+				return ParserPower::errorMessage( 'min', 'invalid-number', $inValue );
 			}
 
 			$inValue = floatval( $inValue );
