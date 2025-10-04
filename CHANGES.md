@@ -18,6 +18,9 @@ Add new entries to the top of the 1.x.x-NEXT section.
 ### 1.x.x-NEXT (YYYY-MM-DD)
 * …
 
+### 1.9.1 (2025-10-04)
+* Reduced complexity of the link functions' regex to patch a ReDoS vulnerability.
+
 ### 1.9.0 (2025-09-04)
 * Empty function parameters are no longer added to the `Pages using invalid arguments in ParserPower functions` tracking category.
 * Added a `mw.ext.ParserPower.string` Lua library. It contains utility functions for adding (`escape`) or removing (`unescape`) escape sequences from text.
