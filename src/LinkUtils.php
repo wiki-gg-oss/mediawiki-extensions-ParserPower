@@ -14,7 +14,7 @@ final class LinkUtils {
 	 * @return string The text with links replaced.
 	 */
 	public static function replace( string $text, callable $callback ): string {
-		return preg_replace_callback( '/\[\[(.*?)\]\]/', static function ( $matches ) use ( $callback ) {
+		return preg_replace_callback( '/\[\[([^\[\]]+)\]\]/', static function ( $matches ) use ( $callback ) {
 			$parts = explode( '|', $matches[1], 2 );
 			return $callback( $parts[0], $parts[1] ?? null );
 		}, $text );
