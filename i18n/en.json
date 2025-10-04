@@ -12,6 +12,7 @@
 	"parserpower-error": "$1 error: $2",
 	"parserpower-error-invalid-argument-number": "The number of given formatter arguments must be divisible by \"$1\".",
 	"parserpower-error-invalid-integer": "\"$1\" must be an integer.",
+	"parserpower-error-invalid-number": "\"$1\" must be numeric.",
 	"parserpower-error-missing-parameter": "The parameter \"$1\" is required.",
 	"parserpower-error-no-arguments": "No formatter arguments were given.",
 	"parserpower-duplicate-args-category": "Pages using duplicate arguments in ParserPower functions",

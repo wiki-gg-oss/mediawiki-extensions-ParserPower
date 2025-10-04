@@ -4,8 +4,8 @@
 
 namespace MediaWiki\Extension\ParserPower\Function;
 
-use MediaWiki\Extension\ParserPower\Formatter\FloatFormatter;
 use MediaWiki\Extension\ParserPower\Parameters;
+use MediaWiki\Extension\ParserPower\ParserPower;
 use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\PPFrame;
 
@@ -27,8 +27,6 @@ final class MaxFunction extends ParserFunctionBase {
 	public function getDefaultSpec(): ?array {
 		return [
 			'unescape' => true,
-			'formatter' => new FloatFormatter(),
-			'default' => NAN,
 		];
 	}
 
@@ -40,9 +38,16 @@ final class MaxFunction extends ParserFunctionBase {
 		$retval = null;
 
 		for ( $i = 0; $params->isDefined( $i ); ++$i ) {
-			$inValue = $params->get( $i );
-			if ( $inValue === 'NAN' ) {
+			$inValue = trim( $params->get( $i ) );
+
+			// Skip empty parameters
+			if ( $inValue === '' ) {
 				continue;
+			}
+
+			// Throw an error if the parameter is non-numeric
+			if ( !is_numeric( $inValue ) ) {
+				return ParserPower::errorMessage( 'min', 'parserpower-error-invalid-number', $inValue );
 			}
 
 			if ( $retval === null ) {
