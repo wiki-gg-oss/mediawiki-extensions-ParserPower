@@ -18,6 +18,9 @@ Add new entries to the top of the 1.x.x-NEXT section.
 ### 1.x.x-NEXT (YYYY-MM-DD)
 * …
 
+### 1.10.0 (2025-10-08)
+* Added `#min`, `#max` functions, which return the, respectively, minimum and the maximum number from provided parameters. An empty string is returned if no or all empty parameters are provided. An error is returned if one of the parameters is not a number.
+
 ### 1.9.1 (2025-10-04)
 * Reduced complexity of the link functions' regex to patch a ReDoS vulnerability.
 
