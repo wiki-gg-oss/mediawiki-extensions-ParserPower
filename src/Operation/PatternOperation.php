@@ -33,19 +33,21 @@ final class PatternOperation implements WikitextOperation {
 	 * @inheritDoc
 	 */
 	public function apply( array $fields, ?int $index = null ): string {
-		$result = $this->pattern;
-		if ( $result === '' ) {
+		if ( $this->pattern === '' ) {
 			return $fields[0];
 		}
 
-		if ( $index !== null ) {
-			$result = str_replace( $this->indexToken, (string)$index, $result );
+		$repl = [];
+		if ( $this->indexToken !== '' && $index !== null ) {
+			$repl[$this->indexToken] = (string)$index;
 		}
-
 		foreach ( $this->tokens as $i => $token ) {
-			$result = str_replace( $token, $fields[$i] ?? '', $result );
+			if ( $token !== '' ) {
+				$repl[$token] = $fields[$i] ?? '';
+			}
 		}
 
+		$result = strtr( $this->pattern, $repl );
 		$result = ParserPower::unescape( $result );
 		return ParserPower::evaluateUnescaped( $this->parser, $this->frame, $result, ParserPower::WITH_ARGS );
 	}
