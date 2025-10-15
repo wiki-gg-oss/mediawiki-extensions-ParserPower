@@ -207,22 +207,6 @@ class ParserPower {
 	}
 
 	/**
-	 * Replaces the indicated token in the pattern with the input value.
-	 *
-	 * @param string $value The value to change into one or more template parameters.
-	 * @param string $token The token to replace.
-	 * @param string $pattern Pattern containing token to be replaced with the input value.
-	 * @return string The result of the token replacement within the pattern.
-	 */
-	public static function applyPattern( string $value, string $token, string $pattern ): string {
-		if ( $pattern === '' ) {
-			return $value;
-		} else {
-			return str_replace( $token, $value, $pattern );
-		}
-	}
-
-	/**
 	 * Create a ParserPower-specific message.
 	 *
 	 * @param string $key Message key.

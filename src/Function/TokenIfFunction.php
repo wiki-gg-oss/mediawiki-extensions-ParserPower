@@ -42,7 +42,15 @@ final class TokenIfFunction extends ParserFunctionBase {
 			return ParserPower::evaluateUnescaped( $parser, $frame, $params->get( 3 ) );
 		}
 
-		$outValue = ParserPower::applyPattern( $inValue, $params->get( 1 ), $params->get( 2 ) );
+		$token = $params->get( 1 );
+		$pattern = $params->get( 2 );
+
+		if ( $pattern === '' ) {
+			$outValue = $inValue;
+		} else {
+			$outValue = str_replace( $token, $inValue, $pattern );
+		}
+
 		$outValue = $parser->preprocessToDom( $outValue, $frame->isTemplate() ? Parser::PTD_FOR_INCLUSION : 0 );
 		$outValue = ParserPower::expand( $frame, $outValue, ParserPower::UNESCAPE );
 

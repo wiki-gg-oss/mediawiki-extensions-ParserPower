@@ -39,11 +39,11 @@ final class PatternOperation implements WikitextOperation {
 		}
 
 		if ( $index !== null ) {
-			$result = ParserPower::applyPattern( (string)$index, $this->indexToken, $result );
+			$result = str_replace( $this->indexToken, (string)$index, $result );
 		}
 
 		foreach ( $this->tokens as $i => $token ) {
-			$result = ParserPower::applyPattern( $fields[$i] ?? '', $token, $result );
+			$result = str_replace( $token, $fields[$i] ?? '', $result );
 		}
 
 		$result = ParserPower::unescape( $result );
