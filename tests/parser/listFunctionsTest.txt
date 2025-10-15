@@ -2313,3 +2313,12 @@ numeric desc: "66, 44, 33, 32, 11"
 "def"
 </p>
 !! end
+
+!! test
+{{#listmap}} tokens are not replaced in substitution values of other tokens
+!! wikitext
+"{{#listmap: list = @:x, y:$, x:z | fieldsep = : | token = $, @ | pattern = @:$ }}"
+!! html/php
+<p>"x:@, $:y, z:x"
+</p>
+!! end
